@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --gold: #F5A623;
+  --dark: #1A1A1A;
+  --light-bg: #F4F4F4;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #FFFFFF;
+  color: #1A1A1A;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Poppins', 'Montserrat', Arial, sans-serif;
+}
+
+.btn-gold {
+  display: inline-block;
+  background-color: #F5A623;
+  color: #1A1A1A;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  text-decoration: none;
+}
+
+.btn-gold:hover {
+  background-color: #e09410;
+}
+
+.hex-clip {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}

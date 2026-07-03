@@ -1,0 +1,123 @@
+[
+  {
+    "id": "iso-9001",
+    "name": "ISO 9001",
+    "title": "Quality Management",
+    "tagline": "Your company with ordered processes that repeat without depending on a single person",
+    "description": "The world's most widely adopted management standard. ISO 9001 allows you to standardize how you do things so the result is always the same, regardless of who is in charge.",
+    "who": "Applies to any company in any sector and size that wants to organize its processes, grow without losing quality, and access tenders and corporate clients.",
+    "impact": "Certified companies reduce operating costs by 15-25% and increase their customer retention rate by up to 40%. The certificate opens doors to contracts that were previously unattainable.",
+    "featured": true,
+    "icon": "award"
+  },
+  {
+    "id": "iso-14001",
+    "name": "ISO 14001",
+    "title": "Environmental Management",
+    "tagline": "Reduce operating costs and open doors to tenders and markets with environmental requirements",
+    "description": "ISO 14001 establishes an environmental management system that identifies, controls and reduces your company's environmental impact in a systematic and measurable way.",
+    "who": "Manufacturing industries, construction companies, logistics services, and any organization that wants to demonstrate environmental commitment to clients and regulators.",
+    "impact": "Waste reduction of up to 30%, access to government tenders with environmental requirements, and differentiation from clients who prioritize responsible suppliers.",
+    "featured": false,
+    "icon": "leaf"
+  },
+  {
+    "id": "iso-45001",
+    "name": "ISO 45001",
+    "title": "Occupational Health and Safety",
+    "tagline": "Fewer accidents, fewer fines, more productive workers and total regulatory compliance",
+    "description": "The international standard for occupational health and safety management systems. Identifies hazards, assesses risks and implements controls that protect your team.",
+    "who": "Companies with physical operations, manufacturing, construction, mining, logistics services, health — any sector where workers are exposed to risks.",
+    "impact": "Reduction of workplace accidents by up to 60%, decrease in sick absences, lower insurance costs and elimination of penalties for regulatory non-compliance.",
+    "featured": false,
+    "icon": "shield"
+  },
+  {
+    "id": "iso-27001",
+    "name": "ISO/IEC 27001",
+    "title": "Information Security",
+    "tagline": "Protect your company's data and open technology markets that demand high security standards",
+    "description": "The global standard for information security management systems. Protects your information assets through proven policies, controls and technologies.",
+    "who": "Tech companies, fintechs, digital health, e-commerce, cloud service providers, and any organization that handles sensitive customer or partner data.",
+    "impact": "Access to enterprise and government contracts, reduced risk of data breaches, international client trust and compliance with regulations such as GDPR and LGPD.",
+    "featured": false,
+    "icon": "lock"
+  },
+  {
+    "id": "iso-22000",
+    "name": "ISO 22000",
+    "title": "Food Safety",
+    "tagline": "Export food with confidence and access the most demanding markets in the world",
+    "description": "ISO 22000 integrates HACCP principles with a comprehensive management system to ensure food safety throughout the food chain, from producer to consumer.",
+    "who": "Food producers, processors, distributors, chain restaurants, food input suppliers and any company in the food supply chain.",
+    "impact": "Ability to export to EU, US and Asian markets, reduction of product rejections and withdrawals, differentiation with international retailers and distributors.",
+    "featured": false,
+    "icon": "utensils"
+  },
+  {
+    "id": "iso-13485",
+    "name": "ISO 13485",
+    "title": "Medical Devices",
+    "tagline": "Sell medical equipment and devices in global markets with the endorsement of the most demanding standard in the sector",
+    "description": "The international standard specific to the design, manufacturing and distribution of medical devices. An essential requirement to access regulated markets such as the EU, US and Canada.",
+    "who": "Medical device manufacturers, distributors, medical supply providers, in vitro diagnostic laboratories and medical technology companies.",
+    "impact": "Authorization to sell in the EU (CE Mark), USA (FDA), access to high-complexity hospitals and clinics, and compliance with public health tender requirements.",
+    "featured": false,
+    "icon": "heart-pulse"
+  },
+  {
+    "id": "iso-50001",
+    "name": "ISO 50001",
+    "title": "Energy Management",
+    "tagline": "Reduce your energy consumption by up to 30% with a system that pays for itself",
+    "description": "ISO 50001 establishes a framework for managing your organization's energy performance: measure, monitor, optimize and reduce consumption systematically.",
+    "who": "High energy-consuming industries, retail chains, service companies, corporate buildings and any organization that wants to lower costs and meet sustainability commitments.",
+    "impact": "Energy consumption reduction between 15-30%, direct savings in operating costs, improved carbon footprint and access to tax incentives for energy efficiency.",
+    "featured": false,
+    "icon": "zap"
+  },
+  {
+    "id": "iso-22301",
+    "name": "ISO 22301",
+    "title": "Business Continuity",
+    "tagline": "Operate through any crisis and win tenders that require demonstrated organizational resilience",
+    "description": "ISO 22301 defines how your company identifies threats, prepares for them and maintains critical operations in the face of disruptions: cyberattacks, natural disasters, pandemics or supplier failures.",
+    "who": "Banks and financial companies, tech companies, critical infrastructure, health companies, logistics and any organization whose interruption has high economic or social impact.",
+    "impact": "Incident recovery time reduced by up to 70%, competitive advantage in tenders requiring BCP, trust from clients and strategic partners.",
+    "featured": false,
+    "icon": "refresh-cw"
+  },
+  {
+    "id": "iso-27701",
+    "name": "ISO/IEC 27701",
+    "title": "Data Privacy",
+    "tagline": "Demonstrably comply with GDPR and LGPD and win the trust of European and Brazilian clients",
+    "description": "Extension of ISO 27001 specifically designed for the management of personally identifiable information (PII). The bridge between information security and privacy compliance.",
+    "who": "Companies operating in the EU or Brazil, digital platforms, apps with registered users, companies that process client data and any organization subject to privacy regulations.",
+    "impact": "Demonstrable GDPR and LGPD compliance, elimination of the risk of multi-million dollar fines, trust from European clients and positioning as a responsible data company.",
+    "featured": false,
+    "icon": "eye-off"
+  },
+  {
+    "id": "iso-42001",
+    "name": "ISO/IEC 42001",
+    "title": "Artificial Intelligence Management",
+    "tagline": "Use AI responsibly, transparently and in a way that builds trust with clients and regulators",
+    "description": "The first international standard for AI management systems. Defines how organizations develop, deploy and govern artificial intelligence systems ethically and under control.",
+    "who": "Tech companies that develop or use AI, fintechs, insurtech, healthtech, and any organization that wants to lead the responsible adoption of AI with clients and regulators.",
+    "impact": "Positioning as a leader in responsible AI, access to contracts in regulated sectors, differentiation from competitors and early preparation for EU AI regulations.",
+    "featured": false,
+    "icon": "brain"
+  },
+  {
+    "id": "iso-17025",
+    "name": "ISO/IEC 17025",
+    "title": "Testing and Calibration Laboratories",
+    "tagline": "Internationally recognized laboratory results that open markets and contracts",
+    "description": "The international standard for the technical competence of laboratories. Ensures that your testing and calibration results are reliable, traceable and accepted worldwide.",
+    "who": "Clinical analysis laboratories, industrial quality control, environmental, food, materials laboratories and any entity that issues technical results with legal or commercial validity.",
+    "impact": "International recognition of results via mutual recognition agreements (MRA), access to contracts with the pharmaceutical industry and regulators, and elimination of costly re-testing.",
+    "featured": false,
+    "icon": "flask"
+  }
+]

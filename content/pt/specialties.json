@@ -1,0 +1,65 @@
+[
+  {
+    "id": "planificacion",
+    "title": "Planejamento e Estruturação Estratégica",
+    "icon": "target",
+    "tagline": "Converta sua visão em um plano executável com KPIs mensuráveis e responsáveis claros",
+    "description": "Não há certificação nem crescimento sustentável sem uma estratégia clara. Ajudamos a definir a direção da sua empresa com metodologias comprovadas como Balanced Scorecard e OKRs, traduzindo sua visão em objetivos concretos, indicadores de desempenho e planos de ação com datas e responsáveis.",
+    "result": "Um plano estratégico documentado, um painel de controle digital integrado e um sistema de acompanhamento mensal que garante que a estratégia não fique no papel.",
+    "features": ["Diagnóstico estratégico inicial", "Definição de missão, visão e valores operacionais", "Mapa estratégico com BSC ou OKRs", "KPIs por área com painel integrado", "Revisões trimestrais sistematizadas"]
+  },
+  {
+    "id": "riesgo",
+    "title": "Gestão de Riscos",
+    "icon": "shield-alert",
+    "tagline": "Identifique e mitigue riscos antes que se tornem crises custosas",
+    "description": "Riscos não gerenciados custam entre 3 e 10 vezes mais do que preveni-los. Implementamos uma metodologia de gestão de riscos integrada com seu sistema de gestão ISO para que sua empresa opere de forma proativa, não reativa.",
+    "result": "Matriz de riscos atualizada, planos de tratamento implementados e um sistema de alertas automatizado que notifica quando um indicador de risco supera o limiar definido.",
+    "features": ["Inventário e classificação de riscos", "Avaliação de probabilidade e impacto", "Planos de tratamento e controles", "Integração com painel de gestão", "Alertas automáticos para indicadores críticos"]
+  },
+  {
+    "id": "comercial",
+    "title": "Gestão Comercial e Sistematização do Processo de Vendas",
+    "icon": "trending-up",
+    "tagline": "Sistematize seu processo de vendas, melhore a taxa de fechamento e preveja sua receita com precisão",
+    "description": "Um processo comercial não documentado depende dos vendedores estrela. Quando saem, levam o know-how. Sistematizamos seu processo de vendas desde a prospecção até o fechamento e o pós-venda, integrando CRM, pipeline visual e métricas comerciais em tempo real.",
+    "result": "Processo comercial documentado e padronizado, CRM implementado e adotado pela equipe, pipeline previsível e taxa de conversão melhorada em até 35%.",
+    "features": ["Mapeamento do processo comercial atual", "Definição do processo ideal e playbook de vendas", "Implementação e configuração de CRM", "Métricas comerciais em painel", "Treinamento da equipe comercial"]
+  },
+  {
+    "id": "operativa",
+    "title": "Gestão Operacional e Sistematização da Cadeia Produtiva",
+    "icon": "settings",
+    "tagline": "Otimize sua produção, reduza desperdícios e faça mais com os mesmos recursos",
+    "description": "A eficiência operacional é a diferença entre crescer de forma rentável e crescer quebrando. Mapeamos sua cadeia produtiva, identificamos gargalos, eliminamos desperdícios e implementamos controles que garantem consistência independentemente de quem esteja operando.",
+    "result": "Processos produtivos documentados, redução de desperdícios entre 20-40%, indicadores operacionais em tempo real e capacidade de escalar sem perder qualidade.",
+    "features": ["Value Stream Mapping da cadeia produtiva", "Identificação e eliminação de desperdícios (Lean)", "Padronização de processos-chave", "Indicadores operacionais em tempo real", "Integração com sistema de não conformidades"]
+  },
+  {
+    "id": "talento",
+    "title": "Gestão do Talento Humano",
+    "icon": "users",
+    "tagline": "Atraia, desenvolva e retenha o talento que sua empresa precisa com processos definidos e mensuráveis",
+    "description": "Empresas que gerenciam seu talento de forma sistemática têm taxas de retenção 60% mais altas e equipes até 40% mais produtivas. Implementamos processos de seleção, integração, avaliação de desempenho e desenvolvimento que transformam a gestão de pessoas em vantagem competitiva.",
+    "result": "Perfis de cargo definidos, processo de seleção estruturado, sistema de avaliação de desempenho integrado e plano de desenvolvimento por função documentado.",
+    "features": ["Design organizacional e perfis de cargo", "Processo de seleção estruturado", "Integração sistematizada", "Sistema de avaliação de desempenho", "Plano de desenvolvimento e formação por função"]
+  },
+  {
+    "id": "diseno",
+    "title": "Gestão de Design e Desenvolvimento",
+    "icon": "lightbulb",
+    "tagline": "Inove com processos controlados que garantem que cada novo produto ou serviço chega ao mercado sem surpresas",
+    "description": "A inovação sem controle gera atrasos, sobrecustos e produtos que não cumprem o prometido. Implementamos um sistema de gestão de design e desenvolvimento que estrutura cada projeto de inovação com fases, revisões, validações e controles de qualidade integrados.",
+    "result": "Time-to-market reduzido, projetos entregues no prazo e no orçamento, e um processo de inovação que pode escalar sem depender de pessoas-chave.",
+    "features": ["Processo de design e desenvolvimento documentado", "Revisões de design sistematizadas", "Controle de alterações integrado", "Verificação e validação de produtos", "Rastreabilidade completa do processo de desenvolvimento"]
+  },
+  {
+    "id": "empresa-familiar",
+    "title": "Empresas Familiares e Governança Corporativa",
+    "icon": "building",
+    "tagline": "Profissionalize a empresa familiar com estruturas de governança que separam a família do negócio",
+    "description": "Empresas familiares que não profissionalizam sua governança corporativa enfrentam conflitos, perda de talentos externos e dificuldades para crescer. Implementamos estruturas de governança corporativa adaptadas à realidade da empresa familiar: protocolos familiares, conselho formal, separação de funções e processos de sucessão.",
+    "result": "Protocolo familiar documentado, conselho operacional implementado, funções e responsabilidades claras e um plano de sucessão que garante a continuidade do negócio.",
+    "features": ["Diagnóstico de governança corporativa atual", "Design do protocolo familiar", "Estrutura de conselho e comitês", "Separação de funções família/empresa", "Plano de sucessão e transferência geracional"]
+  }
+]

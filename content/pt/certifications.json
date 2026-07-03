@@ -1,0 +1,123 @@
+[
+  {
+    "id": "iso-9001",
+    "name": "ISO 9001",
+    "title": "Gestão da Qualidade",
+    "tagline": "Sua empresa com processos ordenados que se repetem sem depender de uma única pessoa",
+    "description": "A norma de gestão mais adotada do mundo. A ISO 9001 permite padronizar como você faz as coisas para que o resultado seja sempre o mesmo, independentemente de quem esteja à frente.",
+    "who": "Aplica-se a qualquer empresa de qualquer setor e tamanho que queira ordenar seus processos, crescer sem perder qualidade e acessar licitações e clientes corporativos.",
+    "impact": "Empresas certificadas reduzem custos operacionais entre 15-25% e aumentam sua taxa de retenção de clientes em até 40%. O certificado abre portas para contratos que antes eram inatingíveis.",
+    "featured": true,
+    "icon": "award"
+  },
+  {
+    "id": "iso-14001",
+    "name": "ISO 14001",
+    "title": "Gestão Ambiental",
+    "tagline": "Reduza custos operacionais e abra portas para licitações e mercados com exigências ambientais",
+    "description": "A ISO 14001 estabelece um sistema de gestão ambiental que identifica, controla e reduz o impacto ambiental da sua empresa de forma sistemática e mensurável.",
+    "who": "Indústrias manufatureiras, empresas de construção, serviços logísticos, e qualquer organização que queira demonstrar comprometimento ambiental a clientes e reguladores.",
+    "impact": "Redução de resíduos em até 30%, acesso a licitações governamentais com requisitos ambientais, e diferenciação perante clientes que priorizam fornecedores responsáveis.",
+    "featured": false,
+    "icon": "leaf"
+  },
+  {
+    "id": "iso-45001",
+    "name": "ISO 45001",
+    "title": "Saúde e Segurança Ocupacional",
+    "tagline": "Menos acidentes, menos multas, trabalhadores mais produtivos e conformidade regulatória total",
+    "description": "A norma internacional para sistemas de gestão de saúde e segurança ocupacional. Identifica perigos, avalia riscos e implementa controles que protegem sua equipe.",
+    "who": "Empresas com operações físicas, manufatura, construção, mineração, serviços logísticos, saúde — qualquer setor onde os trabalhadores estejam expostos a riscos.",
+    "impact": "Redução de acidentes de trabalho em até 60%, diminuição de ausências por doença, menores custos de seguros e eliminação de sanções por descumprimento regulatório.",
+    "featured": false,
+    "icon": "shield"
+  },
+  {
+    "id": "iso-27001",
+    "name": "ISO/IEC 27001",
+    "title": "Segurança da Informação",
+    "tagline": "Proteja os dados da sua empresa e abra mercados tecnológicos que exigem altos padrões de segurança",
+    "description": "O padrão global para sistemas de gestão de segurança da informação. Protege seus ativos de informação por meio de políticas, controles e tecnologias comprovados.",
+    "who": "Empresas tech, fintechs, saúde digital, e-commerce, provedores de serviços em nuvem, e qualquer organização que lida com dados sensíveis de clientes ou parceiros.",
+    "impact": "Acesso a contratos enterprise e governamentais, redução do risco de violações de dados, confiança de clientes internacionais e conformidade com regulamentos como RGPD e LGPD.",
+    "featured": false,
+    "icon": "lock"
+  },
+  {
+    "id": "iso-22000",
+    "name": "ISO 22000",
+    "title": "Inocuidade Alimentar",
+    "tagline": "Exporte alimentos com confiança e acesse os mercados mais exigentes do mundo",
+    "description": "A ISO 22000 integra os princípios HACCP com um sistema de gestão completo para garantir a inocuidade em toda a cadeia alimentar, do produtor ao consumidor.",
+    "who": "Produtores de alimentos, processadores, distribuidores, redes de restaurantes, fornecedores de insumos alimentares e qualquer empresa na cadeia de abastecimento de alimentos.",
+    "impact": "Habilitação para exportar para mercados da UE, EUA e Ásia, redução de rejeições e retiradas de produto, diferenciação perante varejistas e distribuidores internacionais.",
+    "featured": false,
+    "icon": "utensils"
+  },
+  {
+    "id": "iso-13485",
+    "name": "ISO 13485",
+    "title": "Dispositivos Médicos",
+    "tagline": "Venda equipamentos e dispositivos médicos em mercados globais com o aval da norma mais exigente do setor",
+    "description": "O padrão internacional específico para o design, fabricação e distribuição de dispositivos médicos. Requisito indispensável para acessar mercados regulamentados como a UE, EUA e Canadá.",
+    "who": "Fabricantes de dispositivos médicos, distribuidores, fornecedores de insumos médicos, laboratórios de diagnóstico in vitro e empresas de tecnologia médica.",
+    "impact": "Habilitação para vender na UE (Marca CE), EUA (FDA), acesso a hospitais e clínicas de alta complexidade, e cumprimento de requisitos de licitações de saúde pública.",
+    "featured": false,
+    "icon": "heart-pulse"
+  },
+  {
+    "id": "iso-50001",
+    "name": "ISO 50001",
+    "title": "Gestão de Energia",
+    "tagline": "Reduza seu consumo de energia em até 30% com um sistema que se paga sozinho",
+    "description": "A ISO 50001 estabelece uma estrutura para gerenciar o desempenho energético da sua organização: medir, monitorar, otimizar e reduzir o consumo de forma sistemática.",
+    "who": "Indústrias com alto consumo de energia, redes de varejo, empresas de serviços, edifícios corporativos e qualquer organização que queira reduzir custos e cumprir compromissos de sustentabilidade.",
+    "impact": "Redução do consumo de energia entre 15-30%, economia direta em custos operacionais, melhoria da pegada de carbono e acesso a incentivos fiscais por eficiência energética.",
+    "featured": false,
+    "icon": "zap"
+  },
+  {
+    "id": "iso-22301",
+    "name": "ISO 22301",
+    "title": "Continuidade de Negócios",
+    "tagline": "Opere diante de qualquer crise e ganhe licitações que exigem resiliência organizacional demonstrada",
+    "description": "A ISO 22301 define como sua empresa identifica ameaças, se prepara para elas e mantém operações críticas diante de interrupções: ciberataques, desastres naturais, pandemias ou falhas de fornecedor.",
+    "who": "Bancos e financeiras, empresas tech, infraestrutura crítica, empresas de saúde, logística e qualquer organização cuja interrupção tenha alto impacto econômico ou social.",
+    "impact": "Tempo de recuperação diante de incidentes reduzido em até 70%, vantagem competitiva em licitações que exigem BCP, confiança de clientes e parceiros estratégicos.",
+    "featured": false,
+    "icon": "refresh-cw"
+  },
+  {
+    "id": "iso-27701",
+    "name": "ISO/IEC 27701",
+    "title": "Privacidade de Dados",
+    "tagline": "Cumpra com RGPD e LGPD de forma demonstrável e ganhe a confiança de clientes europeus e brasileiros",
+    "description": "Extensão da ISO 27001 especificamente projetada para o gerenciamento de informações de identificação pessoal (PII). A ponte entre segurança da informação e conformidade com privacidade.",
+    "who": "Empresas que operam na UE ou Brasil, plataformas digitais, aplicativos com usuários cadastrados, empresas que processam dados de clientes e qualquer organização sujeita a regulamentos de privacidade.",
+    "impact": "Conformidade demonstrável com RGPD e LGPD, eliminação do risco de multas milionárias, confiança de clientes europeus e posicionamento como empresa responsável com os dados.",
+    "featured": false,
+    "icon": "eye-off"
+  },
+  {
+    "id": "iso-42001",
+    "name": "ISO/IEC 42001",
+    "title": "Gestão de Inteligência Artificial",
+    "tagline": "Use IA de forma responsável, transparente e que gere confiança em clientes e reguladores",
+    "description": "O primeiro padrão internacional para sistemas de gestão de IA. Define como as organizações desenvolvem, implantam e governam sistemas de inteligência artificial de forma ética e controlada.",
+    "who": "Empresas tech que desenvolvem ou usam IA, fintechs, insurtech, healthtech, e qualquer organização que queira liderar a adoção responsável de IA perante clientes e reguladores.",
+    "impact": "Posicionamento como líder em IA responsável, acesso a contratos em setores regulamentados, diferenciação perante concorrentes e preparação antecipada para regulamentações de IA na UE.",
+    "featured": false,
+    "icon": "brain"
+  },
+  {
+    "id": "iso-17025",
+    "name": "ISO/IEC 17025",
+    "title": "Laboratórios de Ensaio e Calibração",
+    "tagline": "Resultados de laboratório reconhecidos internacionalmente que abrem mercados e contratos",
+    "description": "O padrão internacional para a competência técnica de laboratórios. Garante que seus resultados de ensaio e calibração sejam confiáveis, rastreáveis e aceitos mundialmente.",
+    "who": "Laboratórios de análises clínicas, controle de qualidade industrial, laboratórios ambientais, de alimentos, de materiais e qualquer entidade que emite resultados técnicos com validade legal ou comercial.",
+    "impact": "Reconhecimento internacional de resultados via acordos de reconhecimento mútuo (MRA), acesso a contratos com a indústria farmacêutica e reguladores, e eliminação de re-ensaios custosos.",
+    "featured": false,
+    "icon": "flask"
+  }
+]

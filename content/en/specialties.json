@@ -1,0 +1,65 @@
+[
+  {
+    "id": "planificacion",
+    "title": "Strategic Planning and Structuring",
+    "icon": "target",
+    "tagline": "Turn your vision into an executable plan with measurable KPIs and clear accountability",
+    "description": "There is no sustainable certification or growth without a clear strategy. We help you define your company's direction with proven methodologies like Balanced Scorecard and OKRs, translating your vision into concrete objectives, performance indicators and action plans with dates and accountability.",
+    "result": "A documented strategic plan, a digital balanced scorecard and a monthly tracking system that ensures strategy doesn't stay on paper.",
+    "features": ["Initial strategic diagnosis", "Mission, vision and operational values definition", "Strategic map with BSC or OKRs", "KPIs per area with integrated dashboard", "Systematized quarterly reviews"]
+  },
+  {
+    "id": "riesgo",
+    "title": "Risk Management",
+    "icon": "shield-alert",
+    "tagline": "Identify and mitigate risks before they become costly crises",
+    "description": "Unmanaged risks cost 3 to 10 times more than preventing them. We implement a risk management methodology integrated with your ISO management system so your company operates proactively, not reactively.",
+    "result": "Updated risk matrix, implemented treatment plans and an automated alert system that notifies when a risk indicator exceeds the defined threshold.",
+    "features": ["Risk inventory and classification", "Probability and impact assessment", "Treatment plans and controls", "Integration with management dashboard", "Automatic alerts for critical indicators"]
+  },
+  {
+    "id": "comercial",
+    "title": "Commercial Management and Sales Process Systematization",
+    "icon": "trending-up",
+    "tagline": "Systematize your sales process, improve your closing rate and predict your revenue accurately",
+    "description": "An undocumented commercial process depends on star salespeople. When they leave, they take the know-how. We systematize your sales process from prospecting to closing and after-sales, integrating CRM, visual pipeline and real-time commercial metrics.",
+    "result": "Documented and standardized commercial process, CRM implemented and adopted by the team, predictable pipeline and conversion rate improved by up to 35%.",
+    "features": ["Mapping of current commercial process", "Definition of ideal process and sales playbook", "CRM implementation and configuration", "Commercial metrics dashboard", "Sales team training"]
+  },
+  {
+    "id": "operativa",
+    "title": "Operational Management and Production Chain Systematization",
+    "icon": "settings",
+    "tagline": "Optimize your production, reduce waste and do more with the same resources",
+    "description": "Operational efficiency is the difference between growing profitably and growing into bankruptcy. We map your production chain, identify bottlenecks, eliminate waste and implement controls that guarantee consistency regardless of who is operating.",
+    "result": "Documented production processes, 20-40% waste reduction, real-time operational indicators and the capacity to scale without losing quality.",
+    "features": ["Value Stream Mapping of production chain", "Waste identification and elimination (Lean)", "Standardization of key processes", "Real-time operational indicators", "Integration with non-conformity system"]
+  },
+  {
+    "id": "talento",
+    "title": "Human Talent Management",
+    "icon": "users",
+    "tagline": "Attract, develop and retain the talent your company needs with defined, measurable processes",
+    "description": "Companies that manage their talent systematically have retention rates 60% higher and teams up to 40% more productive. We implement selection, onboarding, performance evaluation and development processes that turn people management into a competitive advantage.",
+    "result": "Defined job profiles, structured selection process, integrated performance evaluation system and documented development plan per role.",
+    "features": ["Organizational design and job profiles", "Structured selection process", "Systematized onboarding", "Performance evaluation system", "Role-based development and training plan"]
+  },
+  {
+    "id": "diseno",
+    "title": "Design and Development Management",
+    "icon": "lightbulb",
+    "tagline": "Innovate with controlled processes that ensure every new product or service reaches market without surprises",
+    "description": "Innovation without control generates delays, cost overruns and products that don't deliver on their promise. We implement a design and development management system that structures each innovation project with phases, reviews, validations and integrated quality controls.",
+    "result": "Reduced time-to-market, projects delivered on time and budget, and an innovation process that can scale without depending on key individuals.",
+    "features": ["Documented design and development process", "Systematized design reviews", "Integrated change control", "Product verification and validation", "Complete traceability of development process"]
+  },
+  {
+    "id": "empresa-familiar",
+    "title": "Family Businesses and Corporate Governance",
+    "icon": "building",
+    "tagline": "Professionalize the family business with governance structures that separate family from business",
+    "description": "Family businesses that don't professionalize their corporate governance face conflicts, loss of external talent and difficulty growing. We implement corporate governance structures adapted to the reality of the family business: family protocols, formal board, separation of roles and succession processes.",
+    "result": "Documented family protocol, operating board implemented, clear roles and responsibilities and a succession plan that ensures business continuity.",
+    "features": ["Current corporate governance diagnosis", "Family protocol design", "Board and committee structure", "Family/business role separation", "Succession and generational transfer plan"]
+  }
+]

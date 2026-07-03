@@ -1,0 +1,108 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "nosotros": "Nosotros",
+    "certificaciones": "Certificaciones ISO",
+    "kosher": "Kosher",
+    "especialidades": "Especialidades",
+    "software": "Software",
+    "casos": "Casos de Éxito",
+    "blog": "Blog",
+    "contacto": "Contacto",
+    "cotiza": "Cotiza Ahora",
+    "asesor": "Habla con un asesor"
+  },
+  "hero": {
+    "tagline": "Certificación ISO + Automatización",
+    "headline": "Convertimos tu certificación ISO en un sistema de gestión automatizado que impulsa el crecimiento real de tu empresa.",
+    "sub": "No solo te certificamos. Te construimos el sistema de gestión que mantiene vivo el certificado y convierte tus procesos en ventaja competitiva.",
+    "cta1": "Cotiza tu certificación",
+    "cta2": "Conoce nuestro proceso"
+  },
+  "process": {
+    "title": "Nuestro proceso de certificación",
+    "sub": "Un camino claro, sin burocracia, con tecnología de por medio",
+    "steps": {
+      "diagnostico": "Diagnóstico",
+      "implementacion": "Implementación",
+      "automatizacion": "Automatización",
+      "auditoria": "Auditoría",
+      "certificado": "Certificado",
+      "mantenimiento": "Mantenimiento"
+    }
+  },
+  "testimonials": {
+    "title": "Resultados que hablan por sí solos",
+    "sub": "Empresas reales, métricas concretas, crecimiento medible"
+  },
+  "cta": {
+    "band": "¿Listo para certificarte?",
+    "sub": "Habla hoy con un asesor y recibe tu diagnóstico gratuito",
+    "button": "Cotiza tu certificación",
+    "asesor": "Habla con un asesor"
+  },
+  "footer": {
+    "desc": "Expertos en certificación ISO y automatización de sistemas de gestión. Tu certificado como ventaja competitiva real.",
+    "certifications": "Certificaciones",
+    "specialties": "Especialidades",
+    "company": "Empresa",
+    "rights": "Todos los derechos reservados.",
+    "privacy": "Privacidad",
+    "terms": "Términos"
+  },
+  "contact": {
+    "title": "Cotiza tu certificación",
+    "sub": "Cuéntanos tu proyecto y te respondemos en menos de 24 horas con un plan personalizado.",
+    "name": "Nombre completo",
+    "company": "Empresa",
+    "norm": "Norma de interés",
+    "message": "¿Cómo podemos ayudarte?",
+    "submit": "Enviar solicitud",
+    "sending": "Enviando...",
+    "success": "¡Mensaje enviado! Te contactaremos en menos de 24 horas.",
+    "error": "Hubo un error. Por favor intenta de nuevo.",
+    "selectNorm": "Selecciona una norma"
+  },
+  "nosotros": {
+    "title": "Somos Iso Go Company",
+    "sub": "La firma que une certificación ISO con automatización real de procesos",
+    "history_title": "Nuestra historia",
+    "history": "Iso Go Company nació de una convicción simple pero poderosa: una certificación ISO no debería ser solo un papel en la pared. Fundada por consultores con más de 15 años de experiencia en sistemas de gestión, decidimos ir más allá del estándar e integrar tecnología propia para que cada cliente no solo obtenga su certificado, sino un sistema vivo que mejora continuamente.",
+    "diff_title": "Lo que nos diferencia",
+    "methodology_title": "Nuestra metodología",
+    "team_title": "El equipo detrás de los resultados",
+    "values_title": "Nuestros valores"
+  },
+  "certificaciones": {
+    "title": "Certificaciones ISO",
+    "sub": "Cada norma, un beneficio concreto para tu empresa",
+    "cta": "Cotiza esta certificación"
+  },
+  "kosher": {
+    "title": "Certificación Kosher",
+    "sub": "Accede a mercados de alto valor con el respaldo de la certificación más reconocida del mundo alimentario"
+  },
+  "especialidades": {
+    "title": "Nuestras Especialidades",
+    "sub": "Transformamos cada área de tu empresa con metodología probada y tecnología aplicada"
+  },
+  "software": {
+    "title": "Plataforma de Gestión ISO Go",
+    "sub": "El software que hace que tu certificación trabaje todos los días del año"
+  },
+  "casos": {
+    "title": "Casos de Éxito",
+    "sub": "Empresas que transformaron su gestión con Iso Go Company"
+  },
+  "blog": {
+    "title": "Blog y Recursos",
+    "sub": "Conocimiento aplicado para que tomes mejores decisiones sobre tu sistema de gestión",
+    "readMore": "Leer más",
+    "minutes": "min de lectura"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "sub": "La página que buscas no existe.",
+    "back": "Volver al inicio"
+  }
+}

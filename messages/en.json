@@ -1,0 +1,108 @@
+{
+  "nav": {
+    "home": "Home",
+    "nosotros": "About Us",
+    "certificaciones": "ISO Certifications",
+    "kosher": "Kosher",
+    "especialidades": "Specialties",
+    "software": "Software",
+    "casos": "Success Stories",
+    "blog": "Blog",
+    "contacto": "Contact",
+    "cotiza": "Get a Quote",
+    "asesor": "Talk to an advisor"
+  },
+  "hero": {
+    "tagline": "ISO Certification + Automation",
+    "headline": "We turn your ISO certification into an automated management system that drives real growth for your company.",
+    "sub": "We don't just certify you. We build the management system that keeps the certificate alive and turns your processes into competitive advantage.",
+    "cta1": "Get your certification quote",
+    "cta2": "Learn our process"
+  },
+  "process": {
+    "title": "Our certification process",
+    "sub": "A clear path, no bureaucracy, technology every step of the way",
+    "steps": {
+      "diagnostico": "Diagnosis",
+      "implementacion": "Implementation",
+      "automatizacion": "Automation",
+      "auditoria": "Audit",
+      "certificado": "Certificate",
+      "mantenimiento": "Maintenance"
+    }
+  },
+  "testimonials": {
+    "title": "Results that speak for themselves",
+    "sub": "Real companies, concrete metrics, measurable growth"
+  },
+  "cta": {
+    "band": "Ready to get certified?",
+    "sub": "Talk to an advisor today and get your free diagnosis",
+    "button": "Get your certification quote",
+    "asesor": "Talk to an advisor"
+  },
+  "footer": {
+    "desc": "Experts in ISO certification and management system automation. Your certificate as a real competitive advantage.",
+    "certifications": "Certifications",
+    "specialties": "Specialties",
+    "company": "Company",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "contact": {
+    "title": "Get your certification quote",
+    "sub": "Tell us about your project and we'll respond within 24 hours with a personalized plan.",
+    "name": "Full name",
+    "company": "Company",
+    "norm": "Standard of interest",
+    "message": "How can we help you?",
+    "submit": "Send request",
+    "sending": "Sending...",
+    "success": "Message sent! We'll contact you within 24 hours.",
+    "error": "There was an error. Please try again.",
+    "selectNorm": "Select a standard"
+  },
+  "nosotros": {
+    "title": "We are Iso Go Company",
+    "sub": "The firm that unites ISO certification with real process automation",
+    "history_title": "Our history",
+    "history": "Iso Go Company was born from a simple but powerful conviction: an ISO certification should not just be a piece of paper on the wall. Founded by consultants with more than 15 years of experience in management systems, we decided to go beyond the standard and integrate our own technology so that every client not only gets their certificate, but a living system that continuously improves.",
+    "diff_title": "What sets us apart",
+    "methodology_title": "Our methodology",
+    "team_title": "The team behind the results",
+    "values_title": "Our values"
+  },
+  "certificaciones": {
+    "title": "ISO Certifications",
+    "sub": "Each standard, a concrete benefit for your company",
+    "cta": "Quote this certification"
+  },
+  "kosher": {
+    "title": "Kosher Certification",
+    "sub": "Access high-value markets with the backing of the world's most recognized food certification"
+  },
+  "especialidades": {
+    "title": "Our Specialties",
+    "sub": "We transform every area of your company with proven methodology and applied technology"
+  },
+  "software": {
+    "title": "Iso Go Management Platform",
+    "sub": "The software that makes your certification work every day of the year"
+  },
+  "casos": {
+    "title": "Success Stories",
+    "sub": "Companies that transformed their management with Iso Go Company"
+  },
+  "blog": {
+    "title": "Blog & Resources",
+    "sub": "Applied knowledge to help you make better decisions about your management system",
+    "readMore": "Read more",
+    "minutes": "min read"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "sub": "The page you are looking for does not exist.",
+    "back": "Back to home"
+  }
+}

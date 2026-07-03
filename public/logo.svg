@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 224" width="200" height="224">
+  <defs>
+    <!-- Inner hex clip (everything inside the border) -->
+    <clipPath id="innerHex">
+      <polygon points="100,18 174,60 174,142 100,184 26,142 26,60"/>
+    </clipPath>
+    <!-- Band clip (horizontal strip, then clipped to inner hex via group) -->
+    <clipPath id="bandOnly">
+      <rect x="0" y="90" width="200" height="46"/>
+    </clipPath>
+  </defs>
+
+  <!-- ── Outer hexagon (dark gray border) ── -->
+  <polygon
+    points="100,4 186,50 186,148 100,194 14,148 14,50"
+    fill="#5C5C5C"
+  />
+
+  <!-- ── All inner content clipped to inner hex ── -->
+  <g clip-path="url(#innerHex)">
+
+    <!-- Upper white area -->
+    <rect x="0" y="0" width="200" height="92" fill="#EFEFEF"/>
+
+    <!-- Lower gray area -->
+    <rect x="0" y="136" width="200" height="200" fill="#C8C8C8"/>
+
+    <!-- Yellow band shadow (bottom layer for depth) -->
+    <rect x="0" y="94" width="200" height="46" fill="#C8860A"/>
+
+    <!-- Yellow band main -->
+    <rect x="0" y="90" width="200" height="46" fill="#F5C212"/>
+
+    <!-- Band highlight (top edge shine) -->
+    <rect x="0" y="90" width="200" height="7" fill="#FFE05A" opacity="0.55"/>
+
+    <!-- ISO GO text — clipped inside the band by the group + hex -->
+    <text
+      x="100"
+      y="123"
+      font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+      font-weight="900"
+      font-size="32"
+      fill="#FFFFFF"
+      text-anchor="middle"
+      letter-spacing="3"
+    >ISO GO</text>
+
+  </g>
+
+  <!-- ── Gold checkmark (on top of inner content, no clip needed) ── -->
+  <g clip-path="url(#innerHex)">
+    <polyline
+      points="68,62 88,80 134,36"
+      fill="none"
+      stroke="#F5A623"
+      stroke-width="10"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </g>
+
+  <!-- ── Bottom text (outside clip so it can sit over lower gray) ── -->
+  <g clip-path="url(#innerHex)">
+    <text
+      x="100"
+      y="154"
+      font-family="Arial, Helvetica, sans-serif"
+      font-weight="600"
+      font-size="9"
+      fill="#555555"
+      text-anchor="middle"
+      letter-spacing="1.5"
+    >GARANTÍA DE CERTIFICACIÓN</text>
+    <text
+      x="100"
+      y="170"
+      font-family="Arial, Helvetica, sans-serif"
+      font-weight="700"
+      font-size="11"
+      fill="#444444"
+      text-anchor="middle"
+      letter-spacing="2"
+    >ISO 9001</text>
+  </g>
+
+</svg>
