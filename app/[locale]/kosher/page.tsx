@@ -77,7 +77,7 @@ export default async function KosherPage() {
                 alt="Certificación Kosher"
                 width={280}
                 height={280}
-                className="object-contain drop-shadow-2xl"
+                className="object-contain drop-shadow-2xl brightness-0 invert"
               />
             </div>
           </div>
