@@ -149,33 +149,6 @@ export default async function NosotrosPage() {
         </div>
       </section>
 
-      {/* Team */}
-      <section className="bg-[#F4F4F4] py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] mb-4">{t("team_title")}</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {team.map((member) => (
-              <div key={member.name} className="bg-white rounded-xl overflow-hidden shadow-sm">
-                <div className="relative h-64">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-6">
-                  <h3 className="text-lg font-bold text-[#1A1A1A]">{member.name}</h3>
-                  <p className="text-[#F5A623] text-sm font-semibold mb-3">{member.role}</p>
-                  <p className="text-gray-600 text-sm leading-relaxed">{member.bio}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Methodology */}
       <section className="bg-[#1A1A1A] text-white py-20">
