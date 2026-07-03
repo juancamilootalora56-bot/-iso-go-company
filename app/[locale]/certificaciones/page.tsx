@@ -89,24 +89,14 @@ export default async function CertificacionesPage() {
                   {t("cta")} →
                 </Link>
               </div>
-              <div className="flex flex-col gap-4">
+              <div>
                 <Image
                   src="/certificacion-9001.jpg"
                   alt="Certificación ISO 9001 - Iso Go Company"
-                  width={600}
-                  height={400}
+                  width={700}
+                  height={500}
                   className="rounded-2xl shadow-xl w-full object-cover"
                 />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h4 className="font-bold text-[#1A1A1A] mb-2">¿A quién aplica?</h4>
-                    <p className="text-gray-700 text-sm">{cert.who}</p>
-                  </div>
-                  <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h4 className="font-bold text-[#1A1A1A] mb-2">Impacto en tu negocio</h4>
-                    <p className="text-gray-700 text-sm">{cert.impact}</p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
