@@ -99,19 +99,15 @@ export default async function NosotrosPage() {
                 La clave de nuestro diferencial: integramos ingeniería de software a cada proceso de certificación. Mientras otras firmas entregan documentación, nosotros entregamos sistemas que funcionan.
               </p>
             </div>
-            <div className="relative">
+            <div>
               <video
-                src="/video-iso.mp4"
+                src="/video-iso.mp4#t=3"
                 autoPlay
                 muted
                 loop
                 playsInline
                 className="rounded-2xl shadow-xl w-full object-cover"
               />
-              <div className="absolute -bottom-6 -left-6 bg-[#F5A623] rounded-xl p-4 shadow-xl">
-                <div className="text-3xl font-bold text-[#1A1A1A]">200+</div>
-                <div className="text-sm text-[#1A1A1A] font-medium">Empresas certificadas</div>
-              </div>
             </div>
           </div>
         </div>
