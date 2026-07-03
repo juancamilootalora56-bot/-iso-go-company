@@ -101,7 +101,7 @@ export default async function NosotrosPage() {
             </div>
             <div>
               <video
-                src="/video-iso.mp4#t=3"
+                src="/video-iso.mp4#t=4"
                 autoPlay
                 muted
                 loop
