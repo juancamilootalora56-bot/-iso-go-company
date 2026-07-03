@@ -100,12 +100,13 @@ export default async function NosotrosPage() {
               </p>
             </div>
             <div className="relative">
-              <Image
-                src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=500&fit=crop"
-                alt="Equipo Iso Go Company"
-                width={600}
-                height={500}
-                className="rounded-2xl object-cover shadow-xl"
+              <video
+                src="/video-iso.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="rounded-2xl shadow-xl w-full object-cover"
               />
               <div className="absolute -bottom-6 -left-6 bg-[#F5A623] rounded-xl p-4 shadow-xl">
                 <div className="text-3xl font-bold text-[#1A1A1A]">200+</div>
