@@ -71,7 +71,7 @@ export default async function KosherPage() {
                 </Link>
               </div>
             </div>
-            <div className="flex-shrink-0 flex items-center justify-center">
+            <div className="flex-shrink-0 flex flex-col items-center justify-center gap-5">
               <Image
                 src="/kosher.png"
                 alt="Certificación Kosher"
@@ -79,6 +79,9 @@ export default async function KosherPage() {
                 height={280}
                 className="object-contain drop-shadow-2xl brightness-0 invert"
               />
+              <p className="text-center text-white/80 text-sm font-light tracking-widest uppercase max-w-[260px] leading-relaxed border-t border-white/20 pt-4">
+                Celebramos una alianza diseñada para elevar el estándar de tu empresa.
+              </p>
             </div>
           </div>
         </div>
