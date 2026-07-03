@@ -60,14 +60,25 @@ export default async function KosherPage() {
           <HexagonDecor size={300} color="#F5A623" className="absolute -right-16 -bottom-16 opacity-5" />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl">
-            <span className="text-[#F5A623] text-sm font-bold uppercase tracking-widest">Certificación especializada</span>
-            <h1 className="text-4xl md:text-5xl font-bold mt-3 mb-6">{t("title")}</h1>
-            <p className="text-xl text-gray-300 leading-relaxed">{t("sub")}</p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4">
-              <Link href={`/${locale}/contacto`} className="bg-[#F5A623] text-[#1A1A1A] font-bold px-8 py-4 rounded-lg hover:bg-[#e09410] transition-colors text-center">
-                Cotiza tu certificación Kosher →
-              </Link>
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <div className="flex-1">
+              <span className="text-[#F5A623] text-sm font-bold uppercase tracking-widest">Certificación especializada</span>
+              <h1 className="text-4xl md:text-5xl font-bold mt-3 mb-6">{t("title")}</h1>
+              <p className="text-xl text-gray-300 leading-relaxed">{t("sub")}</p>
+              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                <Link href={`/${locale}/contacto`} className="bg-[#F5A623] text-[#1A1A1A] font-bold px-8 py-4 rounded-lg hover:bg-[#e09410] transition-colors text-center">
+                  Cotiza tu certificación Kosher →
+                </Link>
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex items-center justify-center">
+              <Image
+                src="/kosher.png"
+                alt="Certificación Kosher"
+                width={280}
+                height={280}
+                className="object-contain drop-shadow-2xl"
+              />
             </div>
           </div>
         </div>
