@@ -9,6 +9,8 @@ import { useState } from "react";
 const schema = z.object({
   name: z.string().min(2, "Nombre requerido"),
   company: z.string().min(1, "Empresa requerida"),
+  phone: z.string().min(7, "Teléfono requerido"),
+  email: z.string().email("Email inválido"),
   norm: z.string().min(1, "Selecciona una norma"),
   message: z.string().min(10, "Mensaje muy corto"),
 });
@@ -107,6 +109,29 @@ export default function ContactForm() {
             placeholder="Mi Empresa S.A."
           />
           {errors.company && <p className="text-red-500 text-xs mt-1">{errors.company.message}</p>}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">📱 WhatsApp / Teléfono</label>
+          <input
+            {...register("phone")}
+            type="tel"
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A623] focus:border-transparent"
+            placeholder="+595 99 000 0000"
+          />
+          {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">✉️ Correo electrónico</label>
+          <input
+            {...register("email")}
+            type="email"
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A623] focus:border-transparent"
+            placeholder="tu@empresa.com"
+          />
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
         </div>
       </div>
 

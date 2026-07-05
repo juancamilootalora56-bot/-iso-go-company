@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
-    const { name, company, norm, message } = await req.json();
+    const { name, company, phone, email, norm, message } = await req.json();
 
     await resend.emails.send({
       from: "Iso Go Company <onboarding@resend.dev>",
@@ -26,6 +26,14 @@ export async function POST(req: Request) {
               <tr>
                 <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; color: #555;">Empresa</td>
                 <td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #1A1A1A;">${company}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; color: #555;">📱 WhatsApp / Tel.</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #1A1A1A; font-weight: bold;">${phone}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; color: #555;">✉️ Email</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #1A1A1A;">${email}</td>
               </tr>
               <tr>
                 <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; color: #555;">Norma de interés</td>
