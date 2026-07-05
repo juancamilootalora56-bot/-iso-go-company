@@ -37,6 +37,45 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.refresh();
   }
 
+  // PLATAFORMA EN CONSTRUCCIÓN — bloquear acceso al dashboard temporalmente
+  return (
+    <div className="min-h-screen bg-[#1A1A1A] flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-[#242424] rounded-2xl p-10 shadow-2xl border border-white/5 text-center">
+        <div className="w-20 h-20 bg-[#F5A623]/10 border-2 border-[#F5A623]/30 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-10 h-10 text-[#F5A623]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+
+        <h1 className="text-2xl font-bold text-white mb-3">
+          Plataforma en construcción
+        </h1>
+        <p className="text-gray-400 text-sm leading-relaxed mb-8">
+          Nuestro equipo está estructurando el software para ofrecerte la mejor experiencia. Pronto tendrás acceso completo a tu dashboard de certificaciones.
+        </p>
+
+        <div className="bg-[#F5A623]/10 border border-[#F5A623]/20 rounded-xl p-4 mb-8">
+          <p className="text-[#F5A623] font-semibold text-sm">🚀 Lanzamiento próximo</p>
+          <p className="text-gray-500 text-xs mt-1">Te avisaremos cuando esté listo.</p>
+        </div>
+
+        <Link
+          href={`/${locale}/contacto`}
+          className="block w-full bg-[#F5A623] text-[#1A1A1A] font-bold py-3 rounded-lg hover:bg-[#e09410] transition-colors mb-3"
+        >
+          Cotiza tu certificación →
+        </Link>
+        <Link
+          href={`/${locale}`}
+          className="block w-full text-sm text-gray-500 hover:text-gray-300 transition-colors py-2"
+        >
+          ← Volver al inicio
+        </Link>
+      </div>
+    </div>
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F4F4F4] flex items-center justify-center">
