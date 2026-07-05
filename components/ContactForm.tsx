@@ -44,13 +44,33 @@ export default function ContactForm() {
 
   const onSubmit = async (data: FormData) => {
     setStatus("sending");
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1200));
-    console.log("Form data:", data);
-    setStatus("success");
-    reset();
-    setTimeout(() => setStatus("idle"), 5000);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        setStatus("success");
+        reset();
+        setTimeout(() => setStatus("idle"), 6000);
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
   };
+
+  if (status === "error") {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+        <p className="text-red-700 font-semibold text-lg mb-2">Error al enviar</p>
+        <p className="text-red-600 text-sm mb-4">Intenta de nuevo o escríbenos directo a info@isogocompany.com</p>
+        <button onClick={() => setStatus("idle")} className="text-sm text-red-500 underline">Intentar de nuevo</button>
+      </div>
+    );
+  }
 
   if (status === "success") {
     return (
