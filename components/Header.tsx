@@ -39,7 +39,6 @@ export default function Header() {
     { key: "kosher", href: `/${locale}/kosher` },
     { key: "especialidades", href: `/${locale}/especialidades` },
     { key: "software", href: `/${locale}/software` },
-    { key: "casos", href: `/${locale}/casos-de-exito` },
     { key: "blog", href: `/${locale}/blog` },
   ];
 
