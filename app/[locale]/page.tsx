@@ -58,56 +58,62 @@ const featuredCerts = [
   {
     id: "iso-9001",
     name: "ISO 9001",
-    title: "Calidad",
-    tagline: "Procesos que se repiten sin depender de una sola persona",
-    benefit: "Reduce costos operativos 15-25%",
+    title: "Gestión de Calidad",
+    tagline: "Estandariza tus procesos y escala sin depender de personas clave. Cada área de tu empresa opera con excelencia consistente.",
+    benefit: "↓ 15-25% costos operativos",
     color: "from-amber-50 to-amber-100",
     border: "border-amber-200",
+    image: "https://images.unsplash.com/photo-1664575602276-acd073f104c1?w=600&h=300&fit=crop",
   },
   {
     id: "iso-14001",
     name: "ISO 14001",
-    title: "Medio Ambiente",
-    tagline: "Accede a licitaciones verdes y reduce residuos",
-    benefit: "Reduce residuos hasta 30%",
+    title: "Gestión Ambiental",
+    tagline: "Convierte el cumplimiento ambiental en ventaja competitiva. Accede a licitaciones verdes, reduce residuos y atrae inversión responsable.",
+    benefit: "↓ 30% en residuos y multas",
     color: "from-green-50 to-green-100",
     border: "border-green-200",
+    image: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=600&h=300&fit=crop",
   },
   {
     id: "iso-45001",
     name: "ISO 45001",
-    title: "Seguridad Laboral",
-    tagline: "Menos accidentes, menos multas, equipos protegidos",
-    benefit: "Reduce accidentes hasta 60%",
+    title: "Seguridad y Salud Laboral",
+    tagline: "Protege a tu equipo, reduce ausentismo y elimina multas. Un entorno seguro es el cimiento de la productividad real.",
+    benefit: "↓ 60% en accidentes laborales",
     color: "from-blue-50 to-blue-100",
     border: "border-blue-200",
+    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=300&fit=crop",
   },
   {
     id: "iso-27001",
     name: "ISO/IEC 27001",
     title: "Seguridad de la Información",
-    tagline: "Protege datos y abre mercados tecnológicos exigentes",
-    benefit: "Cumplimiento RGPD y LGPD",
+    tagline: "Protege los datos de tu empresa y tus clientes. Abre puertas a mercados tecnológicos exigentes con el estándar de ciberseguridad más reconocido.",
+    benefit: "✓ Cumplimiento RGPD · LGPD · NIS2",
     color: "from-purple-50 to-purple-100",
     border: "border-purple-200",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&h=300&fit=crop",
   },
   {
     id: "iso-22000",
     name: "ISO 22000",
     title: "Inocuidad Alimentaria",
-    tagline: "Exporta alimentos a los mercados más exigentes del mundo",
-    benefit: "Acceso a mercados UE, EEUU, Asia",
+    tagline: "Exporta con confianza a los mercados más exigentes del mundo. Trazabilidad total desde el origen hasta el consumidor final.",
+    benefit: "✓ Acceso UE · EE.UU. · Asia · Medio Oriente",
     color: "from-orange-50 to-orange-100",
     border: "border-orange-200",
+    image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=600&h=300&fit=crop",
   },
   {
     id: "iso-50001",
     name: "ISO 50001",
-    title: "Energía",
-    tagline: "Sistema de gestión energética que se paga solo",
-    benefit: "Ahorra hasta 30% en energía",
+    title: "Gestión Energética",
+    tagline: "Implementa un sistema que reduce tu factura energética y genera retorno real. La norma que se paga sola en el primer año.",
+    benefit: "↓ Hasta 30% en consumo energético",
     color: "from-yellow-50 to-yellow-100",
     border: "border-yellow-200",
+    image: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=600&h=300&fit=crop",
   },
 ];
 
@@ -169,17 +175,29 @@ export default async function HomePage() {
               <Link
                 key={cert.id}
                 href={`/${locale}/certificaciones#${cert.id}`}
-                className={`bg-gradient-to-br ${cert.color} border ${cert.border} rounded-xl p-6 hover:shadow-lg transition-shadow group`}
+                className={`bg-gradient-to-br ${cert.color} border ${cert.border} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 group hover:-translate-y-1`}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{cert.name}</span>
-                  <HexagonDecor size={32} color="#F5A623" className="opacity-40 group-hover:opacity-70 transition-opacity" />
+                {/* Image */}
+                <div className="relative h-44 overflow-hidden">
+                  <Image
+                    src={cert.image}
+                    alt={cert.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <span className="absolute top-3 left-3 text-xs font-bold text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full uppercase tracking-wider">
+                    {cert.name}
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold text-[#1A1A1A] mb-2">{cert.title}</h3>
-                <p className="text-gray-700 text-sm mb-4">{cert.tagline}</p>
-                <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-xs font-bold px-3 py-1 rounded-full">
-                  {cert.benefit}
-                </span>
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-[#1A1A1A] mb-2">{cert.title}</h3>
+                  <p className="text-gray-700 text-sm mb-4 leading-relaxed">{cert.tagline}</p>
+                  <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-xs font-bold px-3 py-1.5 rounded-full">
+                    {cert.benefit}
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
