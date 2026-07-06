@@ -213,9 +213,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA Band 1 */}
-      <CTABand />
-
       {/* Process steps */}
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -339,11 +336,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA Band 2 */}
-      <CTABand variant="gold" />
-
-
-      {/* Final CTA */}
       <CTABand />
     </>
   );
