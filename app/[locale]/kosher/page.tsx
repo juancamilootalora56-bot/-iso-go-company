@@ -114,9 +114,9 @@ export default async function KosherPage() {
       {/* What is Kosher */}
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-[#1A1A1A] mb-6">¿Qué significa ser Kosher y por qué importa para tu negocio?</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-[#1A1A1A] mb-6">¿Qué significa ser Kosher y por qué importa para tu negocio?</h2>
               <p className="text-gray-700 leading-relaxed mb-6">
                 Kosher es el conjunto de leyes dietéticas judías que regulan qué alimentos son aptos para el consumo y cómo deben ser preparados. Un producto Kosher certificado no solo puede venderse a comunidades judías — se ha convertido en un sello de calidad y trazabilidad reconocido globalmente.
               </p>
@@ -171,9 +171,9 @@ export default async function KosherPage() {
       {/* ISO Synergy */}
       <section className="bg-[#1A1A1A] text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Kosher + ISO 9001/22000: la combinación que multiplica mercados</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-6">Kosher + ISO 9001/22000: la combinación que multiplica mercados</h2>
               <p className="text-gray-300 leading-relaxed mb-6">
                 Nuestra ventaja única: usamos el mismo sistema de trazabilidad que implementamos para ISO 9001 e ISO 22000 para la certificación Kosher. No empezamos de cero, no duplicamos documentación, no creamos dos sistemas paralelos.
               </p>

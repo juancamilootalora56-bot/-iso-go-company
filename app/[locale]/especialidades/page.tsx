@@ -66,7 +66,7 @@ export default async function EspecialidadesPage() {
               <div
                 key={spec.id}
                 id={spec.id}
-                className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-start ${
+                className={`grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start ${
                   index % 2 === 1 ? "lg:flex-row-reverse" : ""
                 }`}
               >

@@ -74,14 +74,14 @@ export default async function CertificacionesPage() {
       {featured.map((cert) => (
         <section key={cert.id} id={cert.id} className="bg-[#F5A623] py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
               <div>
                 <span className="inline-block bg-[#1A1A1A] text-[#F5A623] text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
                   Norma estrella
                 </span>
-                <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-2">{cert.name}</h2>
-                <h3 className="text-2xl font-semibold text-[#1A1A1A] mb-4">{cert.title}</h3>
-                <p className="text-xl text-[#1A1A1A] font-medium mb-6 italic">"{cert.tagline}"</p>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A1A1A] mb-2">{cert.name}</h2>
+                <h3 className="text-xl md:text-2xl font-semibold text-[#1A1A1A] mb-4">{cert.title}</h3>
+                <p className="text-base md:text-xl text-[#1A1A1A] font-medium mb-6 italic">"{cert.tagline}"</p>
                 <p className="text-[#1A1A1A] leading-relaxed mb-6">{cert.description}</p>
                 <Link
                   href={`/${locale}/contacto`}
@@ -115,7 +115,7 @@ export default async function CertificacionesPage() {
                 id={cert.id}
                 className={`rounded-2xl p-8 ${index % 2 === 0 ? "bg-[#F4F4F4]" : "bg-white border border-gray-100"}`}
               >
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                   <div className="lg:col-span-2">
                     {/* Header: imagen cuadrada + nombre + título */}
                     <div className="flex items-start gap-4 mb-5">

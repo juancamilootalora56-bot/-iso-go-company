@@ -89,29 +89,29 @@ export default function HeroCarousel({ locale }: { locale: string }) {
       content: (
         <div className="relative overflow-hidden min-h-[82vh] flex items-center w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
-                <span className="inline-block bg-[#1A1A1A] text-[#F5A623] text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6">
+                <span className="inline-block bg-[#1A1A1A] text-[#F5A623] text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-4 md:mb-6">
                   Norma Estrella
                 </span>
-                <h2 className="text-5xl md:text-6xl font-black text-[#1A1A1A] mb-2">ISO 9001</h2>
-                <h3 className="text-2xl font-bold text-[#1A1A1A] mb-4">Gestión de Calidad</h3>
-                <p className="text-xl text-[#1A1A1A] font-semibold mb-4 italic">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-[#1A1A1A] mb-2">ISO 9001</h2>
+                <h3 className="text-lg md:text-2xl font-bold text-[#1A1A1A] mb-3 md:mb-4">Gestión de Calidad</h3>
+                <p className="text-base md:text-lg text-[#1A1A1A] font-semibold mb-3 md:mb-4 italic">
                   "La norma que convierte tu empresa en una máquina de resultados rentables y escalables"
                 </p>
-                <p className="text-[#1A1A1A] leading-relaxed mb-6 text-base">
+                <p className="text-[#1A1A1A] leading-relaxed mb-4 md:mb-6 text-sm md:text-base">
                   ISO 9001 estandariza tus procesos para que tu empresa funcione igual de bien sin depender de ti. Escala sin perder calidad, reduce costos operativos hasta un 25% y accede a contratos corporativos que antes estaban fuera de tu alcance.
                 </p>
-                <div className="flex flex-wrap gap-2 mb-7">
+                <div className="flex flex-wrap gap-2 mb-5 md:mb-7">
                   {["↓ 25% costos operativos", "↑ 40% retención de clientes", "✓ Acceso a licitaciones"].map((badge) => (
                     <span key={badge} className="text-xs font-bold bg-[#1A1A1A] text-[#F5A623] px-3 py-1.5 rounded-full">{badge}</span>
                   ))}
                 </div>
-                <Link href={`/${locale}/contacto`} className="inline-block bg-[#1A1A1A] text-white font-bold px-8 py-4 rounded-lg hover:bg-[#333] transition-colors text-lg">
+                <Link href={`/${locale}/contacto`} className="inline-block bg-[#1A1A1A] text-white font-bold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:bg-[#333] transition-colors text-base md:text-lg">
                   Quiero esta certificación →
                 </Link>
               </div>
-              <div>
+              <div className="hidden md:block">
                 <Image
                   src="/certificacion-9001.jpg"
                   alt="Certificación ISO 9001"
@@ -134,15 +134,15 @@ export default function HeroCarousel({ locale }: { locale: string }) {
             <div className="absolute -left-16 top-0 bottom-0 w-48 opacity-20" style={{ background: "#F5A623", transform: "skewX(-8deg)" }} />
             <HexagonOutline size={300} color="#F5A623" className="absolute -right-16 -bottom-16 opacity-10" />
           </div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10 w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
               <div>
                 <span className="text-[#F5A623] text-sm font-bold uppercase tracking-widest">Certificación especializada</span>
-                <h2 className="text-4xl md:text-5xl font-bold mt-3 mb-6 text-white">Certificación Kosher</h2>
-                <p className="text-xl text-gray-300 leading-relaxed mb-8">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mt-3 mb-4 md:mb-6 text-white">Certificación Kosher</h2>
+                <p className="text-base md:text-xl text-gray-300 leading-relaxed mb-6 md:mb-8">
                   Accede a mercados de alto valor con el respaldo de la certificación más reconocida del mundo alimentario
                 </p>
-                <Link href={`/${locale}/contacto`} className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-8 py-4 rounded-lg hover:bg-[#e09410] transition-colors text-lg">
+                <Link href={`/${locale}/contacto`} className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:bg-[#e09410] transition-colors text-base md:text-lg">
                   Cotiza tu certificación Kosher →
                 </Link>
               </div>
@@ -152,9 +152,9 @@ export default function HeroCarousel({ locale }: { locale: string }) {
                   alt="Certificación Kosher"
                   width={280}
                   height={280}
-                  className="object-contain drop-shadow-2xl brightness-0 invert"
+                  className="object-contain drop-shadow-2xl brightness-0 invert w-40 h-40 md:w-64 md:h-64 lg:w-72 lg:h-72"
                 />
-                <p className="text-center text-white/70 text-sm font-light tracking-widest uppercase max-w-[260px] leading-relaxed border-t border-white/20 pt-4">
+                <p className="text-center text-white/70 text-xs md:text-sm font-light tracking-widest uppercase max-w-[260px] leading-relaxed border-t border-white/20 pt-4">
                   Celebramos una alianza diseñada para elevar el estándar de tu empresa.
                 </p>
               </div>
