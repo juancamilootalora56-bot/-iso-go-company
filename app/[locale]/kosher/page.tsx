@@ -42,22 +42,22 @@ const markets = [
   {
     region: "América del Norte",
     detail: "EE.UU. y Canadá: mercado Kosher de USD 12.5 mil millones/año",
-    image: "https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=200&h=200&fit=crop&crop=center&q=85",
+    image: "https://flagcdn.com/w160/us.png",
   },
   {
     region: "Israel y Medio Oriente",
     detail: "Exportación directa a mercados con 100% de demanda Kosher",
-    image: "https://images.unsplash.com/photo-1529245856630-f4853233d2ea?w=200&h=200&fit=crop&crop=center&q=85",
+    image: "https://flagcdn.com/w160/il.png",
   },
   {
     region: "Europa",
     detail: "Comunidades judías en UK, Francia, Alemania, Argentina-España",
-    image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=200&h=200&fit=crop&crop=center&q=85",
+    image: "https://flagcdn.com/w160/eu.png",
   },
   {
     region: "Latinoamérica",
     detail: "Argentina, Brasil, México — comunidades grandes y en crecimiento",
-    image: "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=200&h=200&fit=crop&crop=center&q=85",
+    image: "https://flagcdn.com/w160/br.png",
   },
   {
     region: "Retail premium",
