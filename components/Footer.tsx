@@ -41,7 +41,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link href={`/${locale}`}>
-              <Image src="/logo.jpg" alt="Iso Go Company" width={88} height={98} className="mix-blend-multiply" />
+              <Image src="/logo-transparente.png" alt="Iso Go Company" width={88} height={98} />
             </Link>
             <p className="mt-4 text-sm text-gray-400 leading-relaxed">{t("desc")}</p>
             <div className="mt-6 flex gap-4">
