@@ -39,12 +39,36 @@ const processSteps = [
 ];
 
 const markets = [
-  { region: "América del Norte", detail: "EE.UU. y Canadá: mercado Kosher de USD 12.5 mil millones/año" },
-  { region: "Israel y Medio Oriente", detail: "Exportación directa a mercados con 100% de demanda Kosher" },
-  { region: "Europa", detail: "Comunidades judías en UK, Francia, Alemania, Argentina-España" },
-  { region: "Latinoamérica", detail: "Argentina, Brasil, México — comunidades grandes y en crecimiento" },
-  { region: "Retail premium", detail: "Cadenas como Whole Foods, Trader Joe's, Marks & Spencer" },
-  { region: "Food service", detail: "Hoteles, aerolíneas y catering internacional con requisito Kosher" },
+  {
+    region: "América del Norte",
+    detail: "EE.UU. y Canadá: mercado Kosher de USD 12.5 mil millones/año",
+    image: "https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=200&h=200&fit=crop&crop=center&q=85",
+  },
+  {
+    region: "Israel y Medio Oriente",
+    detail: "Exportación directa a mercados con 100% de demanda Kosher",
+    image: "https://images.unsplash.com/photo-1552423310-6c74990c7099?w=200&h=200&fit=crop&crop=center&q=85",
+  },
+  {
+    region: "Europa",
+    detail: "Comunidades judías en UK, Francia, Alemania, Argentina-España",
+    image: "https://images.unsplash.com/photo-1499856871958-5b9357976b82?w=200&h=200&fit=crop&crop=center&q=85",
+  },
+  {
+    region: "Latinoamérica",
+    detail: "Argentina, Brasil, México — comunidades grandes y en crecimiento",
+    image: "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=200&h=200&fit=crop&crop=center&q=85",
+  },
+  {
+    region: "Retail premium",
+    detail: "Cadenas como Whole Foods, Trader Joe's, Marks & Spencer",
+    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&h=200&fit=crop&crop=center&q=85",
+  },
+  {
+    region: "Food service",
+    detail: "Hoteles, aerolíneas y catering internacional con requisito Kosher",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=200&h=200&fit=crop&crop=center&q=85",
+  },
 ];
 
 export default async function KosherPage() {
@@ -126,12 +150,17 @@ export default async function KosherPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {markets.map((m) => (
               <div key={m.region} className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="w-10 h-10 bg-[#F5A623] rounded-lg flex items-center justify-center mb-4">
-                  <svg className="w-5 h-5 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
-                  </svg>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
+                    <Image
+                      src={m.image}
+                      alt={m.region}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <h3 className="font-bold text-[#1A1A1A] leading-snug">{m.region}</h3>
                 </div>
-                <h3 className="font-bold text-[#1A1A1A] mb-2">{m.region}</h3>
                 <p className="text-gray-600 text-sm">{m.detail}</p>
               </div>
             ))}
