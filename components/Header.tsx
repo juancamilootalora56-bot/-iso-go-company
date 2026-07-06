@@ -48,7 +48,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex-shrink-0">
-            <Image src="/logo.jpg" alt="Iso Go Company" width={52} height={58} priority />
+            <Image src="/logo.png" alt="Iso Go Company" width={52} height={58} priority />
           </Link>
 
           {/* Desktop nav */}
