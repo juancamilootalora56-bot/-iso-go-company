@@ -47,12 +47,12 @@ const markets = [
   {
     region: "Israel y Medio Oriente",
     detail: "Exportación directa a mercados con 100% de demanda Kosher",
-    image: "https://images.unsplash.com/photo-1552423310-6c74990c7099?w=200&h=200&fit=crop&crop=center&q=85",
+    image: "https://images.unsplash.com/photo-1548286978-f218023f8d18?w=200&h=200&fit=crop&crop=center&q=85",
   },
   {
     region: "Europa",
     detail: "Comunidades judías en UK, Francia, Alemania, Argentina-España",
-    image: "https://images.unsplash.com/photo-1499856871958-5b9357976b82?w=200&h=200&fit=crop&crop=center&q=85",
+    image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=200&h=200&fit=crop&crop=center&q=85",
   },
   {
     region: "Latinoamérica",
