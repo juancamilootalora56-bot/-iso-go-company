@@ -20,7 +20,7 @@
     "impact": "Reducción de residuos hasta un 30%, acceso a licitaciones de gobierno con requisitos ambientales, y diferenciación ante clientes que priorizan proveedores responsables.",
     "featured": false,
     "icon": "leaf",
-    "image": "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=600&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "iso-45001",
@@ -32,7 +32,7 @@
     "impact": "Reducción de accidentes laborales hasta un 60%, disminución de ausencias por enfermedad, menores costos de seguros y eliminación de sanciones por incumplimiento regulatorio.",
     "featured": false,
     "icon": "shield",
-    "image": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "iso-27001",
@@ -44,7 +44,7 @@
     "impact": "Acceso a contratos enterprise y gubernamentales, reducción del riesgo de brechas de datos, confianza de clientes internacionales y cumplimiento de regulaciones como RGPD y LGPD.",
     "featured": false,
     "icon": "lock",
-    "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "iso-22000",
@@ -56,7 +56,7 @@
     "impact": "Habilitación para exportar a mercados de la UE, EEUU y Asia, reducción de rechazos y retiros de producto, diferenciación ante retailers y distribuidores internacionales.",
     "featured": false,
     "icon": "utensils",
-    "image": "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=600&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "iso-13485",
@@ -68,7 +68,7 @@
     "impact": "Habilitación para vender en la UE (CE Mark), EEUU (FDA), acceso a hospitales y clínicas de alta complejidad, y cumplimiento de requisitos de licitaciones de salud pública.",
     "featured": false,
     "icon": "heart-pulse",
-    "image": "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "iso-50001",
@@ -80,7 +80,7 @@
     "impact": "Reducción del consumo energético entre 15-30%, ahorro directo en costos operativos, mejora de la huella de carbono y acceso a incentivos fiscales por eficiencia energética.",
     "featured": false,
     "icon": "zap",
-    "image": "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=600&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "iso-22301",
@@ -92,7 +92,7 @@
     "impact": "Tiempo de recuperación ante incidentes reducido hasta un 70%, ventaja competitiva en licitaciones que exigen BCP, confianza de clientes y socios estratégicos.",
     "featured": false,
     "icon": "refresh-cw",
-    "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "iso-27701",
@@ -104,7 +104,7 @@
     "impact": "Cumplimiento demostrable de RGPD y LGPD, eliminación del riesgo de multas millonarias, confianza de clientes europeos y posicionamiento como empresa responsable con los datos.",
     "featured": false,
     "icon": "eye-off",
-    "image": "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "iso-42001",
@@ -116,7 +116,7 @@
     "impact": "Posicionamiento como líder en IA responsable, acceso a contratos en sectores regulados, diferenciación ante competidores y preparación anticipada para regulaciones de IA en la UE.",
     "featured": false,
     "icon": "brain",
-    "image": "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "iso-17025",
@@ -128,6 +128,6 @@
     "impact": "Reconocimiento internacional de resultados vía acuerdos de reconocimiento mutuo (MRA), acceso a contratos con industria farmacéutica y reguladores, y eliminación de re-ensayos costosos.",
     "featured": false,
     "icon": "flask",
-    "image": "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=600&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=200&h=200&fit=crop&crop=center&q=85"
   }
 ]
