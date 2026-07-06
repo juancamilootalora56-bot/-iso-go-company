@@ -96,14 +96,19 @@ export default function HeroCarousel({ locale }: { locale: string }) {
                 </span>
                 <h2 className="text-5xl md:text-6xl font-black text-[#1A1A1A] mb-2">ISO 9001</h2>
                 <h3 className="text-2xl font-bold text-[#1A1A1A] mb-4">Gestión de Calidad</h3>
-                <p className="text-xl text-[#1A1A1A] font-medium mb-6 italic">
-                  "Tu empresa con procesos ordenados que se repiten sin depender de una sola persona"
+                <p className="text-xl text-[#1A1A1A] font-semibold mb-4 italic">
+                  "La norma que convierte tu empresa en una máquina de resultados rentables y escalables"
                 </p>
-                <p className="text-[#1A1A1A] leading-relaxed mb-8 text-lg">
-                  La norma de gestión más adoptada del mundo. ISO 9001 te permite estandarizar cómo haces las cosas para que el resultado sea siempre el mismo, independientemente de quién esté al frente.
+                <p className="text-[#1A1A1A] leading-relaxed mb-6 text-base">
+                  ISO 9001 estandariza tus procesos para que tu empresa funcione igual de bien sin depender de ti. Escala sin perder calidad, reduce costos operativos hasta un 25% y accede a contratos corporativos que antes estaban fuera de tu alcance.
                 </p>
+                <div className="flex flex-wrap gap-2 mb-7">
+                  {["↓ 25% costos operativos", "↑ 40% retención de clientes", "✓ Acceso a licitaciones"].map((badge) => (
+                    <span key={badge} className="text-xs font-bold bg-[#1A1A1A] text-[#F5A623] px-3 py-1.5 rounded-full">{badge}</span>
+                  ))}
+                </div>
                 <Link href={`/${locale}/contacto`} className="inline-block bg-[#1A1A1A] text-white font-bold px-8 py-4 rounded-lg hover:bg-[#333] transition-colors text-lg">
-                  Cotiza esta certificación →
+                  Quiero esta certificación →
                 </Link>
               </div>
               <div>
