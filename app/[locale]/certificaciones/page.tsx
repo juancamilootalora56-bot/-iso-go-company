@@ -20,6 +20,7 @@ type Certification = {
   impact: string;
   featured: boolean;
   icon: string;
+  image?: string;
 };
 
 async function getCertifications(locale: string): Promise<Certification[]> {
@@ -112,36 +113,61 @@ export default async function CertificacionesPage() {
               <div
                 key={cert.id}
                 id={cert.id}
-                className={`rounded-2xl p-8 ${index % 2 === 0 ? "bg-[#F4F4F4]" : "bg-white border border-gray-100"}`}
+                className={`rounded-2xl overflow-hidden ${index % 2 === 0 ? "bg-[#F4F4F4]" : "bg-white border border-gray-100"}`}
               >
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2">
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="w-14 h-14 bg-[#1A1A1A] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                {/* Image banner */}
+                {cert.image && (
+                  <div className="relative h-52 w-full overflow-hidden">
+                    <Image
+                      src={cert.image}
+                      alt={cert.title}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute bottom-4 left-6 flex items-center gap-3">
+                      <div className="w-12 h-12 bg-[#F5A623] rounded-xl flex items-center justify-center text-xl flex-shrink-0">
                         {iconMap[cert.icon] || "📋"}
                       </div>
                       <div>
                         <span className="text-xs font-bold text-[#F5A623] uppercase tracking-wider">{cert.name}</span>
-                        <h3 className="text-2xl font-bold text-[#1A1A1A]">{cert.title}</h3>
+                        <h3 className="text-xl font-bold text-white">{cert.title}</h3>
                       </div>
                     </div>
-                    <p className="text-gray-700 italic mb-3 text-lg">"{cert.tagline}"</p>
-                    <p className="text-gray-600 leading-relaxed mb-4">{cert.description}</p>
-                    <Link
-                      href={`/${locale}/contacto`}
-                      className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-6 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors inline-block"
-                    >
-                      {t("cta")} →
-                    </Link>
                   </div>
-                  <div className="space-y-4">
-                    <div className="bg-white rounded-xl p-4 shadow-sm">
-                      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">¿A quién aplica?</h4>
-                      <p className="text-gray-700 text-sm leading-relaxed">{cert.who}</p>
+                )}
+                <div className="p-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2">
+                      {!cert.image && (
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="w-14 h-14 bg-[#1A1A1A] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                            {iconMap[cert.icon] || "📋"}
+                          </div>
+                          <div>
+                            <span className="text-xs font-bold text-[#F5A623] uppercase tracking-wider">{cert.name}</span>
+                            <h3 className="text-2xl font-bold text-[#1A1A1A]">{cert.title}</h3>
+                          </div>
+                        </div>
+                      )}
+                      <p className="text-gray-700 italic mb-3 text-lg">"{cert.tagline}"</p>
+                      <p className="text-gray-600 leading-relaxed mb-4">{cert.description}</p>
+                      <Link
+                        href={`/${locale}/contacto`}
+                        className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-6 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors inline-block"
+                      >
+                        {t("cta")} →
+                      </Link>
                     </div>
-                    <div className="bg-[#1A1A1A] rounded-xl p-4">
-                      <h4 className="text-xs font-bold text-[#F5A623] uppercase tracking-wider mb-2">Impacto</h4>
-                      <p className="text-gray-300 text-sm leading-relaxed">{cert.impact}</p>
+                    <div className="space-y-4">
+                      <div className="bg-white rounded-xl p-4 shadow-sm">
+                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">¿A quién aplica?</h4>
+                        <p className="text-gray-700 text-sm leading-relaxed">{cert.who}</p>
+                      </div>
+                      <div className="bg-[#1A1A1A] rounded-xl p-4">
+                        <h4 className="text-xs font-bold text-[#F5A623] uppercase tracking-wider mb-2">Impacto</h4>
+                        <p className="text-gray-300 text-sm leading-relaxed">{cert.impact}</p>
+                      </div>
                     </div>
                   </div>
                 </div>

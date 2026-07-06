@@ -14,23 +14,25 @@
     "id": "iso-14001",
     "name": "ISO 14001",
     "title": "Gestión Ambiental",
-    "tagline": "Reduce costos operativos y abre puertas a licitaciones y mercados con exigencias ambientales",
+    "tagline": "Convierte el cumplimiento ambiental en ventaja competitiva: accede a licitaciones verdes, reduce residuos y atrae inversión responsable",
     "description": "ISO 14001 establece un sistema de gestión ambiental que identifica, controla y reduce el impacto ambiental de tu empresa de forma sistemática y medible.",
     "who": "Industrias manufactureras, empresas de construcción, servicios logísticos, y cualquier organización que quiera demostrar compromiso ambiental a clientes y reguladores.",
     "impact": "Reducción de residuos hasta un 30%, acceso a licitaciones de gobierno con requisitos ambientales, y diferenciación ante clientes que priorizan proveedores responsables.",
     "featured": false,
-    "icon": "leaf"
+    "icon": "leaf",
+    "image": "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=600&h=300&fit=crop"
   },
   {
     "id": "iso-45001",
     "name": "ISO 45001",
     "title": "Seguridad y Salud Ocupacional",
-    "tagline": "Menos accidentes, menos multas, trabajadores más productivos y cumplimiento regulatorio total",
+    "tagline": "Protege a tu equipo, elimina multas y convierte la seguridad laboral en productividad real y sostenida",
     "description": "La norma internacional para sistemas de gestión de seguridad y salud en el trabajo. Identifica peligros, evalúa riesgos e implementa controles que protegen a tu equipo.",
     "who": "Empresas con operaciones físicas, manufactura, construcción, minería, servicios logísticos, salud — cualquier sector donde los trabajadores estén expuestos a riesgos.",
     "impact": "Reducción de accidentes laborales hasta un 60%, disminución de ausencias por enfermedad, menores costos de seguros y eliminación de sanciones por incumplimiento regulatorio.",
     "featured": false,
-    "icon": "shield"
+    "icon": "shield",
+    "image": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=300&fit=crop"
   },
   {
     "id": "iso-27001",
@@ -41,18 +43,20 @@
     "who": "Empresas tech, fintech, salud digital, e-commerce, proveedores de servicios cloud, y cualquier organización que maneja datos sensibles de clientes o socios.",
     "impact": "Acceso a contratos enterprise y gubernamentales, reducción del riesgo de brechas de datos, confianza de clientes internacionales y cumplimiento de regulaciones como RGPD y LGPD.",
     "featured": false,
-    "icon": "lock"
+    "icon": "lock",
+    "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&h=300&fit=crop"
   },
   {
     "id": "iso-22000",
     "name": "ISO 22000",
     "title": "Inocuidad Alimentaria",
-    "tagline": "Exporta alimentos con confianza y accede a los mercados más exigentes del mundo",
+    "tagline": "Exporta alimentos con confianza y accede a los mercados más exigentes del mundo con trazabilidad total",
     "description": "ISO 22000 integra los principios HACCP con un sistema de gestión completo para garantizar la inocuidad en toda la cadena alimentaria, desde el productor hasta el consumidor.",
     "who": "Productores de alimentos, procesadores, distribuidores, restaurantes de cadena, proveedores de insumos alimentarios y cualquier empresa en la cadena de suministro de alimentos.",
     "impact": "Habilitación para exportar a mercados de la UE, EEUU y Asia, reducción de rechazos y retiros de producto, diferenciación ante retailers y distribuidores internacionales.",
     "featured": false,
-    "icon": "utensils"
+    "icon": "utensils",
+    "image": "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=600&h=300&fit=crop"
   },
   {
     "id": "iso-13485",
@@ -63,18 +67,20 @@
     "who": "Fabricantes de dispositivos médicos, distribuidores, proveedores de insumos médicos, laboratorios de diagnóstico in vitro y empresas de tecnología médica.",
     "impact": "Habilitación para vender en la UE (CE Mark), EEUU (FDA), acceso a hospitales y clínicas de alta complejidad, y cumplimiento de requisitos de licitaciones de salud pública.",
     "featured": false,
-    "icon": "heart-pulse"
+    "icon": "heart-pulse",
+    "image": "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&h=300&fit=crop"
   },
   {
     "id": "iso-50001",
     "name": "ISO 50001",
     "title": "Gestión de la Energía",
-    "tagline": "Reduce tu consumo energético hasta un 30% con un sistema que se paga solo",
+    "tagline": "Implementa un sistema que reduce tu factura energética y genera retorno real desde el primer año",
     "description": "ISO 50001 establece un marco para gestionar el desempeño energético de tu organización: medir, monitorear, optimizar y reducir el consumo de forma sistemática.",
     "who": "Industrias con alto consumo energético, cadenas de retail, empresas de servicios, edificios corporativos y cualquier organización que quiera bajar costos y cumplir compromisos de sostenibilidad.",
     "impact": "Reducción del consumo energético entre 15-30%, ahorro directo en costos operativos, mejora de la huella de carbono y acceso a incentivos fiscales por eficiencia energética.",
     "featured": false,
-    "icon": "zap"
+    "icon": "zap",
+    "image": "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=600&h=300&fit=crop"
   },
   {
     "id": "iso-22301",
@@ -85,7 +91,8 @@
     "who": "Bancos y financieras, empresas tech, infraestructura crítica, empresas de salud, logística y cualquier organización cuya interrupción tenga alto impacto económico o social.",
     "impact": "Tiempo de recuperación ante incidentes reducido hasta un 70%, ventaja competitiva en licitaciones que exigen BCP, confianza de clientes y socios estratégicos.",
     "featured": false,
-    "icon": "refresh-cw"
+    "icon": "refresh-cw",
+    "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&h=300&fit=crop"
   },
   {
     "id": "iso-27701",
@@ -96,7 +103,8 @@
     "who": "Empresas que operan en la UE o Brasil, plataformas digitales, apps con usuarios registrados, empresas que procesan datos de clientes y cualquier organización sujeta a regulaciones de privacidad.",
     "impact": "Cumplimiento demostrable de RGPD y LGPD, eliminación del riesgo de multas millonarias, confianza de clientes europeos y posicionamiento como empresa responsable con los datos.",
     "featured": false,
-    "icon": "eye-off"
+    "icon": "eye-off",
+    "image": "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=300&fit=crop"
   },
   {
     "id": "iso-42001",
@@ -107,7 +115,8 @@
     "who": "Empresas tech que desarrollan o usan IA, fintechs, insurtech, healthtech, y cualquier organización que quiera liderar la adopción responsable de IA ante clientes y reguladores.",
     "impact": "Posicionamiento como líder en IA responsable, acceso a contratos en sectores regulados, diferenciación ante competidores y preparación anticipada para regulaciones de IA en la UE.",
     "featured": false,
-    "icon": "brain"
+    "icon": "brain",
+    "image": "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&h=300&fit=crop"
   },
   {
     "id": "iso-17025",
@@ -118,6 +127,7 @@
     "who": "Laboratorios de análisis clínicos, control de calidad industrial, laboratorios ambientales, de alimentos, de materiales y cualquier entidad que emita resultados técnicos con validez legal o comercial.",
     "impact": "Reconocimiento internacional de resultados vía acuerdos de reconocimiento mutuo (MRA), acceso a contratos con industria farmacéutica y reguladores, y eliminación de re-ensayos costosos.",
     "featured": false,
-    "icon": "flask"
+    "icon": "flask",
+    "image": "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=600&h=300&fit=crop"
   }
 ]
