@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import CTABand from "@/components/CTABand";
 import HexagonDecor, { HexagonOutline } from "@/components/HexagonDecor";
+import HeroCarousel from "@/components/HeroCarousel";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -148,76 +149,8 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="bg-[#1A1A1A] text-white relative overflow-hidden min-h-[75vh] flex items-center">
-        {/* Diagonal decorative elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div
-            className="absolute -left-16 top-0 bottom-0 w-48 opacity-30"
-            style={{ background: "#F5A623", transform: "skewX(-8deg)" }}
-          />
-          <div
-            className="absolute left-24 top-0 bottom-0 w-12 opacity-15"
-            style={{ background: "#F5A623", transform: "skewX(-8deg)" }}
-          />
-          <div className="absolute right-0 top-0 w-1/2 h-full opacity-5"
-            style={{
-              background: "radial-gradient(ellipse at 80% 50%, #F5A623 0%, transparent 70%)"
-            }}
-          />
-          <HexagonOutline size={300} color="#F5A623" className="absolute -right-16 -bottom-16 opacity-10" />
-          <HexagonOutline size={150} color="#F5A623" className="absolute right-48 top-16 opacity-10" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
-          <div className="max-w-3xl">
-            <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6">
-              {t("tagline")}
-            </span>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6">
-              {t("headline")}
-            </h1>
-            <p className="text-xl text-gray-300 mb-10 leading-relaxed max-w-2xl">
-              {t("sub")}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                href={`/${locale}/contacto`}
-                className="bg-[#F5A623] text-[#1A1A1A] font-bold px-8 py-4 rounded-lg hover:bg-[#e09410] transition-colors text-lg text-center"
-              >
-                {t("cta1")} →
-              </Link>
-              <Link
-                href={`/${locale}/certificaciones`}
-                className="border-2 border-white text-white font-bold px-8 py-4 rounded-lg hover:bg-white hover:text-[#1A1A1A] transition-colors text-lg text-center"
-              >
-                {t("cta2")}
-              </Link>
-            </div>
-
-            {/* Trust badges */}
-            <div className="mt-12 flex flex-wrap gap-6 items-center">
-              {[
-                { value: "200+", labelEs: "Empresas certificadas", labelEn: "Certified companies", labelPt: "Empresas certificadas" },
-                { value: "11+", labelEs: "Normas ISO", labelEn: "ISO standards", labelPt: "Normas ISO" },
-                { value: "15+", labelEs: "Años de experiencia", labelEn: "Years of experience", labelPt: "Anos de experiência" },
-                { value: "98%", labelEs: "Tasa de certificación", labelEn: "Certification rate", labelPt: "Taxa de certificação" },
-              ].map((stat, i) => {
-                const label = locale === "en" ? stat.labelEn : locale === "pt" ? stat.labelPt : stat.labelEs;
-                return (
-                  <>
-                    {i > 0 && <div key={`div-${i}`} className="w-px h-10 bg-gray-700" />}
-                    <div key={stat.value} className="text-center">
-                      <div className="text-3xl font-bold text-[#F5A623]">{stat.value}</div>
-                      <div className="text-xs text-gray-400 mt-1">{label}</div>
-                    </div>
-                  </>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Carousel */}
+      <HeroCarousel locale={locale} />
 
       {/* Featured certifications */}
       <section className="bg-[#F4F4F4] py-20">
