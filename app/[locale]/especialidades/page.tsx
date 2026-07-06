@@ -1,5 +1,6 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import Link from "next/link";
+import Image from "next/image";
 import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
@@ -17,6 +18,7 @@ type Specialty = {
   description: string;
   result: string;
   features: string[];
+  image?: string;
 };
 
 async function getSpecialties(locale: string): Promise<Specialty[]> {
@@ -69,12 +71,27 @@ export default async function EspecialidadesPage() {
                 }`}
               >
                 <div className={index % 2 === 1 ? "lg:order-2" : ""}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-14 h-14 bg-[#F5A623] rounded-xl flex items-center justify-center text-2xl">
-                      {iconMap[spec.icon] || "📋"}
-                    </div>
-                    <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">Especialidad {String(index + 1).padStart(2, "0")}</span>
+                  {/* Header: imagen cuadrada + número + título */}
+                  <div className="flex items-center gap-4 mb-5">
+                    {spec.image ? (
+                      <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
+                        <Image
+                          src={spec.image}
+                          alt={spec.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 bg-[#F5A623] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                        {iconMap[spec.icon] || "📋"}
+                      </div>
+                    )}
+                    <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">
+                      Especialidad {String(index + 1).padStart(2, "0")}
+                    </span>
                   </div>
+
                   <h2 className="text-2xl md:text-3xl font-bold text-[#1A1A1A] mb-3">{spec.title}</h2>
                   <p className="text-[#F5A623] font-semibold text-lg mb-4 italic">"{spec.tagline}"</p>
                   <p className="text-gray-700 leading-relaxed mb-6">{spec.description}</p>

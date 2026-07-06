@@ -6,7 +6,8 @@
     "tagline": "Convierte tu visión en un plan ejecutable con KPIs medibles y responsables claros",
     "description": "No hay certificación ni crecimiento sostenible sin una estrategia clara. Te ayudamos a definir el rumbo de tu empresa con metodologías probadas como Balanced Scorecard y OKRs, traduciendo tu visión en objetivos concretos, indicadores de desempeño y planes de acción con fechas y responsables.",
     "result": "Un plan estratégico documentado, un cuadro de mando integral digital y un sistema de seguimiento mensual que garantiza que la estrategia no quede en el papel.",
-    "features": ["Diagnóstico estratégico inicial", "Definición de misión, visión y valores operativos", "Mapa estratégico con BSC u OKRs", "KPIs por área con dashboard integrado", "Revisiones trimestrales sistematizadas"]
+    "features": ["Diagnóstico estratégico inicial", "Definición de misión, visión y valores operativos", "Mapa estratégico con BSC u OKRs", "KPIs por área con dashboard integrado", "Revisiones trimestrales sistematizadas"],
+    "image": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "riesgo",
@@ -15,7 +16,8 @@
     "tagline": "Identifica y mitiga riesgos antes de que se conviertan en crisis que cuestan caro",
     "description": "Los riesgos no gestionados cuestan entre 3 y 10 veces más que prevenirlos. Implementamos una metodología de gestión de riesgos integrada con tu sistema de gestión ISO para que tu empresa opere de forma proactiva, no reactiva.",
     "result": "Matriz de riesgos actualizada, planes de tratamiento implementados y un sistema de alertas automatizado que notifica cuando un indicador de riesgo supera el umbral definido.",
-    "features": ["Inventario y clasificación de riesgos", "Evaluación de probabilidad e impacto", "Planes de tratamiento y controles", "Integración con dashboard de gestión", "Alertas automáticas por indicadores críticos"]
+    "features": ["Inventario y clasificación de riesgos", "Evaluación de probabilidad e impacto", "Planes de tratamiento y controles", "Integración con dashboard de gestión", "Alertas automáticas por indicadores críticos"],
+    "image": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "comercial",
@@ -24,7 +26,8 @@
     "tagline": "Sistematiza tu proceso de ventas, mejora la tasa de cierre y predice tus ingresos con precisión",
     "description": "Un proceso comercial no documentado depende de los vendedores estrella. Cuando se van, se lleva el know-how. Sistematizamos tu proceso de ventas desde la prospección hasta el cierre y la posventa, integrando CRM, pipeline visual y métricas comerciales en tiempo real.",
     "result": "Proceso comercial documentado y estandarizado, CRM implementado y adoptado por el equipo, pipeline predecible y tasa de conversión mejorada hasta un 35%.",
-    "features": ["Mapeo del proceso comercial actual", "Definición del proceso ideal y playbook de ventas", "Implementación y configuración de CRM", "Métricas comerciales en dashboard", "Capacitación del equipo comercial"]
+    "features": ["Mapeo del proceso comercial actual", "Definición del proceso ideal y playbook de ventas", "Implementación y configuración de CRM", "Métricas comerciales en dashboard", "Capacitación del equipo comercial"],
+    "image": "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "operativa",
@@ -33,7 +36,8 @@
     "tagline": "Optimiza tu producción, reduce desperdicios y haz más con los mismos recursos",
     "description": "La eficiencia operativa es la diferencia entre crecer rentablemente y crecer quebrando. Mapeamos tu cadena productiva, identificamos cuellos de botella, eliminamos desperdicios e implementamos controles que garantizan consistencia sin importar quién esté operando.",
     "result": "Procesos productivos documentados, reducción de desperdicios entre 20-40%, indicadores operativos en tiempo real y capacidad para escalar sin perder calidad.",
-    "features": ["Value Stream Mapping de la cadena productiva", "Identificación y eliminación de desperdicios (Lean)", "Estandarización de procesos clave", "Indicadores operativos en tiempo real", "Integración con sistema de no conformidades"]
+    "features": ["Value Stream Mapping de la cadena productiva", "Identificación y eliminación de desperdicios (Lean)", "Estandarización de procesos clave", "Indicadores operativos en tiempo real", "Integración con sistema de no conformidades"],
+    "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "talento",
@@ -42,7 +46,8 @@
     "tagline": "Atrae, desarrolla y retén el talento que tu empresa necesita con procesos definidos y medibles",
     "description": "Las empresas que gestionan su talento de forma sistemática tienen tasas de retención 60% más altas y equipos hasta 40% más productivos. Implementamos procesos de selección, onboarding, evaluación de desempeño y desarrollo que convierten la gestión de personas en ventaja competitiva.",
     "result": "Perfiles de cargo definidos, proceso de selección estructurado, sistema de evaluación de desempeño integrado y plan de desarrollo por rol documentado.",
-    "features": ["Diseño organizacional y perfiles de cargo", "Proceso de selección estructurado", "Onboarding sistematizado", "Sistema de evaluación de desempeño", "Plan de desarrollo y formación por rol"]
+    "features": ["Diseño organizacional y perfiles de cargo", "Proceso de selección estructurado", "Onboarding sistematizado", "Sistema de evaluación de desempeño", "Plan de desarrollo y formación por rol"],
+    "image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "diseno",
@@ -51,7 +56,8 @@
     "tagline": "Innova con procesos controlados que garantizan que cada nuevo producto o servicio llega al mercado sin sorpresas",
     "description": "La innovación sin control genera retrasos, sobrecostos y productos que no cumplen lo prometido. Implementamos un sistema de gestión de diseño y desarrollo que estructura cada proyecto de innovación con fases, revisiones, validaciones y controles de calidad integrados.",
     "result": "Time-to-market reducido, proyectos que se cumplen en tiempo y presupuesto, y un proceso de innovación que puede escalar sin depender de personas clave.",
-    "features": ["Proceso de diseño y desarrollo documentado", "Revisiones de diseño sistematizadas", "Control de cambios integrado", "Verificación y validación de productos", "Trazabilidad completa del proceso de desarrollo"]
+    "features": ["Proceso de diseño y desarrollo documentado", "Revisiones de diseño sistematizadas", "Control de cambios integrado", "Verificación y validación de productos", "Trazabilidad completa del proceso de desarrollo"],
+    "image": "https://images.unsplash.com/photo-1558655146-364adaf1fcc9?w=200&h=200&fit=crop&crop=center&q=85"
   },
   {
     "id": "empresa-familiar",
@@ -60,6 +66,7 @@
     "tagline": "Profesionaliza la empresa familiar con estructuras de gobierno que separan la familia del negocio",
     "description": "Las empresas familiares que no profesionalizan su gobierno corporativo enfrentan conflictos, pérdida de talento externo y dificultades para crecer. Implementamos estructuras de gobierno corporativo adaptadas a la realidad de la empresa familiar: protocolos familiares, directorio formal, separación de roles y procesos de sucesión.",
     "result": "Protocolo familiar documentado, directorio operativo implementado, roles y responsabilidades claros y un plan de sucesión que asegura la continuidad del negocio.",
-    "features": ["Diagnóstico de gobierno corporativo actual", "Diseño del protocolo familiar", "Estructura de directorio y comités", "Separación de roles familia/empresa", "Plan de sucesión y traspaso generacional"]
+    "features": ["Diagnóstico de gobierno corporativo actual", "Diseño del protocolo familiar", "Estructura de directorio y comités", "Separación de roles familia/empresa", "Plan de sucesión y traspaso generacional"],
+    "image": "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=200&h=200&fit=crop&crop=center&q=85"
   }
 ]
