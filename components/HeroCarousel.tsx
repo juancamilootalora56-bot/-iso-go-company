@@ -165,6 +165,55 @@ export default function HeroCarousel({ locale }: { locale: string }) {
     },
     {
       id: 3,
+      bg: "bg-[#1A1A1A]",
+      content: (
+        <div className="relative overflow-hidden min-h-[82vh] flex items-center w-full">
+          {/* Background image */}
+          <div className="absolute inset-0">
+            <img
+              src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600&h=900&fit=crop&crop=center&q=85"
+              alt="Empresas Familiares"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A1A]/90 via-[#1A1A1A]/70 to-[#1A1A1A]/30" />
+          </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
+            <div className="max-w-2xl">
+              <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6">
+                Especialidad exclusiva
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+                Especialistas en Empresas Familiares
+              </h2>
+              <p className="text-xl text-gray-300 leading-relaxed mb-6">
+                Las empresas familiares tienen retos únicos que las consultoras tradicionales no entienden. Construimos estructuras de gobierno corporativo que profesionalizan sin perder la esencia familiar.
+              </p>
+              <ul className="space-y-2 mb-8">
+                {[
+                  "Separación clara entre roles familiares y empresariales",
+                  "Protocolos de sucesión que garantizan continuidad",
+                  "Gobierno corporativo que atrae talento externo",
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-3 text-gray-300 text-sm">
+                    <span className="w-5 h-5 bg-[#F5A623] rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-3 h-3 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link href={`/${locale}/especialidades`} className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-8 py-4 rounded-lg hover:bg-[#e09410] transition-colors text-lg">
+                Habla con un especialista →
+              </Link>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 4,
       bg: "bg-[#111111]",
       content: (
         <div className="relative overflow-hidden min-h-[82vh] flex items-center w-full">
