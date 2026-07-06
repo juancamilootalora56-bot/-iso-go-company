@@ -47,7 +47,7 @@ const markets = [
   {
     region: "Israel y Medio Oriente",
     detail: "Exportación directa a mercados con 100% de demanda Kosher",
-    image: "https://images.unsplash.com/photo-1548286978-f218023f8d18?w=200&h=200&fit=crop&crop=center&q=85",
+    image: "https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=200&h=200&fit=crop&crop=center&q=85",
   },
   {
     region: "Europa",
