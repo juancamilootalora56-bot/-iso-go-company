@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const contactInfo = [
   { icon: "📧", label: "Email", value: "info@isogo.company", href: "mailto:info@isogo.company" },
-  { icon: "📱", label: "WhatsApp", value: "+595 99 244 2381", href: "https://wa.me/595992442381" },
+  { icon: "📱", label: "WhatsApp", value: "+595 982 859 051", href: "https://wa.me/595982859051" },
   { icon: "🌐", label: "Web", value: "isogo.company", href: "https://isogo.company" },
 ];
 
