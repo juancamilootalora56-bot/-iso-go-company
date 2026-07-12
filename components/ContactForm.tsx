@@ -68,7 +68,7 @@ export default function ContactForm() {
     return (
       <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
         <p className="text-red-700 font-semibold text-lg mb-2">Error al enviar</p>
-        <p className="text-red-600 text-sm mb-4">Intenta de nuevo o escríbenos directo a info@isogocompany.com</p>
+        <p className="text-red-600 text-sm mb-4">Intenta de nuevo o escríbenos directo a info@isogo.company</p>
         <button onClick={() => setStatus("idle")} className="text-sm text-red-500 underline">Intentar de nuevo</button>
       </div>
     );

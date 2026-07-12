@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
     await resend.emails.send({
       from: "Iso Go Company <onboarding@resend.dev>",
-      to: "juancamilootalora56@gmail.com",
+      to: "info@isogo.company",
       subject: `Nueva solicitud de cotización — ${norm}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
