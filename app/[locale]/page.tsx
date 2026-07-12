@@ -7,11 +7,17 @@ import HeroCarousel from "@/components/HeroCarousel";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  const t = await getTranslations({ locale, namespace: "hero" });
   return {
-    title: "Iso Go Company | Certificación ISO + Automatización",
-    description: t("headline"),
+    title: "Iso Go Company | Certificación ISO, Kosher y Consultoría Empresarial",
+    description: "Consultora líder en certificaciones ISO 9001, ISO 14001, ISO 22000, ISO 45001, Kosher y más. Implementamos tu sistema de gestión y te acompañamos hasta el certificado. Cotiza gratis.",
+    keywords: ["certificacion ISO", "certificaciones ISO", "ISO 9001", "ISO 22000", "certificacion kosher", "consultoria ISO", "sistema de gestion", "certificacion empresarial"],
+    openGraph: {
+      title: "Iso Go Company | Certificación ISO y Kosher",
+      description: "Consultora especializada en certificaciones ISO y Kosher. Te acompañamos desde la implementación hasta el certificado.",
+      url: "https://isogo.company",
+      siteName: "Iso Go Company",
+      type: "website",
+    },
   };
 }
 

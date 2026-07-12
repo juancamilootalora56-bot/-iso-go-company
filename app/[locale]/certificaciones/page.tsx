@@ -6,8 +6,8 @@ import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Certificaciones ISO | Iso Go Company",
-  description: "Catálogo completo de certificaciones ISO. Cada norma con su beneficio concreto para tu empresa.",
+  title: "Certificaciones ISO | ISO 9001, 14001, 22000, 45001 | Iso Go Company",
+  description: "Obtén tu certificación ISO con acompañamiento experto. ISO 9001 calidad, ISO 14001 ambiente, ISO 22000 inocuidad, ISO 45001 seguridad y más. Cotiza sin compromiso.",
 };
 
 type Certification = {

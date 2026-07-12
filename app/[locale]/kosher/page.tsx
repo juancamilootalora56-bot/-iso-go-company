@@ -6,8 +6,8 @@ import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Certificación Kosher | Iso Go Company",
-  description: "Accede a mercados de alto valor con certificación Kosher. El mismo sistema de trazabilidad que usamos para ISO 9001/22000.",
+  title: "Certificación Kosher | Accede a Mercados Internacionales | Iso Go Company",
+  description: "Obtén tu certificación Kosher y accede al mercado global de USD 24 mil millones. Acompañamiento experto, integrado con ISO 9001/22000. Cotiza gratis.",
 };
 
 const processSteps = [
