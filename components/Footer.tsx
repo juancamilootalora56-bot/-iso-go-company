@@ -29,7 +29,6 @@ export default function Footer() {
   const companyLinks = [
     { label: "Nosotros", href: `/${locale}/nosotros` },
     { label: "Software", href: `/${locale}/software` },
-    { label: "Casos de Éxito", href: `/${locale}/casos-de-exito` },
     { label: "Blog", href: `/${locale}/blog` },
     { label: "Contacto", href: `/${locale}/contacto` },
   ];
@@ -107,8 +106,8 @@ export default function Footer() {
               ))}
             </ul>
             <div className="mt-6">
-              <p className="text-xs text-gray-500">info@isogocompany.com</p>
-              <p className="text-xs text-gray-500 mt-1">+1 (555) 000-0000</p>
+              <p className="text-xs text-gray-500">info@isogo.company</p>
+              <p className="text-xs text-gray-500 mt-1">+595 982 859 051</p>
             </div>
           </div>
         </div>
