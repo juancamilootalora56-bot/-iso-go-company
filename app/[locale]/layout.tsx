@@ -39,6 +39,14 @@ export async function generateMetadata({
     },
     twitter: { card: "summary_large_image" },
     robots: { index: true, follow: true },
+    alternates: {
+      canonical: `https://isogo.company/${l}`,
+      languages: {
+        "es": "https://isogo.company/es",
+        "en": "https://isogo.company/en",
+        "pt": "https://isogo.company/pt",
+      },
+    },
   };
 }
 
