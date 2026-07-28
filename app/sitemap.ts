@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const baseUrl = "https://isogo.company";
+const baseUrl = "https://www.isogo.company";
 const locales = ["es", "en", "pt"];
 
 const pages = [

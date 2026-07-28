@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://isogo.company/sitemap.xml",
+    sitemap: "https://www.isogo.company/sitemap.xml",
   };
 }

@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: "Iso Go Company | Certificación ISO y Kosher",
       description: "Consultora especializada en certificaciones ISO y Kosher. Te acompañamos desde la implementación hasta el certificado.",
-      url: "https://isogo.company",
+      url: "https://www.isogo.company",
       siteName: "Iso Go Company",
       type: "website",
     },
