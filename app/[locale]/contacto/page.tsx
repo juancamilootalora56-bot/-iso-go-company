@@ -2,11 +2,20 @@ import { getTranslations, getLocale } from "next-intl/server";
 import ContactForm from "@/components/ContactForm";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
   title: "Contacto y Cotización | Iso Go Company",
   description: "Cotiza tu certificación ISO. Respuesta en menos de 24 horas con plan personalizado.",
-};
+    alternates: buildAlternates(locale, "contacto"),
+  };
+}
 
 const contactInfo = [
   { icon: "📧", label: "Email", value: "info@isogo.company", href: "mailto:info@isogo.company" },

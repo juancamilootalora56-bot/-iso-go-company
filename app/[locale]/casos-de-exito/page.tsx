@@ -4,11 +4,20 @@ import Link from "next/link";
 import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
   title: "Casos de Éxito | Iso Go Company",
   description: "Empresas que transformaron su gestión con Iso Go Company. Resultados concretos y métricas reales.",
-};
+    alternates: buildAlternates(locale, "casos-de-exito"),
+  };
+}
 
 const cases = [
   {

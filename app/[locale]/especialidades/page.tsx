@@ -4,11 +4,20 @@ import Image from "next/image";
 import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
   title: "Especialidades | Iso Go Company",
   description: "Transformamos cada área de tu empresa con metodología probada y tecnología aplicada.",
-};
+    alternates: buildAlternates(locale, "especialidades"),
+  };
+}
 
 type Specialty = {
   id: string;

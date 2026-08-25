@@ -1,6 +1,19 @@
 import { getLocale } from "next-intl/server";
 import Link from "next/link";
 import CTABand from "@/components/CTABand";
+import { buildAlternates } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; locale: string }>;
+}): Promise<Metadata> {
+  const { slug, locale } = await params;
+  return {
+    alternates: buildAlternates(locale, `blog/${slug}`),
+  };
+}
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug } = await params;

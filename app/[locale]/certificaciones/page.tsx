@@ -4,11 +4,20 @@ import Image from "next/image";
 import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
   title: "Certificaciones ISO | ISO 9001, 14001, 22000, 45001 | Iso Go Company",
   description: "Obtén tu certificación ISO con acompañamiento experto. ISO 9001 calidad, ISO 14001 ambiente, ISO 22000 inocuidad, ISO 45001 seguridad y más. Cotiza sin compromiso.",
-};
+    alternates: buildAlternates(locale, "certificaciones"),
+  };
+}
 
 type Certification = {
   id: string;

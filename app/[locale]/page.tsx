@@ -5,8 +5,14 @@ import CTABand from "@/components/CTABand";
 import HexagonDecor, { HexagonOutline } from "@/components/HexagonDecor";
 import HeroCarousel from "@/components/HeroCarousel";
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
   return {
     title: "Iso Go Company | Certificación ISO, Kosher y Consultoría Empresarial",
     description: "Consultora líder en certificaciones ISO 9001, ISO 14001, ISO 22000, ISO 45001, Kosher y más. Implementamos tu sistema de gestión y te acompañamos hasta el certificado. Cotiza gratis.",
@@ -18,6 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "Iso Go Company",
       type: "website",
     },
+    alternates: buildAlternates(locale, ""),
   };
 }
 

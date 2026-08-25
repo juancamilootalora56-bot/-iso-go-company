@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.isogocompany.com"),
+  metadataBase: new URL("https://www.isogo.company"),
   title: "Iso Go Company",
   description: "Certificación ISO + Automatización de sistemas de gestión",
 };

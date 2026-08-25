@@ -4,11 +4,20 @@ import Image from "next/image";
 import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
   title: "Blog y Recursos ISO | Iso Go Company",
   description: "Artículos y guías sobre certificación ISO, gestión de calidad y automatización de procesos.",
-};
+    alternates: buildAlternates(locale, "blog"),
+  };
+}
 
 const articles = [
   {

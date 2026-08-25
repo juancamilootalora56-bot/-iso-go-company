@@ -3,11 +3,20 @@ import Link from "next/link";
 import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
   title: "Software de Gestión ISO | Iso Go Company",
   description: "Plataforma de gestión ISO que hace que tu certificación trabaje todos los días del año.",
-};
+    alternates: buildAlternates(locale, "software"),
+  };
+}
 
 const features = [
   {

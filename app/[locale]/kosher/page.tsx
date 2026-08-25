@@ -4,11 +4,20 @@ import Image from "next/image";
 import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
   title: "Certificación Kosher | Accede a Mercados Internacionales | Iso Go Company",
   description: "Obtén tu certificación Kosher y accede al mercado global de USD 24 mil millones. Acompañamiento experto, integrado con ISO 9001/22000. Cotiza gratis.",
-};
+    alternates: buildAlternates(locale, "kosher"),
+  };
+}
 
 const processSteps = [
   {
