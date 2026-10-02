@@ -34,6 +34,7 @@ export default function Header() {
   }, []);
 
   const navLinks = [
+    { key: "home", href: `/${locale}` },
     { key: "nosotros", href: `/${locale}/nosotros` },
     { key: "certificaciones", href: `/${locale}/certificaciones` },
     { key: "kosher", href: `/${locale}/kosher` },
