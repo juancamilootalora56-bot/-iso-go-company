@@ -1,0 +1,143 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { ETAPAS, type Lead, type Etapa } from "@/hooks/useLeads";
+
+export default function LeadDetallePage() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params.id as string;
+
+  const [lead, setLead] = useState<Lead | null>(null);
+  const [form, setForm] = useState<Partial<Lead>>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("leads")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle()
+      .then(({ data }) => {
+        setLead(data as Lead | null);
+        setForm((data as Lead) ?? {});
+        setLoading(false);
+      });
+  }, [id]);
+
+  function set<K extends keyof Lead>(key: K, value: Lead[K]) {
+    setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    const supabase = createClient();
+    await supabase
+      .from("leads")
+      .update({
+        nombre: form.nombre,
+        empresa: form.empresa,
+        email: form.email,
+        telefono: form.telefono,
+        norma_interes: form.norma_interes,
+        etapa: form.etapa,
+        notas: form.notas,
+      })
+      .eq("id", id);
+    setSaving(false);
+    router.push("/crm/leads");
+  }
+
+  if (loading) return <p className="text-gray-400 text-sm">Cargando...</p>;
+  if (!lead) return <p className="text-gray-400 text-sm">Lead no encontrado.</p>;
+
+  return (
+    <div className="max-w-xl">
+      <Link href="/crm/leads" className="text-sm text-gray-400 hover:text-white mb-4 inline-block">
+        ← Volver a Leads
+      </Link>
+      <h1 className="text-2xl font-bold mb-6">{lead.nombre}</h1>
+
+      <form onSubmit={handleSave} className="space-y-4 bg-[#242424] border border-white/5 rounded-2xl p-6">
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1">Nombre</label>
+          <input
+            value={form.nombre ?? ""}
+            onChange={(e) => set("nombre", e.target.value)}
+            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1">Empresa</label>
+          <input
+            value={form.empresa ?? ""}
+            onChange={(e) => set("empresa", e.target.value)}
+            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1">Email</label>
+            <input
+              value={form.email ?? ""}
+              onChange={(e) => set("email", e.target.value)}
+              className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1">Teléfono</label>
+            <input
+              value={form.telefono ?? ""}
+              onChange={(e) => set("telefono", e.target.value)}
+              className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1">Norma de interés</label>
+          <input
+            value={form.norma_interes ?? ""}
+            onChange={(e) => set("norma_interes", e.target.value)}
+            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1">Etapa</label>
+          <select
+            value={form.etapa ?? "lead_nuevo"}
+            onChange={(e) => set("etapa", e.target.value as Etapa)}
+            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+          >
+            {ETAPAS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1">Notas</label>
+          <textarea
+            value={form.notas ?? ""}
+            onChange={(e) => set("notas", e.target.value)}
+            rows={4}
+            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={saving}
+          className="w-full bg-[#F5A623] text-[#1A1A1A] font-bold py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60"
+        >
+          {saving ? "Guardando..." : "Guardar cambios"}
+        </button>
+      </form>
+    </div>
+  );
+}
