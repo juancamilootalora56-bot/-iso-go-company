@@ -26,11 +26,13 @@ export default function CotizacionesPage() {
         </div>
       ) : (
         <div className="bg-white border border-[#E8E2D8] rounded-2xl overflow-x-auto">
-          <table className="w-full text-sm min-w-[500px]">
+          <table className="w-full text-sm min-w-[720px]">
             <thead>
               <tr className="border-b border-[#E8E2D8] text-left text-[#8A8478]">
                 <th className="px-4 py-3 font-medium">N°</th>
                 <th className="px-4 py-3 font-medium">Empresa</th>
+                <th className="px-4 py-3 font-medium">Persona de contacto</th>
+                <th className="px-4 py-3 font-medium">Cargo</th>
                 <th className="px-4 py-3 font-medium">Estado</th>
                 <th className="px-4 py-3 font-medium">Total</th>
                 <th className="px-4 py-3 font-medium">Fecha</th>
@@ -47,6 +49,8 @@ export default function CotizacionesPage() {
                       </Link>
                     </td>
                     <td className="px-4 py-3 text-[#5C564C]">{c.empresa || "—"}</td>
+                    <td className="px-4 py-3 text-[#5C564C]">{c.contacto || "—"}</td>
+                    <td className="px-4 py-3 text-[#5C564C]">{c.cargo || "—"}</td>
                     <td className="px-4 py-3">
                       <span
                         className="text-xs font-semibold px-2 py-0.5 rounded-full"
