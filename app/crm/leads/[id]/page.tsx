@@ -64,6 +64,7 @@ export default function LeadDetallePage() {
       .update({
         nombre: form.nombre,
         empresa: form.empresa,
+        representante: form.representante,
         rubro: form.rubro,
         cargo: form.cargo,
         email: form.email,

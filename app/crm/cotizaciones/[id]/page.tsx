@@ -70,11 +70,23 @@ export default function CotizacionDetallePage() {
             {cotizacion.representante && (
               <div><p className="text-xs text-[#8A8478]">Representante</p><p className="text-[#2D2A26]">{cotizacion.representante}</p></div>
             )}
+            {cotizacion.contacto && (
+              <div><p className="text-xs text-[#8A8478]">Persona de contacto</p><p className="text-[#2D2A26]">{cotizacion.contacto}</p></div>
+            )}
+            {cotizacion.cargo && (
+              <div><p className="text-xs text-[#8A8478]">Cargo</p><p className="text-[#2D2A26]">{cotizacion.cargo}</p></div>
+            )}
+            {cotizacion.rubro && (
+              <div><p className="text-xs text-[#8A8478]">Rubro</p><p className="text-[#2D2A26]">{cotizacion.rubro}</p></div>
+            )}
             {cotizacion.telefono && (
               <div><p className="text-xs text-[#8A8478]">Teléfono</p><p className="text-[#2D2A26]">{cotizacion.telefono}</p></div>
             )}
             {cotizacion.email && (
               <div><p className="text-xs text-[#8A8478]">Correo</p><p className="text-[#2D2A26]">{cotizacion.email}</p></div>
+            )}
+            {cotizacion.direccion && (
+              <div><p className="text-xs text-[#8A8478]">Dirección</p><p className="text-[#2D2A26]">{cotizacion.direccion}</p></div>
             )}
             {cotizacion.num_colaboradores != null && (
               <div><p className="text-xs text-[#8A8478]">N° colaboradores</p><p className="text-[#2D2A26]">{cotizacion.num_colaboradores}</p></div>

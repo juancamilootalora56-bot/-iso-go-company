@@ -9,6 +9,7 @@ export type Cliente = {
   lead_id: string | null;
   nombre: string;
   empresa: string | null;
+  representante: string | null;
   rubro: string | null;
   cargo: string | null;
   email: string | null;

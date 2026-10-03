@@ -26,11 +26,12 @@ export default function ClientesPage() {
         </div>
       ) : (
         <div className="bg-white border border-[#E8E2D8] rounded-2xl overflow-x-auto">
-          <table className="w-full text-sm min-w-[860px]">
+          <table className="w-full text-sm min-w-[980px]">
             <thead>
               <tr className="border-b border-[#E8E2D8] text-left text-[#8A8478]">
                 <th className="px-4 py-3 font-medium">Nombre</th>
                 <th className="px-4 py-3 font-medium">Empresa</th>
+                <th className="px-4 py-3 font-medium">Representante</th>
                 <th className="px-4 py-3 font-medium">Rubro</th>
                 <th className="px-4 py-3 font-medium">Cargo</th>
                 <th className="px-4 py-3 font-medium">Teléfono</th>
@@ -49,6 +50,7 @@ export default function ClientesPage() {
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-[#8A8478]">{c.empresa || "—"}</td>
+                  <td className="px-4 py-3 text-[#8A8478]">{c.representante || "—"}</td>
                   <td className="px-4 py-3 text-[#8A8478]">{c.rubro || "—"}</td>
                   <td className="px-4 py-3 text-[#8A8478]">{c.cargo || "—"}</td>
                   <td className="px-4 py-3 text-[#8A8478]">{c.telefono || "—"}</td>

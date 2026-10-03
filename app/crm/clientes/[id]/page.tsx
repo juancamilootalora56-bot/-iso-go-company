@@ -12,6 +12,7 @@ type Cliente = {
   lead_id: string | null;
   nombre: string;
   empresa: string | null;
+  representante: string | null;
   rubro: string | null;
   cargo: string | null;
   email: string | null;
@@ -92,6 +93,7 @@ export default function ClienteDetallePage() {
       .update({
         nombre: form.nombre,
         empresa: form.empresa,
+        representante: form.representante,
         rubro: form.rubro,
         cargo: form.cargo,
         email: form.email,
@@ -163,6 +165,10 @@ export default function ClienteDetallePage() {
             <label className={labelClass}>Empresa</label>
             <input value={form.empresa ?? ""} onChange={(e) => set("empresa", e.target.value)} className={inputClass} />
           </div>
+        </div>
+        <div>
+          <label className={labelClass}>Dueño o representante</label>
+          <input value={form.representante ?? ""} onChange={(e) => set("representante", e.target.value)} className={inputClass} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>

@@ -16,8 +16,12 @@ export default function NuevaCotizacionPage() {
 
   const [empresa, setEmpresa] = useState("");
   const [representante, setRepresentante] = useState("");
+  const [contacto, setContacto] = useState("");
+  const [cargo, setCargo] = useState("");
+  const [rubro, setRubro] = useState("");
   const [telefono, setTelefono] = useState("");
   const [email, setEmail] = useState("");
+  const [direccion, setDireccion] = useState("");
   const [numColaboradores, setNumColaboradores] = useState("");
   const [numProcesos, setNumProcesos] = useState("");
   const [producto, setProducto] = useState("");
@@ -66,8 +70,12 @@ export default function NuevaCotizacionPage() {
           estado: "borrador",
           empresa: empresa || null,
           representante: representante || null,
+          contacto: contacto || null,
+          cargo: cargo || null,
+          rubro: rubro || null,
           telefono: telefono || null,
           email: email || null,
+          direccion: direccion || null,
           num_colaboradores: numColaboradores ? parseInt(numColaboradores, 10) : null,
           num_procesos: numProcesos ? parseInt(numProcesos, 10) : null,
           producto: producto || null,
@@ -119,6 +127,20 @@ export default function NuevaCotizacionPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
+                <label className={labelClass}>Persona de contacto</label>
+                <input value={contacto} onChange={(e) => setContacto(e.target.value)} className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Cargo</label>
+                <input value={cargo} onChange={(e) => setCargo(e.target.value)} className={inputClass} />
+              </div>
+            </div>
+            <div>
+              <label className={labelClass}>Rubro de la empresa</label>
+              <input value={rubro} onChange={(e) => setRubro(e.target.value)} className={inputClass} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
                 <label className={labelClass}>Teléfono</label>
                 <input value={telefono} onChange={(e) => setTelefono(e.target.value)} className={inputClass} />
               </div>
@@ -126,6 +148,10 @@ export default function NuevaCotizacionPage() {
                 <label className={labelClass}>Correo</label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
               </div>
+            </div>
+            <div>
+              <label className={labelClass}>Dirección</label>
+              <input value={direccion} onChange={(e) => setDireccion(e.target.value)} className={inputClass} />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>

@@ -29,8 +29,12 @@ export type Cotizacion = {
   total: number;
   empresa: string | null;
   representante: string | null;
+  contacto: string | null;
+  cargo: string | null;
+  rubro: string | null;
   telefono: string | null;
   email: string | null;
+  direccion: string | null;
   num_colaboradores: number | null;
   num_procesos: number | null;
   producto: string | null;
