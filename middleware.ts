@@ -46,8 +46,23 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set("next", pathname);
       return NextResponse.redirect(loginUrl);
     }
-    if (isAuthRoute && user) {
-      return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+
+    // El portal del cliente (/dashboard, /demos) es solo para clientes, nunca
+    // para colaboradores internos (admin/comercial/tecnico) — aunque su email
+    // coincida con un lead/cliente, siempre van al CRM.
+    if ((isProtected || isAuthRoute) && user) {
+      const { data: perfilInterno } = await result.supabase
+        .from("perfiles_internos")
+        .select("activo")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (perfilInterno?.activo) {
+        return NextResponse.redirect(new URL("/crm", request.url));
+      }
+      if (isAuthRoute) {
+        return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+      }
     }
   } catch {
     // Supabase not configured — allow through
