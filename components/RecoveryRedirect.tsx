@@ -5,12 +5,14 @@ import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 /**
- * Supabase's password-recovery links return the session as a URL hash
- * fragment (#access_token=...&type=recovery&refresh_token=...), which never
- * reaches the server. If the confirmation link's redirect_to isn't on
- * Supabase's allowed list it falls back to the bare Site URL, so this hash
- * can show up on any page. Catch it here, establish the session, and send
- * the user to the "set a new password" form instead of leaving them stuck.
+ * Supabase's password-recovery AND invite links return the session as a URL
+ * hash fragment (#access_token=...&type=recovery|invite&refresh_token=...),
+ * which never reaches the server. If the confirmation link's redirect_to
+ * isn't on Supabase's allowed list it falls back to the bare Site URL, so
+ * this hash can show up on any page. Catch it here, establish the session,
+ * and send the user to the "set a new password" form instead of leaving
+ * them stuck — both a recovery link and a first-time invite need the same
+ * "choose your password" step.
  */
 export default function RecoveryRedirect() {
   const router = useRouter();
@@ -19,7 +21,7 @@ export default function RecoveryRedirect() {
 
   useEffect(() => {
     const hash = window.location.hash;
-    if (!hash || !hash.includes("type=recovery")) return;
+    if (!hash || (!hash.includes("type=recovery") && !hash.includes("type=invite"))) return;
 
     const query = new URLSearchParams(hash.slice(1));
     const access_token = query.get("access_token");
