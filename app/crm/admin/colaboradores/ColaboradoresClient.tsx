@@ -73,6 +73,22 @@ export default function ColaboradoresClient({
     }
   }
 
+  async function handleDelete(id: string, email: string) {
+    if (!confirm(`¿Eliminar definitivamente a ${email}? Vas a poder volver a invitarlo después.`)) return;
+    setError(null);
+    const res = await fetch("/api/crm/colaboradores", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error || "No se pudo eliminar");
+      return;
+    }
+    setColaboradores((prev) => prev.filter((c) => c.id !== id));
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Colaboradores</h1>
@@ -150,12 +166,18 @@ export default function ColaboradoresClient({
                     {c.activo ? "Activo" : "Inactivo"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3 text-right whitespace-nowrap">
                   <button
                     onClick={() => toggleActivo(c.id, c.activo)}
-                    className="text-xs text-[#8A8478] hover:text-[#2D2A26] underline"
+                    className="text-xs text-[#8A8478] hover:text-[#2D2A26] underline mr-3"
                   >
                     {c.activo ? "Desactivar" : "Reactivar"}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(c.id, c.email)}
+                    className="text-xs text-[#8A8478] hover:text-red-500 underline"
+                  >
+                    Eliminar
                   </button>
                 </td>
               </tr>
