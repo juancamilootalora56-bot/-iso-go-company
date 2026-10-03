@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdvisorBar from "@/components/AdvisorBar";
 import StructuredData from "@/components/StructuredData";
+import RecoveryRedirect from "@/components/RecoveryRedirect";
 import type { Metadata } from "next";
 
 type Locale = "es" | "en" | "pt";
@@ -60,6 +61,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
   return (
     <NextIntlClientProvider messages={messages} locale={locale}>
+      <RecoveryRedirect />
       <StructuredData />
       <Header />
       <AdvisorBar />
