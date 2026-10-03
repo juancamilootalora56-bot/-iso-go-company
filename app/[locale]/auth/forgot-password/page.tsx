@@ -22,7 +22,7 @@ export default function ForgotPasswordPage() {
       const supabase = createClient();
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3002";
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${siteUrl}/${locale}/auth/callback?next=/${locale}/auth/update-password`,
+        redirectTo: `${siteUrl}/${locale}/auth/update-password`,
       });
       if (error) {
         setError("Error al enviar el correo. Verifica tu email.");

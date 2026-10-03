@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function UpdatePasswordPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = params.locale as string;
 
   const [password, setPassword] = useState("");
@@ -15,6 +16,24 @@ export default function UpdatePasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
+
+  useEffect(() => {
+    const code = searchParams.get("code");
+    const supabase = createClient();
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+        if (error) setError("El enlace de recuperación es inválido o expiró. Solicita uno nuevo.");
+        setSessionReady(true);
+      });
+    } else {
+      supabase.auth.getSession().then(({ data }) => {
+        if (!data.session) setError("El enlace de recuperación es inválido o expiró. Solicita uno nuevo.");
+        setSessionReady(true);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -51,6 +70,15 @@ export default function UpdatePasswordPage() {
       <div className="bg-[#242424] rounded-2xl p-8 shadow-2xl border border-white/5 text-center">
         <h2 className="text-xl font-bold text-white mb-2">Contraseña actualizada</h2>
         <p className="text-gray-400 text-sm">Redirigiendo al inicio de sesión…</p>
+      </div>
+    );
+  }
+
+  if (!sessionReady) {
+    return (
+      <div className="bg-[#242424] rounded-2xl p-8 shadow-2xl border border-white/5 text-center">
+        <h2 className="text-xl font-bold text-white mb-2">Verificando enlace…</h2>
+        <p className="text-gray-400 text-sm">Un momento por favor</p>
       </div>
     );
   }
