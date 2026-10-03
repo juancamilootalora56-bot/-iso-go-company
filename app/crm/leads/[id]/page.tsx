@@ -54,6 +54,23 @@ export default function LeadDetallePage() {
         notas: form.notas,
       })
       .eq("id", id);
+
+    // Si este lead ya se graduó a cliente, mantenemos su ficha sincronizada.
+    await supabase
+      .from("clientes")
+      .update({
+        nombre: form.nombre,
+        empresa: form.empresa,
+        rubro: form.rubro,
+        cargo: form.cargo,
+        email: form.email,
+        telefono: form.telefono,
+        norma_interes: form.norma_interes,
+        valor: form.valor_estimado,
+        notas: form.notas,
+      })
+      .eq("lead_id", id);
+
     setSaving(false);
     router.push("/crm/leads");
   }
