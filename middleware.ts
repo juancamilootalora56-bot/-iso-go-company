@@ -31,7 +31,8 @@ export async function middleware(request: NextRequest) {
   const isProtected =
     pathname.match(/^\/(es|en|pt)\/(dashboard|demos)(\/|$)/) !== null;
   const isAuthRoute =
-    pathname.match(/^\/(es|en|pt)\/auth(\/|$)/) !== null;
+    pathname.match(/^\/(es|en|pt)\/auth(\/|$)/) !== null &&
+    pathname.match(/^\/(es|en|pt)\/auth\/update-password(\/|$)/) === null;
 
   // Run Supabase session refresh
   let user = null;
