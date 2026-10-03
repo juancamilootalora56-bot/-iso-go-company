@@ -3,6 +3,18 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useUser } from "@/hooks/useUser";
+import { useMiProceso } from "@/hooks/useMiProceso";
+
+const ETAPA_INFO: Record<string, { label: string; color: string; probabilidad: number }> = {
+  lead_nuevo: { label: "Lead nuevo", color: "#60A5FA", probabilidad: 10 },
+  contactado: { label: "Contactado", color: "#FBBF24", probabilidad: 25 },
+  reunion: { label: "Reunión agendada", color: "#22D3EE", probabilidad: 40 },
+  presentacion: { label: "Presentación", color: "#2DD4BF", probabilidad: 55 },
+  demo: { label: "Demo en curso", color: "#A78BFA", probabilidad: 70 },
+  negociacion: { label: "Negociación", color: "#F5A623", probabilidad: 85 },
+  ganado: { label: "Cliente activo", color: "#4ADE80", probabilidad: 100 },
+  perdido: { label: "Cerrado", color: "#F87171", probabilidad: 0 },
+};
 
 const NORM_SLUGS: Record<string, string> = {
   "ISO 9001": "iso-9001",
@@ -31,6 +43,7 @@ export default function DashboardPage() {
   const params = useParams();
   const locale = params.locale as string;
   const { user, profile } = useUser();
+  const { cliente, lead, loading: procesoLoading } = useMiProceso();
 
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "Usuario";
   const registeredDate = user?.created_at ? new Date(user.created_at) : new Date();
@@ -74,44 +87,109 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Certification progress card */}
         <div className="bg-white rounded-xl p-6 border border-gray-100">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-[#1A1A1A]">Tu proceso de certificación</h2>
-            <span className="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 px-2 py-1 rounded-full font-medium">
-              En inicio
-            </span>
-          </div>
-          <div className="space-y-3">
-            {[
-              { step: 1, label: "Diagnóstico inicial", status: "pendiente" },
-              { step: 2, label: "Implementación", status: "locked" },
-              { step: 3, label: "Certificado + Mantenimiento", status: "locked" },
-            ].map(({ step, label, status }) => (
-              <div key={step} className="flex items-center gap-3">
-                <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                    status === "pendiente"
-                      ? "bg-[#F5A623]/20 text-[#F5A623] border border-[#F5A623]"
-                      : "bg-gray-100 text-gray-400"
-                  }`}
-                >
-                  {step}
-                </div>
-                <span className={`text-sm ${status === "locked" ? "text-gray-400" : "text-[#1A1A1A] font-medium"}`}>
-                  {label}
-                  {status === "locked" && " 🔒"}
+          {procesoLoading ? (
+            <p className="text-gray-400 text-sm">Cargando tu proceso...</p>
+          ) : cliente ? (
+            <>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-semibold text-[#1A1A1A]">Tu proceso de certificación</h2>
+                <span className="text-xs bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded-full font-medium">
+                  Cliente activo
                 </span>
-                {status === "pendiente" && (
-                  <span className="ml-auto text-xs text-[#F5A623] font-medium">Pendiente</span>
+              </div>
+              <div className="space-y-2 text-sm">
+                {cliente.norma_interes && (
+                  <p className="text-[#1A1A1A]"><span className="text-gray-500">Norma / servicio:</span> {cliente.norma_interes}</p>
+                )}
+                {lead?.tipo_producto && (
+                  <p className="text-[#1A1A1A]">
+                    <span className="text-gray-500">Modalidad:</span>{" "}
+                    {lead.tipo_producto === "solo_software" ? "Solo software" : "Software + coordinación"}
+                  </p>
+                )}
+                {lead?.fecha_inicio_servicio && (
+                  <p className="text-[#1A1A1A]">
+                    <span className="text-gray-500">Inicio:</span>{" "}
+                    {new Date(lead.fecha_inicio_servicio).toLocaleDateString("es")}
+                  </p>
                 )}
               </div>
-            ))}
-          </div>
-          <Link
-            href={`/${locale}/dashboard/progreso`}
-            className="mt-4 block text-sm text-[#F5A623] font-medium hover:text-[#e09410]"
-          >
-            Ver progreso completo →
-          </Link>
+            </>
+          ) : lead ? (
+            <>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-semibold text-[#1A1A1A]">Tu proceso de certificación</h2>
+                <span
+                  className="text-xs px-2 py-1 rounded-full font-medium"
+                  style={{
+                    backgroundColor: `${(ETAPA_INFO[lead.etapa] ?? ETAPA_INFO.lead_nuevo).color}1A`,
+                    color: (ETAPA_INFO[lead.etapa] ?? ETAPA_INFO.lead_nuevo).color,
+                  }}
+                >
+                  {(ETAPA_INFO[lead.etapa] ?? ETAPA_INFO.lead_nuevo).label}
+                </span>
+              </div>
+              <div className="w-full h-1.5 bg-gray-100 rounded-full mb-4 overflow-hidden">
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${(ETAPA_INFO[lead.etapa] ?? ETAPA_INFO.lead_nuevo).probabilidad}%`,
+                    backgroundColor: (ETAPA_INFO[lead.etapa] ?? ETAPA_INFO.lead_nuevo).color,
+                  }}
+                />
+              </div>
+              <div className="space-y-2 text-sm">
+                {lead.norma_interes && (
+                  <p className="text-[#1A1A1A]"><span className="text-gray-500">Norma de interés:</span> {lead.norma_interes}</p>
+                )}
+                {lead.etapa === "reunion" && lead.reunion_fecha && (
+                  <p className="text-[#1A1A1A]">
+                    <span className="text-gray-500">Reunión:</span>{" "}
+                    {new Date(lead.reunion_fecha).toLocaleString("es", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                    {lead.reunion_lugar ? ` · ${lead.reunion_lugar}` : ""}
+                  </p>
+                )}
+                {lead.etapa === "presentacion" && lead.presentacion_fecha && (
+                  <p className="text-[#1A1A1A]">
+                    <span className="text-gray-500">Presentación:</span>{" "}
+                    {new Date(lead.presentacion_fecha).toLocaleString("es", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                  </p>
+                )}
+                {lead.etapa === "demo" && lead.demo_fecha_entrega && (
+                  <p className="text-[#1A1A1A]">
+                    <span className="text-gray-500">Demo entregada:</span>{" "}
+                    {new Date(lead.demo_fecha_entrega).toLocaleDateString("es")}
+                    {lead.demo_dias_acceso ? ` · ${lead.demo_dias_acceso} días de acceso` : ""}
+                  </p>
+                )}
+                {(lead.reunion_proximos_pasos || lead.presentacion_proximos_pasos || lead.demo_proximos_pasos) && (
+                  <p className="text-[#1A1A1A]">
+                    <span className="text-gray-500">Próximos pasos:</span>{" "}
+                    {lead.reunion_proximos_pasos || lead.presentacion_proximos_pasos || lead.demo_proximos_pasos}
+                  </p>
+                )}
+              </div>
+              <Link
+                href={`/${locale}/dashboard/mi-certificacion`}
+                className="mt-4 block text-sm text-[#F5A623] font-medium hover:text-[#e09410]"
+              >
+                Ver detalle completo →
+              </Link>
+            </>
+          ) : (
+            <>
+              <h2 className="font-semibold text-[#1A1A1A] mb-2">Tu proceso de certificación</h2>
+              <p className="text-gray-500 text-sm mb-4">
+                Todavía no iniciaste un proceso con nosotros. Agenda un diagnóstico gratuito para empezar.
+              </p>
+              <Link
+                href={`/${locale}/contacto`}
+                className="text-sm text-[#F5A623] font-medium hover:text-[#e09410]"
+              >
+                Hablar con un asesor →
+              </Link>
+            </>
+          )}
         </div>
 
         {/* CTA card */}
