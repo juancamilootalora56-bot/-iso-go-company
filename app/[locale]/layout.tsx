@@ -2,9 +2,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { getMessages, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import AdvisorBar from "@/components/AdvisorBar";
+import SiteChrome from "@/components/SiteChrome";
 import StructuredData from "@/components/StructuredData";
 import RecoveryRedirect from "@/components/RecoveryRedirect";
 import type { Metadata } from "next";
@@ -63,10 +61,7 @@ export default async function LocaleLayout({
     <NextIntlClientProvider messages={messages} locale={locale}>
       <RecoveryRedirect />
       <StructuredData />
-      <Header />
-      <AdvisorBar />
-      <main className="flex-1">{children}</main>
-      <Footer />
+      <SiteChrome>{children}</SiteChrome>
     </NextIntlClientProvider>
   );
 }
