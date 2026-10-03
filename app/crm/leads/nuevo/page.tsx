@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLeads } from "@/hooks/useLeads";
+import { PRODUCTOS } from "@/lib/productos";
 
 export default function NuevoLeadPage() {
   const router = useRouter();
@@ -89,12 +90,16 @@ export default function NuevoLeadPage() {
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-400 mb-1">Norma de interés</label>
-          <input
-            placeholder="ISO 9001, Kosher, etc."
+          <select
             value={form.norma_interes}
             onChange={(e) => set("norma_interes", e.target.value)}
             className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
-          />
+          >
+            <option value="">Seleccionar...</option>
+            {PRODUCTOS.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-400 mb-1">Notas</label>

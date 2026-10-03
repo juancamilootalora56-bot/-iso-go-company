@@ -1,0 +1,16 @@
+export const PRODUCTOS: string[] = [
+  "ISO 9001 - Gestión de Calidad",
+  "ISO 14001 - Gestión Ambiental",
+  "ISO 45001 - Seguridad y Salud Ocupacional",
+  "ISO/IEC 27001 - Seguridad de la Información",
+  "ISO 22000 - Inocuidad Alimentaria",
+  "ISO 13485 - Dispositivos Médicos",
+  "ISO 50001 - Gestión de la Energía",
+  "ISO 22301 - Continuidad de Negocio",
+  "ISO/IEC 27701 - Privacidad de Datos",
+  "ISO/IEC 42001 - Gestión de Inteligencia Artificial",
+  "ISO/IEC 17025 - Laboratorios de Ensayo y Calibración",
+  "Certificación Kosher",
+  "Plataforma de Gestión Iso Go",
+  "Otro",
+];

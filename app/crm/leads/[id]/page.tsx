@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { ETAPAS, type Lead, type Etapa } from "@/hooks/useLeads";
+import { PRODUCTOS } from "@/lib/productos";
 
 export default function LeadDetallePage() {
   const params = useParams();
@@ -101,11 +102,16 @@ export default function LeadDetallePage() {
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-400 mb-1">Norma de interés</label>
-          <input
+          <select
             value={form.norma_interes ?? ""}
             onChange={(e) => set("norma_interes", e.target.value)}
             className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
-          />
+          >
+            <option value="">Seleccionar...</option>
+            {PRODUCTOS.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-400 mb-1">Etapa</label>
