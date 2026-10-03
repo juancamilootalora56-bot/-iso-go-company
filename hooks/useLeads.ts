@@ -13,16 +13,20 @@ export type Etapa =
   | "ganado"
   | "perdido";
 
-export const ETAPAS: { value: Etapa; label: string }[] = [
-  { value: "lead_nuevo", label: "Lead nuevo" },
-  { value: "contactado", label: "Contactado" },
-  { value: "reunion", label: "Reunión" },
-  { value: "presentacion", label: "Presentación" },
-  { value: "demo", label: "Demo" },
-  { value: "negociacion", label: "Negociación" },
-  { value: "ganado", label: "Ganado" },
-  { value: "perdido", label: "Perdido" },
+export const ETAPAS: { value: Etapa; label: string; probabilidad: number; color: string }[] = [
+  { value: "lead_nuevo", label: "Lead nuevo", probabilidad: 10, color: "#60A5FA" },
+  { value: "contactado", label: "Contactado", probabilidad: 25, color: "#FBBF24" },
+  { value: "reunion", label: "Reunión", probabilidad: 40, color: "#22D3EE" },
+  { value: "presentacion", label: "Presentación", probabilidad: 55, color: "#2DD4BF" },
+  { value: "demo", label: "Demo", probabilidad: 70, color: "#A78BFA" },
+  { value: "negociacion", label: "Negociación", probabilidad: 85, color: "#F5A623" },
+  { value: "ganado", label: "Ganado", probabilidad: 100, color: "#4ADE80" },
+  { value: "perdido", label: "Perdido", probabilidad: 0, color: "#F87171" },
 ];
+
+export function etapaInfo(etapa: string) {
+  return ETAPAS.find((e) => e.value === etapa) ?? ETAPAS[0];
+}
 
 export type Lead = {
   id: string;
@@ -35,6 +39,7 @@ export type Lead = {
   telefono: string | null;
   norma_interes: string | null;
   etapa: Etapa;
+  valor_estimado: number;
   notas: string | null;
   created_at: string;
   updated_at: string;
@@ -78,5 +83,12 @@ export function useLeads() {
     await update(id, { etapa });
   }
 
-  return { leads, loading, create, update, setEtapa, refetch: fetchAll };
+  async function remove(id: string) {
+    const supabase = createClient();
+    const { error } = await supabase.from("leads").delete().eq("id", id);
+    if (error) throw error;
+    await fetchAll();
+  }
+
+  return { leads, loading, create, update, setEtapa, remove, refetch: fetchAll };
 }

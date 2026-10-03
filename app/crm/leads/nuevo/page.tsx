@@ -17,6 +17,7 @@ export default function NuevoLeadPage() {
     email: "",
     telefono: "",
     norma_interes: "",
+    valor_estimado: "",
     notas: "",
   });
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ export default function NuevoLeadPage() {
     setLoading(true);
     setError(null);
     try {
-      await create(form);
+      await create({ ...form, valor_estimado: parseFloat(form.valor_estimado) || 0 });
       router.push("/crm/leads");
     } catch {
       setError("No se pudo guardar el lead. Intentá de nuevo.");
@@ -120,6 +121,17 @@ export default function NuevoLeadPage() {
               <option key={p} value={p}>{p}</option>
             ))}
           </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1">Valor estimado (Gs.)</label>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            value={form.valor_estimado}
+            onChange={(e) => set("valor_estimado", e.target.value)}
+            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+          />
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-400 mb-1">Notas</label>
