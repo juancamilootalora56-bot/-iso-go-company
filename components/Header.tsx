@@ -112,10 +112,10 @@ export default function Header() {
                     href={`/${locale}/dashboard`}
                     className="hidden md:inline-block bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410] transition-colors"
                   >
-                    Mi Dashboard →
+                    Mi cuenta →
                   </Link>
                 ) : (
-                  <div className="hidden md:flex items-center gap-2">
+                  <div className="hidden md:flex items-center gap-3">
                     <Link
                       href={`/${locale}/auth/login`}
                       className="text-sm font-medium text-gray-700 hover:text-[#F5A623] transition-colors"
@@ -123,10 +123,10 @@ export default function Header() {
                       Iniciar sesión
                     </Link>
                     <Link
-                      href={`/${locale}/contacto`}
+                      href={`/${locale}/auth/register`}
                       className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410] transition-colors"
                     >
-                      {t("cotiza")}
+                      Crear cuenta →
                     </Link>
                   </div>
                 )}
@@ -192,11 +192,11 @@ export default function Header() {
                   Iniciar sesión
                 </Link>
                 <Link
-                  href={`/${locale}/contacto`}
+                  href={`/${locale}/auth/register`}
                   onClick={() => setMenuOpen(false)}
                   className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg text-center hover:bg-[#e09410]"
                 >
-                  {t("cotiza")}
+                  Crear cuenta →
                 </Link>
               </>
             )}
