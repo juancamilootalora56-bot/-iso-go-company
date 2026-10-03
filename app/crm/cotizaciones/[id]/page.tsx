@@ -60,6 +60,35 @@ export default function CotizacionDetallePage() {
         </span>
       </div>
 
+      {(cotizacion.empresa || cotizacion.representante || cotizacion.producto) && (
+        <div className="bg-[#242424] border border-white/5 rounded-2xl p-6 mb-6">
+          <h2 className="text-sm font-semibold text-gray-400 mb-3">Datos de la empresa</h2>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            {cotizacion.empresa && (
+              <div><p className="text-xs text-gray-500">Empresa</p><p className="text-white">{cotizacion.empresa}</p></div>
+            )}
+            {cotizacion.representante && (
+              <div><p className="text-xs text-gray-500">Representante</p><p className="text-white">{cotizacion.representante}</p></div>
+            )}
+            {cotizacion.telefono && (
+              <div><p className="text-xs text-gray-500">Teléfono</p><p className="text-white">{cotizacion.telefono}</p></div>
+            )}
+            {cotizacion.email && (
+              <div><p className="text-xs text-gray-500">Correo</p><p className="text-white">{cotizacion.email}</p></div>
+            )}
+            {cotizacion.num_colaboradores != null && (
+              <div><p className="text-xs text-gray-500">N° colaboradores</p><p className="text-white">{cotizacion.num_colaboradores}</p></div>
+            )}
+            {cotizacion.num_procesos != null && (
+              <div><p className="text-xs text-gray-500">N° procesos</p><p className="text-white">{cotizacion.num_procesos}</p></div>
+            )}
+            {cotizacion.producto && (
+              <div className="col-span-2"><p className="text-xs text-gray-500">Producto / Servicio</p><p className="text-white">{cotizacion.producto}</p></div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="bg-[#242424] border border-white/5 rounded-2xl p-6 mb-6">
         <h2 className="text-sm font-semibold text-gray-400 mb-3">Ítems</h2>
         <table className="w-full text-sm mb-4">

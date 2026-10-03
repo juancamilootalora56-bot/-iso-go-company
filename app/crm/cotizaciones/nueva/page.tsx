@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { useCotizaciones } from "@/hooks/useCotizaciones";
+import { useCotizaciones, PRODUCTOS } from "@/hooks/useCotizaciones";
 
 type ItemForm = { descripcion: string; cantidad: string; precio_unitario: string };
 
@@ -13,6 +13,15 @@ export default function NuevaCotizacionPage() {
   const { create } = useCotizaciones();
   const [leads, setLeads] = useState<{ id: string; nombre: string }[]>([]);
   const [leadId, setLeadId] = useState("");
+
+  const [empresa, setEmpresa] = useState("");
+  const [representante, setRepresentante] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [email, setEmail] = useState("");
+  const [numColaboradores, setNumColaboradores] = useState("");
+  const [numProcesos, setNumProcesos] = useState("");
+  const [producto, setProducto] = useState("");
+
   const [notas, setNotas] = useState("");
   const [items, setItems] = useState<ItemForm[]>([
     { descripcion: "", cantidad: "1", precio_unitario: "" },
@@ -51,7 +60,18 @@ export default function NuevaCotizacionPage() {
     try {
       const validItems = items.filter((it) => it.descripcion.trim());
       const id = await create(
-        { lead_id: leadId || null, notas: notas || null, estado: "borrador" },
+        {
+          lead_id: leadId || null,
+          notas: notas || null,
+          estado: "borrador",
+          empresa: empresa || null,
+          representante: representante || null,
+          telefono: telefono || null,
+          email: email || null,
+          num_colaboradores: numColaboradores ? parseInt(numColaboradores, 10) : null,
+          num_procesos: numProcesos ? parseInt(numProcesos, 10) : null,
+          producto: producto || null,
+        },
         validItems.map((it, idx) => ({
           orden: idx + 1,
           descripcion: it.descripcion,
@@ -67,6 +87,10 @@ export default function NuevaCotizacionPage() {
     }
   }
 
+  const inputClass =
+    "w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]";
+  const labelClass = "block text-xs font-medium text-gray-400 mb-1";
+
   return (
     <div className="max-w-2xl">
       <Link href="/crm/cotizaciones" className="text-sm text-gray-400 hover:text-white mb-4 inline-block">
@@ -80,23 +104,75 @@ export default function NuevaCotizacionPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5 bg-[#242424] border border-white/5 rounded-2xl p-6">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-[#242424] border border-white/5 rounded-2xl p-6">
+        {/* Datos de la empresa */}
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Lead asociado (opcional)</label>
-          <select
-            value={leadId}
-            onChange={(e) => setLeadId(e.target.value)}
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
-          >
-            <option value="">Sin lead asociado</option>
-            {leads.map((l) => (
-              <option key={l.id} value={l.id}>{l.nombre}</option>
-            ))}
-          </select>
+          <h2 className="text-sm font-bold text-white mb-3">Datos de la empresa</h2>
+          <div className="space-y-3">
+            <div>
+              <label className={labelClass}>Empresa</label>
+              <input value={empresa} onChange={(e) => setEmpresa(e.target.value)} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Dueño o representante</label>
+              <input value={representante} onChange={(e) => setRepresentante(e.target.value)} className={inputClass} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>Teléfono</label>
+                <input value={telefono} onChange={(e) => setTelefono(e.target.value)} className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Correo</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>N° de colaboradores</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={numColaboradores}
+                  onChange={(e) => setNumColaboradores(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>N° de procesos</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={numProcesos}
+                  onChange={(e) => setNumProcesos(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+            <div>
+              <label className={labelClass}>Producto / Servicio</label>
+              <select value={producto} onChange={(e) => setProducto(e.target.value)} className={inputClass}>
+                <option value="">Seleccionar...</option>
+                {PRODUCTOS.map((p) => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Lead asociado (opcional)</label>
+              <select value={leadId} onChange={(e) => setLeadId(e.target.value)} className={inputClass}>
+                <option value="">Sin lead asociado</option>
+                {leads.map((l) => (
+                  <option key={l.id} value={l.id}>{l.nombre}</option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="block text-xs font-medium text-gray-400 mb-2">Ítems</label>
+        {/* Ítems */}
+        <div className="border-t border-white/10 pt-5">
+          <h2 className="text-sm font-bold text-white mb-3">Ítems de la cotización</h2>
           <div className="space-y-2">
             {items.map((it, i) => (
               <div key={i} className="grid grid-cols-[1fr_70px_90px_28px] gap-2 items-center">
@@ -124,21 +200,13 @@ export default function NuevaCotizacionPage() {
                   onChange={(e) => updateItem(i, "precio_unitario", e.target.value)}
                   className="bg-[#1A1A1A] border border-white/10 rounded-lg px-2 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
                 />
-                <button
-                  type="button"
-                  onClick={() => removeItem(i)}
-                  className="text-gray-600 hover:text-red-400 text-sm"
-                >
+                <button type="button" onClick={() => removeItem(i)} className="text-gray-600 hover:text-red-400 text-sm">
                   ✕
                 </button>
               </div>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={addItem}
-            className="mt-2 text-xs text-[#F5A623] font-semibold hover:text-[#e09410]"
-          >
+          <button type="button" onClick={addItem} className="mt-2 text-xs text-[#F5A623] font-semibold hover:text-[#e09410]">
             + Agregar ítem
           </button>
         </div>
@@ -149,13 +217,8 @@ export default function NuevaCotizacionPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Notas (opcional)</label>
-          <textarea
-            rows={3}
-            value={notas}
-            onChange={(e) => setNotas(e.target.value)}
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
-          />
+          <label className={labelClass}>Notas (opcional)</label>
+          <textarea rows={3} value={notas} onChange={(e) => setNotas(e.target.value)} className={inputClass} />
         </div>
 
         <button

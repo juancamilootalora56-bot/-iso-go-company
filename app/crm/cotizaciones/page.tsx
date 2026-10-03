@@ -30,6 +30,7 @@ export default function CotizacionesPage() {
             <thead>
               <tr className="border-b border-white/10 text-left text-gray-400">
                 <th className="px-4 py-3 font-medium">N°</th>
+                <th className="px-4 py-3 font-medium">Empresa</th>
                 <th className="px-4 py-3 font-medium">Estado</th>
                 <th className="px-4 py-3 font-medium">Total</th>
                 <th className="px-4 py-3 font-medium">Fecha</th>
@@ -45,6 +46,7 @@ export default function CotizacionesPage() {
                         {c.numero}
                       </Link>
                     </td>
+                    <td className="px-4 py-3 text-gray-300">{c.empresa || "—"}</td>
                     <td className="px-4 py-3">
                       <span
                         className="text-xs font-semibold px-2 py-0.5 rounded-full"

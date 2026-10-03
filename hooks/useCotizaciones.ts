@@ -16,6 +16,23 @@ export function estadoInfo(estado: string) {
   return ESTADOS.find((e) => e.value === estado) ?? ESTADOS[0];
 }
 
+export const PRODUCTOS: string[] = [
+  "ISO 9001 - Gestión de Calidad",
+  "ISO 14001 - Gestión Ambiental",
+  "ISO 45001 - Seguridad y Salud Ocupacional",
+  "ISO/IEC 27001 - Seguridad de la Información",
+  "ISO 22000 - Inocuidad Alimentaria",
+  "ISO 13485 - Dispositivos Médicos",
+  "ISO 50001 - Gestión de la Energía",
+  "ISO 22301 - Continuidad de Negocio",
+  "ISO/IEC 27701 - Privacidad de Datos",
+  "ISO/IEC 42001 - Gestión de Inteligencia Artificial",
+  "ISO/IEC 17025 - Laboratorios de Ensayo y Calibración",
+  "Certificación Kosher",
+  "Plataforma de Gestión Iso Go",
+  "Otro",
+];
+
 export type Cotizacion = {
   id: string;
   created_by: string;
@@ -25,6 +42,13 @@ export type Cotizacion = {
   estado: EstadoCotizacion;
   notas: string | null;
   total: number;
+  empresa: string | null;
+  representante: string | null;
+  telefono: string | null;
+  email: string | null;
+  num_colaboradores: number | null;
+  num_procesos: number | null;
+  producto: string | null;
   created_at: string;
   updated_at: string;
 };
