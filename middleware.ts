@@ -8,6 +8,20 @@ const intlMiddleware = createMiddleware(routing);
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // /crm: internal tool, not locale-prefixed, never goes through intlMiddleware.
+  // Only checks a session exists here; role/activo is verified in app/crm/layout.tsx.
+  if (pathname.startsWith("/crm")) {
+    try {
+      const { supabaseResponse, user } = await updateSession(request);
+      if (!user) {
+        return NextResponse.redirect(new URL("/es/auth/login", request.url));
+      }
+      return supabaseResponse;
+    } catch {
+      return NextResponse.redirect(new URL("/es/auth/login", request.url));
+    }
+  }
+
   // Match locale prefix
   const localePattern = /^\/(es|en|pt)(\/|$)/;
   const localeMatch = pathname.match(localePattern);

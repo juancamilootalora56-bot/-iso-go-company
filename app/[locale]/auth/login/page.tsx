@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const params = useParams();
+  const router = useRouter();
   const locale = params.locale as string;
 
   const [email, setEmail] = useState("");
@@ -24,11 +25,22 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         setError("Credenciales incorrectas. Verifica tu email y contraseña.");
       } else {
-        // Plataforma en construcción — no redirigir al dashboard
+        // Colaborador interno (admin/comercial/tecnico) -> CRM. Resto: plataforma en construcción.
+        const { data: perfilInterno } = await supabase
+          .from("perfiles_internos")
+          .select("activo")
+          .eq("id", signInData.user.id)
+          .maybeSingle();
+
+        if (perfilInterno?.activo) {
+          router.push("/crm");
+          return;
+        }
+
         await supabase.auth.signOut();
         setBlocked(true);
       }
