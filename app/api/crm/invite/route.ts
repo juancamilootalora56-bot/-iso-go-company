@@ -27,8 +27,11 @@ export async function POST(request: Request) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
+  const { origin } = new URL(request.url);
+
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
     data: { full_name: nombre || null },
+    redirectTo: `${origin}/es/auth/callback?next=/crm`,
   });
 
   if (inviteError || !invited.user) {
