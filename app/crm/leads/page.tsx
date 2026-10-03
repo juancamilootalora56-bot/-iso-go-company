@@ -55,7 +55,7 @@ export default function LeadsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-1">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold">Pipeline de Ventas</h1>
-          <p className="text-gray-500 text-sm">
+          <p className="text-[#8A8478] text-sm">
             {leads.length} leads · {formatGs(stats.pipelineTotal)} activo
           </p>
         </div>
@@ -69,20 +69,20 @@ export default function LeadsPage() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-6 mb-6">
-        <div className="bg-[#242424] border border-white/5 rounded-2xl p-4">
-          <p className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">📈 PIPELINE</p>
-          <p className="text-xl font-bold text-white mt-1">{formatGs(stats.pipelineTotal)}</p>
-          <p className="text-xs text-gray-500">{stats.pipelineCount} activos</p>
+        <div className="bg-white border border-[#E8E2D8] rounded-2xl p-4">
+          <p className="text-xs font-semibold text-[#8A8478] flex items-center gap-1.5">📈 PIPELINE</p>
+          <p className="text-xl font-bold text-[#2D2A26] mt-1">{formatGs(stats.pipelineTotal)}</p>
+          <p className="text-xs text-[#8A8478]">{stats.pipelineCount} activos</p>
         </div>
-        <div className="bg-[#1F2E22] border border-green-900/40 rounded-2xl p-4">
-          <p className="text-xs font-semibold text-green-400 flex items-center gap-1.5">🎯 GANADOS</p>
-          <p className="text-xl font-bold text-white mt-1">{formatGs(stats.ganadosTotal)}</p>
-          <p className="text-xs text-gray-500">{stats.ganadosCount} leads</p>
+        <div className="bg-green-50 border border-green-200 rounded-2xl p-4">
+          <p className="text-xs font-semibold text-green-600 flex items-center gap-1.5">🎯 GANADOS</p>
+          <p className="text-xl font-bold text-[#2D2A26] mt-1">{formatGs(stats.ganadosTotal)}</p>
+          <p className="text-xs text-[#8A8478]">{stats.ganadosCount} leads</p>
         </div>
-        <div className="bg-[#2E1F1F] border border-red-900/40 rounded-2xl p-4">
-          <p className="text-xs font-semibold text-red-400 flex items-center gap-1.5">🎯 PERDIDOS</p>
-          <p className="text-xl font-bold text-white mt-1">{stats.perdidosCount}</p>
-          <p className="text-xs text-gray-500">leads</p>
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
+          <p className="text-xs font-semibold text-red-500 flex items-center gap-1.5">🎯 PERDIDOS</p>
+          <p className="text-xl font-bold text-[#2D2A26] mt-1">{stats.perdidosCount}</p>
+          <p className="text-xs text-[#8A8478]">leads</p>
         </div>
       </div>
 
@@ -91,13 +91,13 @@ export default function LeadsPage() {
         placeholder="Buscar prospecto, empresa..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full bg-[#242424] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#F5A623] mb-6"
+        className="w-full bg-white border border-[#E8E2D8] rounded-xl px-4 py-3 text-sm text-[#2D2A26] placeholder-[#B5AEA0] focus:outline-none focus:border-[#F5A623] mb-6"
       />
 
       {loading ? (
-        <p className="text-gray-400 text-sm">Cargando...</p>
+        <p className="text-[#8A8478] text-sm">Cargando...</p>
       ) : leads.length === 0 ? (
-        <div className="bg-[#242424] border border-white/5 rounded-2xl p-8 text-center text-gray-400 text-sm">
+        <div className="bg-white border border-[#E8E2D8] rounded-2xl p-8 text-center text-[#8A8478] text-sm">
           Todavía no hay leads cargados. Click en &quot;+ Nuevo lead&quot; para empezar.
         </div>
       ) : (
@@ -120,30 +120,30 @@ export default function LeadsPage() {
                       {leadsEtapa.length}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-0.5">{formatGs(totalEtapa)}</p>
+                  <p className="text-xs text-[#8A8478] mt-0.5">{formatGs(totalEtapa)}</p>
                 </div>
 
                 <div className="space-y-2">
                   {leadsEtapa.length === 0 && (
-                    <div className="border border-dashed border-white/10 rounded-xl p-4 text-center text-xs text-gray-600">
+                    <div className="border border-dashed border-[#E8E2D8] rounded-xl p-4 text-center text-xs text-[#A8A194]">
                       Sin leads
                     </div>
                   )}
                   {leadsEtapa.map((lead) => (
                     <div
                       key={lead.id}
-                      className="bg-[#242424] border border-white/5 rounded-xl p-3 hover:border-[#F5A623]/30 transition-colors"
+                      className="bg-white border border-[#E8E2D8] rounded-xl p-3 hover:border-[#F5A623]/30 transition-colors"
                     >
                       <Link href={`/crm/leads/${lead.id}`} className="block mb-2">
-                        <p className="text-sm font-semibold text-white truncate">{lead.empresa || lead.nombre}</p>
+                        <p className="text-sm font-semibold text-[#2D2A26] truncate">{lead.empresa || lead.nombre}</p>
                         {lead.empresa && (
-                          <p className="text-xs text-gray-500 truncate">{lead.nombre}</p>
+                          <p className="text-xs text-[#8A8478] truncate">{lead.nombre}</p>
                         )}
                       </Link>
 
                       <div className="flex items-center justify-between mb-1.5">
-                        <p className="text-sm font-bold text-green-400">{formatGs(lead.valor_estimado || 0)}</p>
-                        <p className="text-xs text-gray-500">{etapa.probabilidad}%</p>
+                        <p className="text-sm font-bold text-green-600">{formatGs(lead.valor_estimado || 0)}</p>
+                        <p className="text-xs text-[#8A8478]">{etapa.probabilidad}%</p>
                       </div>
                       <div className="w-full h-1 bg-white/5 rounded-full mb-2 overflow-hidden">
                         <div
@@ -156,7 +156,7 @@ export default function LeadsPage() {
                         value={lead.etapa}
                         disabled={updating === lead.id}
                         onChange={(e) => handleEtapaChange(lead.id, e.target.value as Etapa)}
-                        className="w-full bg-[#1A1A1A] border border-white/10 rounded-md px-2 py-1 text-xs text-gray-300 focus:outline-none focus:border-[#F5A623] mb-2"
+                        className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-md px-2 py-1 text-xs text-[#5C564C] focus:outline-none focus:border-[#F5A623] mb-2"
                       >
                         {ETAPAS.map((opt) => (
                           <option key={opt.value} value={opt.value}>
@@ -168,13 +168,13 @@ export default function LeadsPage() {
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/crm/leads/${lead.id}`}
-                          className="text-xs text-gray-500 hover:text-[#F5A623]"
+                          className="text-xs text-[#8A8478] hover:text-[#F5A623]"
                         >
                           ✎ Editar
                         </Link>
                         <button
                           onClick={() => handleDelete(lead.id)}
-                          className="text-xs text-gray-500 hover:text-red-400"
+                          className="text-xs text-[#8A8478] hover:text-red-500"
                         >
                           🗑
                         </button>

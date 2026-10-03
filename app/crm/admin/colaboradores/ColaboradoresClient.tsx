@@ -79,35 +79,35 @@ export default function ColaboradoresClient({
 
       <form
         onSubmit={handleInvite}
-        className="bg-[#242424] border border-white/5 rounded-2xl p-6 mb-8 grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
+        className="bg-white border border-[#E8E2D8] rounded-2xl p-6 mb-8 grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
       >
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Email</label>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Email</label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="nombre@isogo.company"
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#F5A623]"
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] placeholder-[#B5AEA0] focus:outline-none focus:border-[#F5A623]"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Nombre</label>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Nombre</label>
           <input
             type="text"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             placeholder="Opcional"
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#F5A623]"
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] placeholder-[#B5AEA0] focus:outline-none focus:border-[#F5A623]"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Rol</label>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Rol</label>
           <select
             value={rol}
             onChange={(e) => setRol(e.target.value as typeof rol)}
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
           >
             <option value="comercial">Comercial</option>
             <option value="tecnico">Técnico</option>
@@ -122,14 +122,14 @@ export default function ColaboradoresClient({
           {loading ? "Invitando..." : "Invitar"}
         </button>
 
-        {error && <p className="md:col-span-4 text-red-400 text-sm">{error}</p>}
-        {success && <p className="md:col-span-4 text-green-400 text-sm">{success}</p>}
+        {error && <p className="md:col-span-4 text-red-500 text-sm">{error}</p>}
+        {success && <p className="md:col-span-4 text-green-600 text-sm">{success}</p>}
       </form>
 
-      <div className="bg-[#242424] border border-white/5 rounded-2xl overflow-x-auto">
+      <div className="bg-white border border-[#E8E2D8] rounded-2xl overflow-x-auto">
         <table className="w-full text-sm min-w-[500px]">
           <thead>
-            <tr className="border-b border-white/10 text-left text-gray-400">
+            <tr className="border-b border-[#E8E2D8] text-left text-[#8A8478]">
               <th className="px-4 py-3 font-medium">Nombre</th>
               <th className="px-4 py-3 font-medium">Email</th>
               <th className="px-4 py-3 font-medium">Rol</th>
@@ -139,21 +139,21 @@ export default function ColaboradoresClient({
           </thead>
           <tbody>
             {colaboradores.map((c) => (
-              <tr key={c.id} className="border-b border-white/5 last:border-0">
+              <tr key={c.id} className="border-b border-[#E8E2D8] last:border-0">
                 <td className="px-4 py-3">{c.nombre || "—"}</td>
-                <td className="px-4 py-3 text-gray-400">{c.email}</td>
+                <td className="px-4 py-3 text-[#8A8478]">{c.email}</td>
                 <td className="px-4 py-3">
                   <span className="text-xs uppercase font-bold text-[#F5A623]">{c.rol}</span>
                 </td>
                 <td className="px-4 py-3">
-                  <span className={c.activo ? "text-green-400" : "text-gray-500"}>
+                  <span className={c.activo ? "text-green-600" : "text-[#8A8478]"}>
                     {c.activo ? "Activo" : "Inactivo"}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button
                     onClick={() => toggleActivo(c.id, c.activo)}
-                    className="text-xs text-gray-400 hover:text-white underline"
+                    className="text-xs text-[#8A8478] hover:text-[#2D2A26] underline"
                   >
                     {c.activo ? "Desactivar" : "Reactivar"}
                   </button>
@@ -162,7 +162,7 @@ export default function ColaboradoresClient({
             ))}
             {colaboradores.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
+                <td colSpan={5} className="px-4 py-6 text-center text-[#8A8478]">
                   Todavía no hay colaboradores invitados.
                 </td>
               </tr>

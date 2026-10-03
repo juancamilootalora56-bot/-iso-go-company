@@ -58,75 +58,75 @@ export default function LeadDetallePage() {
     router.push("/crm/leads");
   }
 
-  if (loading) return <p className="text-gray-400 text-sm">Cargando...</p>;
-  if (!lead) return <p className="text-gray-400 text-sm">Lead no encontrado.</p>;
+  if (loading) return <p className="text-[#8A8478] text-sm">Cargando...</p>;
+  if (!lead) return <p className="text-[#8A8478] text-sm">Lead no encontrado.</p>;
 
   return (
     <div className="max-w-xl">
-      <Link href="/crm/leads" className="text-sm text-gray-400 hover:text-white mb-4 inline-block">
+      <Link href="/crm/leads" className="text-sm text-[#8A8478] hover:text-[#2D2A26] mb-4 inline-block">
         ← Volver a Leads
       </Link>
       <h1 className="text-2xl font-bold mb-6">{lead.nombre}</h1>
 
-      <form onSubmit={handleSave} className="space-y-4 bg-[#242424] border border-white/5 rounded-2xl p-6">
+      <form onSubmit={handleSave} className="space-y-4 bg-white border border-[#E8E2D8] rounded-2xl p-6">
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Nombre</label>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Nombre</label>
           <input
             value={form.nombre ?? ""}
             onChange={(e) => set("nombre", e.target.value)}
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Empresa</label>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Empresa</label>
           <input
             value={form.empresa ?? ""}
             onChange={(e) => set("empresa", e.target.value)}
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
           />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1">Rubro de la empresa</label>
+            <label className="block text-xs font-medium text-[#8A8478] mb-1">Rubro de la empresa</label>
             <input
               value={form.rubro ?? ""}
               onChange={(e) => set("rubro", e.target.value)}
-              className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+              className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1">Cargo</label>
+            <label className="block text-xs font-medium text-[#8A8478] mb-1">Cargo</label>
             <input
               value={form.cargo ?? ""}
               onChange={(e) => set("cargo", e.target.value)}
-              className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+              className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
             />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1">Email</label>
+            <label className="block text-xs font-medium text-[#8A8478] mb-1">Email</label>
             <input
               value={form.email ?? ""}
               onChange={(e) => set("email", e.target.value)}
-              className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+              className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1">Teléfono</label>
+            <label className="block text-xs font-medium text-[#8A8478] mb-1">Teléfono</label>
             <input
               value={form.telefono ?? ""}
               onChange={(e) => set("telefono", e.target.value)}
-              className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+              className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
             />
           </div>
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Norma de interés</label>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Norma de interés</label>
           <select
             value={form.norma_interes ?? ""}
             onChange={(e) => set("norma_interes", e.target.value)}
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
           >
             <option value="">Seleccionar...</option>
             {PRODUCTOS.map((p) => (
@@ -135,22 +135,22 @@ export default function LeadDetallePage() {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Valor estimado (Gs.)</label>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Valor estimado (Gs.)</label>
           <input
             type="number"
             min="0"
             step="1"
             value={form.valor_estimado ?? 0}
             onChange={(e) => set("valor_estimado", parseFloat(e.target.value) || 0)}
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Etapa</label>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Etapa</label>
           <select
             value={form.etapa ?? "lead_nuevo"}
             onChange={(e) => set("etapa", e.target.value as Etapa)}
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
           >
             {ETAPAS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -160,12 +160,12 @@ export default function LeadDetallePage() {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Notas</label>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Notas</label>
           <textarea
             value={form.notas ?? ""}
             onChange={(e) => set("notas", e.target.value)}
             rows={4}
-            className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
           />
         </div>
         <button

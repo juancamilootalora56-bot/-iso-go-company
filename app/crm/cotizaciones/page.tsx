@@ -19,16 +19,16 @@ export default function CotizacionesPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-400 text-sm">Cargando...</p>
+        <p className="text-[#8A8478] text-sm">Cargando...</p>
       ) : cotizaciones.length === 0 ? (
-        <div className="bg-[#242424] border border-white/5 rounded-2xl p-8 text-center text-gray-400 text-sm">
+        <div className="bg-white border border-[#E8E2D8] rounded-2xl p-8 text-center text-[#8A8478] text-sm">
           Todavía no hay cotizaciones. Click en &quot;+ Nueva cotización&quot; para crear la primera.
         </div>
       ) : (
-        <div className="bg-[#242424] border border-white/5 rounded-2xl overflow-x-auto">
+        <div className="bg-white border border-[#E8E2D8] rounded-2xl overflow-x-auto">
           <table className="w-full text-sm min-w-[500px]">
             <thead>
-              <tr className="border-b border-white/10 text-left text-gray-400">
+              <tr className="border-b border-[#E8E2D8] text-left text-[#8A8478]">
                 <th className="px-4 py-3 font-medium">N°</th>
                 <th className="px-4 py-3 font-medium">Empresa</th>
                 <th className="px-4 py-3 font-medium">Estado</th>
@@ -40,13 +40,13 @@ export default function CotizacionesPage() {
               {cotizaciones.map((c) => {
                 const info = estadoInfo(c.estado);
                 return (
-                  <tr key={c.id} className="border-b border-white/5 last:border-0 hover:bg-white/5">
+                  <tr key={c.id} className="border-b border-[#E8E2D8] last:border-0 hover:bg-[#F0EBE2]">
                     <td className="px-4 py-3">
-                      <Link href={`/crm/cotizaciones/${c.id}`} className="font-semibold text-white hover:text-[#F5A623]">
+                      <Link href={`/crm/cotizaciones/${c.id}`} className="font-semibold text-[#2D2A26] hover:text-[#F5A623]">
                         {c.numero}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-gray-300">{c.empresa || "—"}</td>
+                    <td className="px-4 py-3 text-[#5C564C]">{c.empresa || "—"}</td>
                     <td className="px-4 py-3">
                       <span
                         className="text-xs font-semibold px-2 py-0.5 rounded-full"
@@ -55,10 +55,10 @@ export default function CotizacionesPage() {
                         {info.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-300">
+                    <td className="px-4 py-3 text-[#5C564C]">
                       ${c.total.toLocaleString("es")}
                     </td>
-                    <td className="px-4 py-3 text-gray-500">
+                    <td className="px-4 py-3 text-[#8A8478]">
                       {new Date(c.created_at).toLocaleDateString("es")}
                     </td>
                   </tr>

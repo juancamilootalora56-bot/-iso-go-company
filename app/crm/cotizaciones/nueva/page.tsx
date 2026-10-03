@@ -88,26 +88,26 @@ export default function NuevaCotizacionPage() {
   }
 
   const inputClass =
-    "w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]";
-  const labelClass = "block text-xs font-medium text-gray-400 mb-1";
+    "w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]";
+  const labelClass = "block text-xs font-medium text-[#8A8478] mb-1";
 
   return (
     <div className="max-w-2xl">
-      <Link href="/crm/cotizaciones" className="text-sm text-gray-400 hover:text-white mb-4 inline-block">
+      <Link href="/crm/cotizaciones" className="text-sm text-[#8A8478] hover:text-[#2D2A26] mb-4 inline-block">
         ← Volver a Cotizaciones
       </Link>
       <h1 className="text-2xl font-bold mb-6">Nueva cotización</h1>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-[#242424] border border-white/5 rounded-2xl p-6">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white border border-[#E8E2D8] rounded-2xl p-6">
         {/* Datos de la empresa */}
         <div>
-          <h2 className="text-sm font-bold text-white mb-3">Datos de la empresa</h2>
+          <h2 className="text-sm font-bold text-[#2D2A26] mb-3">Datos de la empresa</h2>
           <div className="space-y-3">
             <div>
               <label className={labelClass}>Empresa</label>
@@ -171,8 +171,8 @@ export default function NuevaCotizacionPage() {
         </div>
 
         {/* Ítems */}
-        <div className="border-t border-white/10 pt-5">
-          <h2 className="text-sm font-bold text-white mb-3">Ítems de la cotización</h2>
+        <div className="border-t border-[#E8E2D8] pt-5">
+          <h2 className="text-sm font-bold text-[#2D2A26] mb-3">Ítems de la cotización</h2>
           <div className="space-y-2">
             {items.map((it, i) => (
               <div
@@ -183,7 +183,7 @@ export default function NuevaCotizacionPage() {
                   placeholder="Descripción"
                   value={it.descripcion}
                   onChange={(e) => updateItem(i, "descripcion", e.target.value)}
-                  className="col-span-2 sm:col-span-1 bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+                  className="col-span-2 sm:col-span-1 bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
                 />
                 <input
                   type="number"
@@ -192,7 +192,7 @@ export default function NuevaCotizacionPage() {
                   placeholder="Cant."
                   value={it.cantidad}
                   onChange={(e) => updateItem(i, "cantidad", e.target.value)}
-                  className="bg-[#1A1A1A] border border-white/10 rounded-lg px-2 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+                  className="bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-2 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
                 />
                 <input
                   type="number"
@@ -201,12 +201,12 @@ export default function NuevaCotizacionPage() {
                   placeholder="Precio"
                   value={it.precio_unitario}
                   onChange={(e) => updateItem(i, "precio_unitario", e.target.value)}
-                  className="bg-[#1A1A1A] border border-white/10 rounded-lg px-2 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+                  className="bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-2 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
                 />
                 <button
                   type="button"
                   onClick={() => removeItem(i)}
-                  className="text-gray-600 hover:text-red-400 text-sm justify-self-end sm:justify-self-auto"
+                  className="text-[#A8A194] hover:text-red-500 text-sm justify-self-end sm:justify-self-auto"
                 >
                   ✕
                 </button>
@@ -218,9 +218,9 @@ export default function NuevaCotizacionPage() {
           </button>
         </div>
 
-        <div className="flex items-center justify-end border-t border-white/10 pt-4">
-          <p className="text-sm text-gray-400 mr-3">Total:</p>
-          <p className="text-xl font-bold text-white">${total.toLocaleString("es")}</p>
+        <div className="flex items-center justify-end border-t border-[#E8E2D8] pt-4">
+          <p className="text-sm text-[#8A8478] mr-3">Total:</p>
+          <p className="text-xl font-bold text-[#2D2A26]">${total.toLocaleString("es")}</p>
         </div>
 
         <div>

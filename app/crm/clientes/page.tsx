@@ -34,17 +34,17 @@ export default function ClientesPage() {
       <h1 className="text-2xl font-bold mb-6">Clientes</h1>
 
       {loading ? (
-        <p className="text-gray-400 text-sm">Cargando...</p>
+        <p className="text-[#8A8478] text-sm">Cargando...</p>
       ) : clientes.length === 0 ? (
-        <div className="bg-[#242424] border border-white/5 rounded-2xl p-8 text-center text-gray-400 text-sm">
+        <div className="bg-white border border-[#E8E2D8] rounded-2xl p-8 text-center text-[#8A8478] text-sm">
           Todavía no hay clientes. Se crean automáticamente cuando un lead pasa a la etapa
           &quot;Ganado&quot; en Leads.
         </div>
       ) : (
-        <div className="bg-[#242424] border border-white/5 rounded-2xl overflow-x-auto">
+        <div className="bg-white border border-[#E8E2D8] rounded-2xl overflow-x-auto">
           <table className="w-full text-sm min-w-[500px]">
             <thead>
-              <tr className="border-b border-white/10 text-left text-gray-400">
+              <tr className="border-b border-[#E8E2D8] text-left text-[#8A8478]">
                 <th className="px-4 py-3 font-medium">Nombre</th>
                 <th className="px-4 py-3 font-medium">Empresa</th>
                 <th className="px-4 py-3 font-medium">Contacto</th>
@@ -53,13 +53,13 @@ export default function ClientesPage() {
             </thead>
             <tbody>
               {clientes.map((c) => (
-                <tr key={c.id} className="border-b border-white/5 last:border-0">
+                <tr key={c.id} className="border-b border-[#E8E2D8] last:border-0">
                   <td className="px-4 py-3 font-medium">{c.nombre}</td>
-                  <td className="px-4 py-3 text-gray-400">{c.empresa || "—"}</td>
-                  <td className="px-4 py-3 text-gray-400">
+                  <td className="px-4 py-3 text-[#8A8478]">{c.empresa || "—"}</td>
+                  <td className="px-4 py-3 text-[#8A8478]">
                     {c.email || c.telefono || "—"}
                   </td>
-                  <td className="px-4 py-3 text-gray-400">{c.norma_interes || "—"}</td>
+                  <td className="px-4 py-3 text-[#8A8478]">{c.norma_interes || "—"}</td>
                 </tr>
               ))}
             </tbody>

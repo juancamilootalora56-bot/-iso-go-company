@@ -51,7 +51,7 @@ export default function CrmShell({
               href={item.href}
               onClick={() => setMenuOpen(false)}
               className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                active ? "bg-[#F5A623] text-[#1A1A1A]" : "text-gray-300 hover:bg-white/5"
+                active ? "bg-[#F5A623] text-[#1A1A1A]" : "text-[#5C564C] hover:bg-[#F0EBE2]"
               }`}
             >
               {item.label}
@@ -60,12 +60,12 @@ export default function CrmShell({
         })}
       </nav>
 
-      <div className="p-3 border-t border-white/10">
-        <p className="text-xs text-gray-500 truncate">{nombre || email}</p>
+      <div className="p-3 border-t border-[#E8E2D8]">
+        <p className="text-xs text-[#8A8478] truncate">{nombre || email}</p>
         <p className="text-[10px] uppercase tracking-wider text-[#F5A623] font-bold mb-2">{rol}</p>
         <button
           onClick={handleLogout}
-          className="w-full text-left text-xs text-gray-400 hover:text-white transition-colors py-1"
+          className="w-full text-left text-xs text-[#8A8478] hover:text-[#2D2A26] transition-colors py-1"
         >
           Cerrar sesión
         </button>
@@ -74,9 +74,9 @@ export default function CrmShell({
   );
 
   return (
-    <div className="min-h-screen bg-[#1A1A1A] text-white flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[#FAF7F2] text-[#2D2A26] flex flex-col lg:flex-row">
       {/* Mobile top bar */}
-      <div className="lg:hidden flex items-center justify-between p-4 border-b border-white/10 sticky top-0 bg-[#1A1A1A] z-30">
+      <div className="lg:hidden flex items-center justify-between p-4 border-b border-[#E8E2D8] sticky top-0 bg-[#FAF7F2] z-30">
         <Link href="/crm" className="flex items-center gap-2">
           <Image src="/logo.jpg" alt="Iso Go Company" width={28} height={32} />
           <span className="font-bold text-sm">Iso Go Interno</span>
@@ -84,7 +84,7 @@ export default function CrmShell({
         <button
           onClick={() => setMenuOpen(true)}
           aria-label="Abrir menú"
-          className="p-2 -mr-2 text-gray-300"
+          className="p-2 -mr-2 text-[#5C564C]"
         >
           <div className="w-5 h-0.5 bg-current mb-1.5" />
           <div className="w-5 h-0.5 bg-current mb-1.5" />
@@ -102,13 +102,13 @@ export default function CrmShell({
 
       {/* Mobile drawer */}
       <aside
-        className={`lg:hidden fixed top-0 right-0 h-full w-64 bg-[#1A1A1A] border-l border-white/10 z-50 flex flex-col transition-transform duration-300 ${
+        className={`lg:hidden fixed top-0 right-0 h-full w-64 bg-[#FAF7F2] border-l border-[#E8E2D8] z-50 flex flex-col transition-transform duration-300 ${
           menuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+        <div className="p-4 border-b border-[#E8E2D8] flex items-center justify-between">
           <span className="font-bold text-sm">Menú</span>
-          <button onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" className="text-gray-400 p-1">
+          <button onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" className="text-[#8A8478] p-1">
             ✕
           </button>
         </div>
@@ -116,8 +116,8 @@ export default function CrmShell({
       </aside>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-56 flex-shrink-0 border-r border-white/10 flex-col">
-        <div className="p-5 border-b border-white/10 flex items-center gap-2">
+      <aside className="hidden lg:flex w-56 flex-shrink-0 border-r border-[#E8E2D8] flex-col">
+        <div className="p-5 border-b border-[#E8E2D8] flex items-center gap-2">
           <Image src="/logo.jpg" alt="Iso Go Company" width={32} height={36} />
           <span className="font-bold text-sm">Iso Go Interno</span>
         </div>
