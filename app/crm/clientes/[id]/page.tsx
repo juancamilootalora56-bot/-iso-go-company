@@ -20,6 +20,7 @@ type Cliente = {
   norma_interes: string | null;
   num_colaboradores: number | null;
   num_procesos: number | null;
+  valor: number;
   notas: string | null;
   created_at: string;
 };
@@ -99,6 +100,7 @@ export default function ClienteDetallePage() {
         norma_interes: form.norma_interes,
         num_colaboradores: form.num_colaboradores,
         num_procesos: form.num_procesos,
+        valor: form.valor,
         notas: form.notas,
       })
       .eq("id", id);
@@ -220,6 +222,17 @@ export default function ClienteDetallePage() {
               <option key={p} value={p}>{p}</option>
             ))}
           </select>
+        </div>
+        <div>
+          <label className={labelClass}>Costo / Valor del servicio</label>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            value={form.valor ?? 0}
+            onChange={(e) => set("valor", parseFloat(e.target.value) || 0)}
+            className={inputClass}
+          />
         </div>
         <div>
           <label className={labelClass}>Notas</label>

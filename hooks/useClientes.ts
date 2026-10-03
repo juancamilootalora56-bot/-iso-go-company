@@ -17,6 +17,7 @@ export type Cliente = {
   norma_interes: string | null;
   num_colaboradores: number | null;
   num_procesos: number | null;
+  valor: number;
   notas: string | null;
   created_at: string;
 };
