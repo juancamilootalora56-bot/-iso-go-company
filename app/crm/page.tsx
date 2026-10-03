@@ -1,10 +1,34 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { etapaInfo } from "@/hooks/useLeads";
-import { tipoInfo } from "@/hooks/useVisitas";
 
 function formatGs(n: number) {
   return `${Math.round(n).toLocaleString("es")}Gs.`;
+}
+
+const ETAPA_COLORS: Record<string, { label: string; color: string }> = {
+  lead_nuevo: { label: "Lead nuevo", color: "#60A5FA" },
+  contactado: { label: "Contactado", color: "#FBBF24" },
+  reunion: { label: "Reunión", color: "#22D3EE" },
+  presentacion: { label: "Presentación", color: "#2DD4BF" },
+  demo: { label: "Demo", color: "#A78BFA" },
+  negociacion: { label: "Negociación", color: "#F5A623" },
+  ganado: { label: "Ganado", color: "#4ADE80" },
+  perdido: { label: "Perdido", color: "#F87171" },
+};
+
+function etapaInfo(etapa: string) {
+  return ETAPA_COLORS[etapa] ?? ETAPA_COLORS.lead_nuevo;
+}
+
+const TIPO_COLORS: Record<string, { label: string; color: string }> = {
+  reunion: { label: "Reunión", color: "#F5A623" },
+  demo: { label: "Demo", color: "#3B82F6" },
+  llamada: { label: "Llamada", color: "#22C55E" },
+  otro: { label: "Otro", color: "#A855F7" },
+};
+
+function tipoInfo(tipo: string) {
+  return TIPO_COLORS[tipo] ?? TIPO_COLORS.otro;
 }
 
 export default async function CrmHomePage() {
