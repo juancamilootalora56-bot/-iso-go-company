@@ -46,6 +46,32 @@ export type Lead = {
   notas: string | null;
   created_at: string;
   updated_at: string;
+
+  // Reunión
+  reunion_fecha: string | null;
+  reunion_lugar: string | null;
+  reunion_participantes: string | null;
+  reunion_modalidad: "presencial" | "virtual" | null;
+  reunion_proximos_pasos: string | null;
+
+  // Presentación
+  presentacion_fecha: string | null;
+  presentacion_lugar: string | null;
+  presentacion_participantes: string | null;
+  presentacion_modalidad: "presencial" | "virtual" | null;
+  presentacion_norma: string | null;
+  presentacion_proximos_pasos: string | null;
+
+  // Demo
+  demo_fecha_entrega: string | null;
+  demo_dias_acceso: number | null;
+  demo_proximos_pasos: string | null;
+
+  // Negociación / Ganado
+  forma_pago: "contado" | "cuotas" | null;
+  cuotas: number | null;
+  tipo_producto: "solo_software" | "software_coordinacion" | null;
+  fecha_inicio_servicio: string | null;
 };
 
 export function useLeads() {

@@ -2,10 +2,52 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { useLeads, ETAPAS, type Etapa } from "@/hooks/useLeads";
+import { useLeads, ETAPAS, type Etapa, type Lead } from "@/hooks/useLeads";
 
 function formatGs(n: number) {
   return `${Math.round(n).toLocaleString("es")}Gs.`;
+}
+
+function formatFecha(iso: string | null) {
+  if (!iso) return null;
+  return new Date(iso).toLocaleString("es", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+
+function modalidadLabel(m: string | null) {
+  if (!m) return null;
+  return m === "presencial" ? "Presencial" : "Virtual";
+}
+
+function etapaResumen(lead: Lead): string | null {
+  switch (lead.etapa) {
+    case "reunion": {
+      const partes = [formatFecha(lead.reunion_fecha), modalidadLabel(lead.reunion_modalidad), lead.reunion_lugar].filter(Boolean);
+      return partes.length ? partes.join(" · ") : null;
+    }
+    case "presentacion": {
+      const partes = [formatFecha(lead.presentacion_fecha), modalidadLabel(lead.presentacion_modalidad), lead.presentacion_norma].filter(Boolean);
+      return partes.length ? partes.join(" · ") : null;
+    }
+    case "demo": {
+      const partes = [
+        lead.demo_fecha_entrega ? `Entregada: ${formatFecha(lead.demo_fecha_entrega)}` : null,
+        lead.demo_dias_acceso ? `${lead.demo_dias_acceso} días de acceso` : null,
+      ].filter(Boolean);
+      return partes.length ? partes.join(" · ") : null;
+    }
+    case "negociacion":
+    case "ganado": {
+      const pago = lead.forma_pago === "cuotas" ? `Cuotas x${lead.cuotas ?? "?"}` : lead.forma_pago === "contado" ? "Contado" : null;
+      const tipo = lead.tipo_producto === "solo_software" ? "Solo software" : lead.tipo_producto === "software_coordinacion" ? "Software + coordinación" : null;
+      const inicio = lead.etapa === "ganado" && lead.fecha_inicio_servicio
+        ? `Inicio: ${new Date(lead.fecha_inicio_servicio).toLocaleDateString("es")}`
+        : null;
+      const partes = [pago, tipo, inicio].filter(Boolean);
+      return partes.length ? partes.join(" · ") : null;
+    }
+    default:
+      return null;
+  }
 }
 
 export default function LeadsPage() {
@@ -129,7 +171,9 @@ export default function LeadsPage() {
                       Sin leads
                     </div>
                   )}
-                  {leadsEtapa.map((lead) => (
+                  {leadsEtapa.map((lead) => {
+                    const resumen = etapaResumen(lead);
+                    return (
                     <div
                       key={lead.id}
                       className="bg-white border border-[#E8E2D8] rounded-xl p-3 hover:border-[#F5A623]/30 transition-colors"
@@ -138,6 +182,11 @@ export default function LeadsPage() {
                         <p className="text-sm font-semibold text-[#2D2A26] truncate">{lead.empresa || lead.nombre}</p>
                         {lead.empresa && (
                           <p className="text-xs text-[#8A8478] truncate">{lead.nombre}</p>
+                        )}
+                        {resumen && (
+                          <p className="text-[11px] text-[#A8762C] bg-[#F5A623]/10 rounded px-1.5 py-0.5 mt-1 truncate">
+                            {resumen}
+                          </p>
                         )}
                       </Link>
 
@@ -180,7 +229,8 @@ export default function LeadsPage() {
                         </button>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             );
