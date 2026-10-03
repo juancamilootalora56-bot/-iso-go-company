@@ -8,11 +8,11 @@ export default function CotizacionesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Cotizaciones</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold">Cotizaciones</h1>
         <Link
           href="/crm/cotizaciones/nueva"
-          className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410]"
+          className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410] text-center"
         >
           + Nueva cotización
         </Link>
@@ -25,8 +25,8 @@ export default function CotizacionesPage() {
           Todavía no hay cotizaciones. Click en &quot;+ Nueva cotización&quot; para crear la primera.
         </div>
       ) : (
-        <div className="bg-[#242424] border border-white/5 rounded-2xl overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="bg-[#242424] border border-white/5 rounded-2xl overflow-x-auto">
+          <table className="w-full text-sm min-w-[500px]">
             <thead>
               <tr className="border-b border-white/10 text-left text-gray-400">
                 <th className="px-4 py-3 font-medium">N°</th>

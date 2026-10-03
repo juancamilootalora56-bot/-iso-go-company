@@ -41,8 +41,8 @@ export default function ClientesPage() {
           &quot;Ganado&quot; en Leads.
         </div>
       ) : (
-        <div className="bg-[#242424] border border-white/5 rounded-2xl overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="bg-[#242424] border border-white/5 rounded-2xl overflow-x-auto">
+          <table className="w-full text-sm min-w-[500px]">
             <thead>
               <tr className="border-b border-white/10 text-left text-gray-400">
                 <th className="px-4 py-3 font-medium">Nombre</th>

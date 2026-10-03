@@ -117,7 +117,7 @@ export default function NuevaCotizacionPage() {
               <label className={labelClass}>Dueño o representante</label>
               <input value={representante} onChange={(e) => setRepresentante(e.target.value)} className={inputClass} />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className={labelClass}>Teléfono</label>
                 <input value={telefono} onChange={(e) => setTelefono(e.target.value)} className={inputClass} />
@@ -127,7 +127,7 @@ export default function NuevaCotizacionPage() {
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className={labelClass}>N° de colaboradores</label>
                 <input
@@ -175,12 +175,15 @@ export default function NuevaCotizacionPage() {
           <h2 className="text-sm font-bold text-white mb-3">Ítems de la cotización</h2>
           <div className="space-y-2">
             {items.map((it, i) => (
-              <div key={i} className="grid grid-cols-[1fr_70px_90px_28px] gap-2 items-center">
+              <div
+                key={i}
+                className="grid grid-cols-2 sm:grid-cols-[1fr_70px_90px_28px] gap-2 items-center bg-white/[0.02] sm:bg-transparent p-2 sm:p-0 rounded-lg"
+              >
                 <input
                   placeholder="Descripción"
                   value={it.descripcion}
                   onChange={(e) => updateItem(i, "descripcion", e.target.value)}
-                  className="bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+                  className="col-span-2 sm:col-span-1 bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
                 />
                 <input
                   type="number"
@@ -200,7 +203,11 @@ export default function NuevaCotizacionPage() {
                   onChange={(e) => updateItem(i, "precio_unitario", e.target.value)}
                   className="bg-[#1A1A1A] border border-white/10 rounded-lg px-2 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
                 />
-                <button type="button" onClick={() => removeItem(i)} className="text-gray-600 hover:text-red-400 text-sm">
+                <button
+                  type="button"
+                  onClick={() => removeItem(i)}
+                  className="text-gray-600 hover:text-red-400 text-sm justify-self-end sm:justify-self-auto"
+                >
                   ✕
                 </button>
               </div>

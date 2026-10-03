@@ -109,9 +109,9 @@ export default function CalendarioPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-1">
         <div>
-          <h1 className="text-2xl font-bold">Calendario</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">Calendario</h1>
           <p className="text-gray-500 text-sm">Visitas, reuniones y llamadas comerciales.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -123,7 +123,7 @@ export default function CalendarioPage() {
           </button>
           <button
             onClick={() => openFormFor(selectedDay)}
-            className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410]"
+            className="flex-1 sm:flex-none bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410]"
           >
             + Nueva visita
           </button>

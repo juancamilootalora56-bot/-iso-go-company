@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -29,6 +30,7 @@ export default function CrmShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -38,48 +40,92 @@ export default function CrmShell({
 
   const visibleItems = navItems.filter((item) => item.roles.includes(rol as Rol));
 
+  const sidebarContent = (
+    <>
+      <nav className="flex-1 p-3 space-y-1">
+        {visibleItems.map((item) => {
+          const active = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setMenuOpen(false)}
+              className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                active ? "bg-[#F5A623] text-[#1A1A1A]" : "text-gray-300 hover:bg-white/5"
+              }`}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="p-3 border-t border-white/10">
+        <p className="text-xs text-gray-500 truncate">{nombre || email}</p>
+        <p className="text-[10px] uppercase tracking-wider text-[#F5A623] font-bold mb-2">{rol}</p>
+        <button
+          onClick={handleLogout}
+          className="w-full text-left text-xs text-gray-400 hover:text-white transition-colors py-1"
+        >
+          Cerrar sesión
+        </button>
+      </div>
+    </>
+  );
+
   return (
-    <div className="min-h-screen bg-[#1A1A1A] text-white flex">
-      {/* Sidebar */}
-      <aside className="w-56 flex-shrink-0 border-r border-white/10 flex flex-col">
+    <div className="min-h-screen bg-[#1A1A1A] text-white flex flex-col lg:flex-row">
+      {/* Mobile top bar */}
+      <div className="lg:hidden flex items-center justify-between p-4 border-b border-white/10 sticky top-0 bg-[#1A1A1A] z-30">
+        <Link href="/crm" className="flex items-center gap-2">
+          <Image src="/logo.jpg" alt="Iso Go Company" width={28} height={32} />
+          <span className="font-bold text-sm">Iso Go Interno</span>
+        </Link>
+        <button
+          onClick={() => setMenuOpen(true)}
+          aria-label="Abrir menú"
+          className="p-2 -mr-2 text-gray-300"
+        >
+          <div className="w-5 h-0.5 bg-current mb-1.5" />
+          <div className="w-5 h-0.5 bg-current mb-1.5" />
+          <div className="w-5 h-0.5 bg-current" />
+        </button>
+      </div>
+
+      {/* Mobile drawer overlay */}
+      {menuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/60 z-40"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile drawer */}
+      <aside
+        className={`lg:hidden fixed top-0 right-0 h-full w-64 bg-[#1A1A1A] border-l border-white/10 z-50 flex flex-col transition-transform duration-300 ${
+          menuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+          <span className="font-bold text-sm">Menú</span>
+          <button onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" className="text-gray-400 p-1">
+            ✕
+          </button>
+        </div>
+        {sidebarContent}
+      </aside>
+
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex w-56 flex-shrink-0 border-r border-white/10 flex-col">
         <div className="p-5 border-b border-white/10 flex items-center gap-2">
           <Image src="/logo.jpg" alt="Iso Go Company" width={32} height={36} />
           <span className="font-bold text-sm">Iso Go Interno</span>
         </div>
-
-        <nav className="flex-1 p-3 space-y-1">
-          {visibleItems.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-[#F5A623] text-[#1A1A1A]"
-                    : "text-gray-300 hover:bg-white/5"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="p-3 border-t border-white/10">
-          <p className="text-xs text-gray-500 truncate">{nombre || email}</p>
-          <p className="text-[10px] uppercase tracking-wider text-[#F5A623] font-bold mb-2">{rol}</p>
-          <button
-            onClick={handleLogout}
-            className="w-full text-left text-xs text-gray-400 hover:text-white transition-colors"
-          >
-            Cerrar sesión
-          </button>
-        </div>
+        {sidebarContent}
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-6 lg:p-8 overflow-x-auto">{children}</main>
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden min-w-0">{children}</main>
     </div>
   );
 }

@@ -63,7 +63,7 @@ export default function CotizacionDetallePage() {
       {(cotizacion.empresa || cotizacion.representante || cotizacion.producto) && (
         <div className="bg-[#242424] border border-white/5 rounded-2xl p-6 mb-6">
           <h2 className="text-sm font-semibold text-gray-400 mb-3">Datos de la empresa</h2>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
             {cotizacion.empresa && (
               <div><p className="text-xs text-gray-500">Empresa</p><p className="text-white">{cotizacion.empresa}</p></div>
             )}
@@ -91,7 +91,8 @@ export default function CotizacionDetallePage() {
 
       <div className="bg-[#242424] border border-white/5 rounded-2xl p-6 mb-6">
         <h2 className="text-sm font-semibold text-gray-400 mb-3">Ítems</h2>
-        <table className="w-full text-sm mb-4">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm mb-4 min-w-[420px]">
           <thead>
             <tr className="border-b border-white/10 text-left text-gray-500 text-xs">
               <th className="pb-2 font-medium">Descripción</th>
@@ -113,6 +114,7 @@ export default function CotizacionDetallePage() {
             ))}
           </tbody>
         </table>
+        </div>
         <div className="flex items-center justify-end border-t border-white/10 pt-4">
           <p className="text-sm text-gray-400 mr-3">Total:</p>
           <p className="text-xl font-bold text-white">${cotizacion.total.toLocaleString("es")}</p>

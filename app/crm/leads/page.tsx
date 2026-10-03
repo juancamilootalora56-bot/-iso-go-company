@@ -52,23 +52,23 @@ export default function LeadsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-1">
         <div>
-          <h1 className="text-2xl font-bold">Pipeline de Ventas</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">Pipeline de Ventas</h1>
           <p className="text-gray-500 text-sm">
             {leads.length} leads · {formatGs(stats.pipelineTotal)} activo
           </p>
         </div>
         <Link
           href="/crm/leads/nuevo"
-          className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410]"
+          className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410] text-center"
         >
           + Nuevo lead
         </Link>
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-3 gap-4 mt-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-6 mb-6">
         <div className="bg-[#242424] border border-white/5 rounded-2xl p-4">
           <p className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">📈 PIPELINE</p>
           <p className="text-xl font-bold text-white mt-1">{formatGs(stats.pipelineTotal)}</p>
