@@ -3,6 +3,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+export type TipoVisita = "reunion" | "demo" | "llamada" | "otro";
+
+export const TIPOS: { value: TipoVisita; label: string; color: string }[] = [
+  { value: "reunion", label: "Reunión", color: "#F5A623" },
+  { value: "demo", label: "Demo", color: "#3B82F6" },
+  { value: "llamada", label: "Llamada", color: "#22C55E" },
+  { value: "otro", label: "Otro", color: "#A855F7" },
+];
+
+export function tipoInfo(tipo: string) {
+  return TIPOS.find((t) => t.value === tipo) ?? TIPOS[3];
+}
+
 export type Visita = {
   id: string;
   created_by: string;
@@ -13,6 +26,7 @@ export type Visita = {
   fecha_fin: string | null;
   lead_id: string | null;
   cliente_id: string | null;
+  tipo: TipoVisita;
   created_at: string;
 };
 

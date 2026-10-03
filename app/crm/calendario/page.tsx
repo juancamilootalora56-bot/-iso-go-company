@@ -1,17 +1,26 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useVisitas } from "@/hooks/useVisitas";
+import { useVisitas, TIPOS, tipoInfo, type TipoVisita } from "@/hooks/useVisitas";
 import { createClient } from "@/lib/supabase/client";
 
-const DIAS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+const DIAS = ["D", "L", "M", "M", "J", "V", "S"];
 const MESES = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
 ];
+const MESES_LARGO = [
+  "de enero", "de febrero", "de marzo", "de abril", "de mayo", "de junio",
+  "de julio", "de agosto", "de septiembre", "de octubre", "de noviembre", "de diciembre",
+];
 
 function toLocalDateKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function formatDayHeader(key: string) {
+  const [y, m, d] = key.split("-").map(Number);
+  return `${d} ${MESES_LARGO[m - 1]} ${y}`;
 }
 
 export default function CalendarioPage() {
@@ -34,6 +43,7 @@ export default function CalendarioPage() {
     ubicacion: "",
     descripcion: "",
     lead_id: "",
+    tipo: "reunion" as TipoVisita,
   });
 
   const visitasPorDia = useMemo(() => {
@@ -57,7 +67,30 @@ export default function CalendarioPage() {
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
 
   const todayKey = toLocalDateKey(new Date());
-  const visitasDelDia = visitasPorDia[selectedDay] ?? [];
+  const visitasDelDia = (visitasPorDia[selectedDay] ?? [])
+    .slice()
+    .sort((a, b) => a.fecha_inicio.localeCompare(b.fecha_inicio));
+
+  const conteoPorTipo = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const v of visitas) {
+      if (v.fecha_inicio.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`)) {
+        counts[v.tipo] = (counts[v.tipo] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }, [visitas, year, month]);
+
+  function goToday() {
+    const now = new Date();
+    setCursor(now);
+    setSelectedDay(toLocalDateKey(now));
+  }
+
+  function openFormFor(day: string) {
+    setSelectedDay(day);
+    setShowForm(true);
+  }
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -68,60 +101,72 @@ export default function CalendarioPage() {
       descripcion: form.descripcion || null,
       fecha_inicio,
       lead_id: form.lead_id || null,
+      tipo: form.tipo,
     });
-    setForm({ titulo: "", hora: "10:00", ubicacion: "", descripcion: "", lead_id: "" });
+    setForm({ titulo: "", hora: "10:00", ubicacion: "", descripcion: "", lead_id: "", tipo: "reunion" });
     setShowForm(false);
   }
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Calendario</h1>
-        <button
-          onClick={() => setShowForm((v) => !v)}
-          className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410]"
-        >
-          + Nueva visita
-        </button>
+      <div className="flex items-center justify-between mb-1">
+        <div>
+          <h1 className="text-2xl font-bold">Calendario</h1>
+          <p className="text-gray-500 text-sm">Visitas, reuniones y llamadas comerciales.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={goToday}
+            className="border border-white/10 text-gray-300 text-sm px-3 py-2 rounded-lg hover:bg-white/5"
+          >
+            Hoy
+          </button>
+          <button
+            onClick={() => openFormFor(selectedDay)}
+            className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410]"
+          >
+            + Nueva visita
+          </button>
+        </div>
       </div>
 
-      <div className="grid lg:grid-cols-[1fr_320px] gap-6">
-        {/* Month grid */}
+      <div className="grid lg:grid-cols-[1fr_340px] gap-6 mt-6">
+        {/* Left: month grid + legend */}
         <div className="bg-[#242424] border border-white/5 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={() => setCursor(new Date(year, month - 1, 1))}
-              className="text-gray-400 hover:text-white px-2"
+              className="text-gray-400 hover:text-white px-2 text-lg"
             >
-              ←
+              ‹
             </button>
             <h2 className="font-bold text-sm">{MESES[month]} {year}</h2>
             <button
               onClick={() => setCursor(new Date(year, month + 1, 1))}
-              className="text-gray-400 hover:text-white px-2"
+              className="text-gray-400 hover:text-white px-2 text-lg"
             >
-              →
+              ›
             </button>
           </div>
 
           <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-500 mb-2">
-            {DIAS.map((d) => (
-              <div key={d}>{d}</div>
+            {DIAS.map((d, i) => (
+              <div key={i}>{d}</div>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-1 mb-5">
             {cells.map((date, i) => {
               if (!date) return <div key={i} />;
               const key = toLocalDateKey(date);
-              const hasEvents = !!visitasPorDia[key]?.length;
+              const dayEvents = visitasPorDia[key] ?? [];
               const isSelected = key === selectedDay;
               const isToday = key === todayKey;
               return (
                 <button
                   key={i}
                   onClick={() => setSelectedDay(key)}
-                  className={`aspect-square rounded-lg text-sm flex flex-col items-center justify-center gap-0.5 transition-colors ${
+                  className={`aspect-square rounded-lg text-sm flex flex-col items-center justify-center gap-1 transition-colors relative ${
                     isSelected
                       ? "bg-[#F5A623] text-[#1A1A1A] font-bold"
                       : isToday
@@ -130,18 +175,50 @@ export default function CalendarioPage() {
                   }`}
                 >
                   {date.getDate()}
-                  {hasEvents && (
-                    <span className={`w-1 h-1 rounded-full ${isSelected ? "bg-[#1A1A1A]" : "bg-[#F5A623]"}`} />
+                  {dayEvents.length > 0 && (
+                    <span className="flex gap-0.5">
+                      {dayEvents.slice(0, 3).map((v, idx) => (
+                        <span
+                          key={idx}
+                          className="w-1 h-1 rounded-full"
+                          style={{ backgroundColor: isSelected ? "#1A1A1A" : tipoInfo(v.tipo).color }}
+                        />
+                      ))}
+                    </span>
                   )}
                 </button>
               );
             })}
           </div>
+
+          {/* Legend */}
+          <div className="border-t border-white/10 pt-4">
+            <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Leyenda</p>
+            <div className="space-y-1.5">
+              {TIPOS.map((t) => (
+                <div key={t.value} className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-2 text-gray-300">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} />
+                    {t.label}
+                  </span>
+                  <span className="text-gray-500 text-xs">{conteoPorTipo[t.value] ?? 0}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Day panel */}
+        {/* Right: day panel */}
         <div className="bg-[#242424] border border-white/5 rounded-2xl p-5">
-          <h3 className="font-bold text-sm mb-4">{selectedDay}</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-sm capitalize">{formatDayHeader(selectedDay)}</h3>
+            <button
+              onClick={() => openFormFor(selectedDay)}
+              className="text-[#F5A623] text-xs font-semibold hover:text-[#e09410]"
+            >
+              + Agregar
+            </button>
+          </div>
 
           {showForm && (
             <form onSubmit={handleCreate} className="space-y-3 mb-5 pb-5 border-b border-white/10">
@@ -152,13 +229,24 @@ export default function CalendarioPage() {
                 onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))}
                 className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5A623]"
               />
-              <input
-                type="time"
-                required
-                value={form.hora}
-                onChange={(e) => setForm((f) => ({ ...f, hora: e.target.value }))}
-                className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5A623]"
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="time"
+                  required
+                  value={form.hora}
+                  onChange={(e) => setForm((f) => ({ ...f, hora: e.target.value }))}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5A623]"
+                />
+                <select
+                  value={form.tipo}
+                  onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value as TipoVisita }))}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5A623]"
+                >
+                  {TIPOS.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+              </div>
               <input
                 placeholder="Ubicación (opcional)"
                 value={form.ubicacion}
@@ -182,12 +270,21 @@ export default function CalendarioPage() {
                 onChange={(e) => setForm((f) => ({ ...f, descripcion: e.target.value }))}
                 className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5A623]"
               />
-              <button
-                type="submit"
-                className="w-full bg-[#F5A623] text-[#1A1A1A] font-bold text-xs py-2 rounded-lg hover:bg-[#e09410]"
-              >
-                Guardar visita
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="flex-1 border border-white/10 text-gray-300 text-xs py-2 rounded-lg hover:bg-white/5"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-[#F5A623] text-[#1A1A1A] font-bold text-xs py-2 rounded-lg hover:bg-[#e09410]"
+                >
+                  Guardar
+                </button>
+              </div>
             </form>
           )}
 
@@ -197,26 +294,39 @@ export default function CalendarioPage() {
             <p className="text-gray-500 text-xs">Sin visitas este día.</p>
           ) : (
             <div className="space-y-2">
-              {visitasDelDia.map((v) => (
-                <div key={v.id} className="bg-[#1A1A1A] rounded-lg p-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-white">
-                        {new Date(v.fecha_inicio).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" })}
-                        {" — "}{v.titulo}
-                      </p>
-                      {v.ubicacion && <p className="text-xs text-gray-500 mt-0.5">{v.ubicacion}</p>}
-                      {v.descripcion && <p className="text-xs text-gray-400 mt-1">{v.descripcion}</p>}
+              {visitasDelDia.map((v) => {
+                const info = tipoInfo(v.tipo);
+                return (
+                  <div
+                    key={v.id}
+                    className="bg-[#1A1A1A] rounded-lg p-3 border-l-2"
+                    style={{ borderLeftColor: info.color }}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">
+                          {new Date(v.fecha_inicio).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" })}
+                          {" — "}{v.titulo}
+                        </p>
+                        <span
+                          className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mt-1.5"
+                          style={{ backgroundColor: `${info.color}22`, color: info.color }}
+                        >
+                          {info.label}
+                        </span>
+                        {v.ubicacion && <p className="text-xs text-gray-500 mt-1.5">{v.ubicacion}</p>}
+                        {v.descripcion && <p className="text-xs text-gray-400 mt-1">{v.descripcion}</p>}
+                      </div>
+                      <button
+                        onClick={() => remove(v.id)}
+                        className="text-gray-600 hover:text-red-400 text-xs flex-shrink-0"
+                      >
+                        ✕
+                      </button>
                     </div>
-                    <button
-                      onClick={() => remove(v.id)}
-                      className="text-gray-600 hover:text-red-400 text-xs flex-shrink-0 ml-2"
-                    >
-                      ✕
-                    </button>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
