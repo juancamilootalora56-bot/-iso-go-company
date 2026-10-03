@@ -2,8 +2,17 @@ import { NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 
+function generarPassword() {
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+  let pass = "";
+  for (let i = 0; i < 10; i++) {
+    pass += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return pass;
+}
+
 export async function POST(request: Request) {
-  const { email, nombre, rol } = await request.json();
+  const { email, nombre, rol, password: passwordInput } = await request.json();
 
   if (!email || !rol || !["admin", "comercial", "tecnico"].includes(rol)) {
     return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
@@ -27,27 +36,29 @@ export async function POST(request: Request) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  const { origin } = new URL(request.url);
+  const password = (passwordInput && String(passwordInput).length >= 8) ? passwordInput : generarPassword();
 
-  const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
-    data: { full_name: nombre || null },
-    redirectTo: `${origin}/es/auth/callback?next=/crm`,
+  const { data: created, error: createError } = await admin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: { full_name: nombre || null },
   });
 
-  if (inviteError || !invited.user) {
+  if (createError || !created.user) {
     return NextResponse.json(
-      { error: inviteError?.message || "No se pudo invitar al usuario" },
+      { error: createError?.message || "No se pudo crear el usuario" },
       { status: 400 }
     );
   }
 
   const { error: profileError } = await admin
     .from("perfiles_internos")
-    .upsert({ id: invited.user.id, email, nombre: nombre || null, rol, activo: true });
+    .upsert({ id: created.user.id, email, nombre: nombre || null, rol, activo: true });
 
   if (profileError) {
     return NextResponse.json({ error: profileError.message }, { status: 400 });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, password });
 }

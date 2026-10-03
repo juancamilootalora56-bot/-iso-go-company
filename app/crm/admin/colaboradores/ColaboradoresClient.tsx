@@ -20,31 +20,33 @@ export default function ColaboradoresClient({
   const [colaboradores, setColaboradores] = useState(initialColaboradores);
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
+  const [password, setPassword] = useState("");
   const [rol, setRol] = useState<"comercial" | "tecnico" | "admin">("comercial");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [creado, setCreado] = useState<{ email: string; password: string } | null>(null);
 
   async function handleInvite(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setSuccess(null);
+    setCreado(null);
 
     try {
       const res = await fetch("/api/crm/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, nombre, rol }),
+        body: JSON.stringify({ email, nombre, rol, password: password || undefined }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Error al invitar");
+        setError(data.error || "Error al crear el usuario");
         return;
       }
-      setSuccess(`Invitación enviada a ${email}`);
+      setCreado({ email, password: data.password });
       setEmail("");
       setNombre("");
+      setPassword("");
       setRol("comercial");
 
       const supabase = createClient();
@@ -95,7 +97,7 @@ export default function ColaboradoresClient({
 
       <form
         onSubmit={handleInvite}
-        className="bg-white border border-[#E8E2D8] rounded-2xl p-6 mb-8 grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
+        className="bg-white border border-[#E8E2D8] rounded-2xl p-6 mb-8 grid grid-cols-1 md:grid-cols-5 gap-4 items-end"
       >
         <div>
           <label className="block text-xs font-medium text-[#8A8478] mb-1">Email</label>
@@ -119,6 +121,16 @@ export default function ColaboradoresClient({
           />
         </div>
         <div>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Contraseña</label>
+          <input
+            type="text"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Generar automática"
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] placeholder-[#B5AEA0] focus:outline-none focus:border-[#F5A623]"
+          />
+        </div>
+        <div>
           <label className="block text-xs font-medium text-[#8A8478] mb-1">Rol</label>
           <select
             value={rol}
@@ -135,11 +147,25 @@ export default function ColaboradoresClient({
           disabled={loading}
           className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410] disabled:opacity-60"
         >
-          {loading ? "Invitando..." : "Invitar"}
+          {loading ? "Creando..." : "Crear usuario"}
         </button>
 
-        {error && <p className="md:col-span-4 text-red-500 text-sm">{error}</p>}
-        {success && <p className="md:col-span-4 text-green-600 text-sm">{success}</p>}
+        {error && <p className="md:col-span-5 text-red-500 text-sm">{error}</p>}
+
+        {creado && (
+          <div className="md:col-span-5 bg-green-50 border border-green-200 rounded-lg p-4 text-sm">
+            <p className="text-green-700 font-semibold mb-1">Usuario creado. Compartile estos datos:</p>
+            <p className="text-[#2D2A26]">
+              Email: <span className="font-mono font-semibold">{creado.email}</span>
+            </p>
+            <p className="text-[#2D2A26]">
+              Contraseña: <span className="font-mono font-semibold">{creado.password}</span>
+            </p>
+            <p className="text-[#8A8478] text-xs mt-2">
+              Puede cambiarla luego desde su perfil dentro del CRM.
+            </p>
+          </div>
+        )}
       </form>
 
       <div className="bg-white border border-[#E8E2D8] rounded-2xl overflow-x-auto">
