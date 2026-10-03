@@ -18,19 +18,24 @@ export default function Header() {
 
   useEffect(() => {
     let supabase: ReturnType<typeof createClient> | null = null;
+    const safety = setTimeout(() => setAuthLoading(false), 6000);
     try {
       supabase = createClient();
-      supabase.auth.getUser().then(({ data }) => {
-        setUser(data.user);
+      supabase.auth.getSession().then(({ data }) => {
+        setUser(data.session?.user ?? null);
         setAuthLoading(false);
       });
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         setUser(session?.user ?? null);
       });
-      return () => subscription.unsubscribe();
+      return () => {
+        clearTimeout(safety);
+        subscription.unsubscribe();
+      };
     } catch {
       setAuthLoading(false);
     }
+    return () => clearTimeout(safety);
   }, []);
 
   const navLinks = [

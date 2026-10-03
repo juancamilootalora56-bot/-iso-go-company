@@ -44,10 +44,14 @@ export function useMiProceso() {
 
   useEffect(() => {
     let cancelled = false;
+    const safety = setTimeout(() => {
+      if (!cancelled) setLoading(false);
+    }, 6000);
+
     async function load() {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      const email = user?.email;
+      const { data: { session } } = await supabase.auth.getSession();
+      const email = session?.user?.email;
       if (!email) {
         if (!cancelled) setLoading(false);
         return;
@@ -85,6 +89,7 @@ export function useMiProceso() {
     load();
     return () => {
       cancelled = true;
+      clearTimeout(safety);
     };
   }, []);
 

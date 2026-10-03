@@ -33,8 +33,9 @@ export function useUser(): UseUserResult {
     async function loadUser() {
       try {
         const {
-          data: { user },
-        } = await supabase.auth.getUser();
+          data: { session },
+        } = await supabase.auth.getSession();
+        const user = session?.user ?? null;
         setUser(user);
 
         if (user) {
@@ -54,6 +55,10 @@ export function useUser(): UseUserResult {
 
     loadUser();
 
+    // Red de seguridad: si algo deja la llamada colgada, no te deja
+    // pantalla de "Cargando..." eterna.
+    const safety = setTimeout(() => setLoading(false), 6000);
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -70,7 +75,10 @@ export function useUser(): UseUserResult {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(safety);
+      subscription.unsubscribe();
+    };
   }, []);
 
   return { user, profile, loading };
