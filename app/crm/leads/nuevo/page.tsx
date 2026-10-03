@@ -12,10 +12,13 @@ export default function NuevoLeadPage() {
   const [form, setForm] = useState({
     nombre: "",
     empresa: "",
+    representante: "",
     rubro: "",
     cargo: "",
     email: "",
     telefono: "",
+    direccion: "",
+    num_colaboradores: "",
     norma_interes: "",
     valor_estimado: "",
     notas: "",
@@ -32,7 +35,11 @@ export default function NuevoLeadPage() {
     setLoading(true);
     setError(null);
     try {
-      await create({ ...form, valor_estimado: parseFloat(form.valor_estimado) || 0 });
+      await create({
+        ...form,
+        valor_estimado: parseFloat(form.valor_estimado) || 0,
+        num_colaboradores: form.num_colaboradores ? parseInt(form.num_colaboradores, 10) : null,
+      });
       router.push("/crm/leads");
     } catch {
       setError("No se pudo guardar el lead. Intentá de nuevo.");
@@ -72,6 +79,14 @@ export default function NuevoLeadPage() {
             className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
           />
         </div>
+        <div>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Dueño o representante</label>
+          <input
+            value={form.representante}
+            onChange={(e) => set("representante", e.target.value)}
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
+          />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-[#8A8478] mb-1">Rubro de la empresa</label>
@@ -108,6 +123,24 @@ export default function NuevoLeadPage() {
               className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
             />
           </div>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Dirección</label>
+          <input
+            value={form.direccion}
+            onChange={(e) => set("direccion", e.target.value)}
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">N° de colaboradores</label>
+          <input
+            type="number"
+            min="0"
+            value={form.num_colaboradores}
+            onChange={(e) => set("num_colaboradores", e.target.value)}
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
+          />
         </div>
         <div>
           <label className="block text-xs font-medium text-[#8A8478] mb-1">Norma de interés</label>

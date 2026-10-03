@@ -33,10 +33,13 @@ export type Lead = {
   created_by: string;
   nombre: string;
   empresa: string | null;
+  representante: string | null;
   rubro: string | null;
   cargo: string | null;
   email: string | null;
   telefono: string | null;
+  direccion: string | null;
+  num_colaboradores: number | null;
   norma_interes: string | null;
   etapa: Etapa;
   valor_estimado: number;

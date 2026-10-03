@@ -14,6 +14,7 @@ const navItems: { href: string; label: string; roles: Rol[] }[] = [
   { href: "/crm/clientes", label: "Clientes", roles: ["admin", "comercial"] },
   { href: "/crm/cotizaciones", label: "Cotizaciones", roles: ["admin", "comercial"] },
   { href: "/crm/calendario", label: "Calendario", roles: ["admin", "comercial"] },
+  { href: "/crm/admin/empresas", label: "Base de empresas", roles: ["admin"] },
   { href: "/crm/admin/colaboradores", label: "Colaboradores", roles: ["admin"] },
 ];
 

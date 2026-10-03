@@ -44,10 +44,13 @@ export default function LeadDetallePage() {
       .update({
         nombre: form.nombre,
         empresa: form.empresa,
+        representante: form.representante,
         rubro: form.rubro,
         cargo: form.cargo,
         email: form.email,
         telefono: form.telefono,
+        direccion: form.direccion,
+        num_colaboradores: form.num_colaboradores,
         norma_interes: form.norma_interes,
         valor_estimado: form.valor_estimado,
         etapa: form.etapa,
@@ -65,6 +68,8 @@ export default function LeadDetallePage() {
         cargo: form.cargo,
         email: form.email,
         telefono: form.telefono,
+        direccion: form.direccion,
+        num_colaboradores: form.num_colaboradores,
         norma_interes: form.norma_interes,
         valor: form.valor_estimado,
         notas: form.notas,
@@ -99,6 +104,14 @@ export default function LeadDetallePage() {
           <input
             value={form.empresa ?? ""}
             onChange={(e) => set("empresa", e.target.value)}
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Dueño o representante</label>
+          <input
+            value={form.representante ?? ""}
+            onChange={(e) => set("representante", e.target.value)}
             className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
           />
         </div>
@@ -137,6 +150,24 @@ export default function LeadDetallePage() {
               className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
             />
           </div>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">Dirección</label>
+          <input
+            value={form.direccion ?? ""}
+            onChange={(e) => set("direccion", e.target.value)}
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-[#8A8478] mb-1">N° de colaboradores</label>
+          <input
+            type="number"
+            min="0"
+            value={form.num_colaboradores ?? ""}
+            onChange={(e) => set("num_colaboradores", e.target.value ? parseInt(e.target.value, 10) : null)}
+            className="w-full bg-[#FAF7F2] border border-[#E8E2D8] rounded-lg px-3 py-2 text-sm text-[#2D2A26] focus:outline-none focus:border-[#F5A623]"
+          />
         </div>
         <div>
           <label className="block text-xs font-medium text-[#8A8478] mb-1">Norma de interés</label>
