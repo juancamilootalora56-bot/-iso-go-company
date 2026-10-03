@@ -12,6 +12,8 @@ export default function NuevoLeadPage() {
   const [form, setForm] = useState({
     nombre: "",
     empresa: "",
+    rubro: "",
+    cargo: "",
     email: "",
     telefono: "",
     norma_interes: "",
@@ -68,6 +70,24 @@ export default function NuevoLeadPage() {
             onChange={(e) => set("empresa", e.target.value)}
             className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
           />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1">Rubro de la empresa</label>
+            <input
+              value={form.rubro}
+              onChange={(e) => set("rubro", e.target.value)}
+              className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1">Cargo</label>
+            <input
+              value={form.cargo}
+              onChange={(e) => set("cargo", e.target.value)}
+              className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5A623]"
+            />
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
