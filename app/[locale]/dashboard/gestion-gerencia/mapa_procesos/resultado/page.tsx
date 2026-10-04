@@ -69,7 +69,7 @@ export default function MapaProcesosResultadoPage() {
               className="bg-[#F5A623] rounded-lg flex items-center justify-center px-2 py-4 flex-shrink-0"
               style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
             >
-              <span className="text-white text-xs font-bold whitespace-nowrap">Necesidades del cliente</span>
+              <span className="text-white text-xs font-bold whitespace-nowrap">Requisitos del cliente y partes interesadas</span>
             </div>
 
             {/* Centro */}
@@ -138,7 +138,7 @@ export default function MapaProcesosResultadoPage() {
                 className="text-[#1A1A1A] text-xs font-bold whitespace-nowrap"
                 style={{ writingMode: "vertical-rl" }}
               >
-                Satisfacción del cliente
+                Satisfacción del cliente y partes interesadas
               </span>
             </div>
           </div>
