@@ -91,13 +91,15 @@ export default function GestionDocumentos({
   titulo,
   descripcion,
   items,
+  userId,
 }: {
   modulo: string;
   titulo: string;
   descripcion: string;
   items: ItemGestion[];
+  userId: string | null;
 }) {
-  const { docs, loading, save } = useGestionDocumentos(modulo);
+  const { docs, loading, save } = useGestionDocumentos(modulo, userId);
 
   const completados = items.filter((i) => (docs[i.key] ?? "").trim().length > 0).length;
 

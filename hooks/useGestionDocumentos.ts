@@ -3,24 +3,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export function useGestionDocumentos(modulo: string) {
+export function useGestionDocumentos(modulo: string, userId: string | null) {
   const [docs, setDocs] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
 
   const fetchAll = useCallback(async () => {
-    const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    const uid = session?.user?.id ?? null;
-    setUserId(uid);
-    if (!uid) {
+    if (!userId) {
       setLoading(false);
       return;
     }
+    const supabase = createClient();
     const { data } = await supabase
       .from("gestion_documentos")
       .select("item_key, contenido")
-      .eq("profile_id", uid)
+      .eq("profile_id", userId)
       .eq("modulo", modulo);
 
     const map: Record<string, string> = {};
@@ -29,7 +25,7 @@ export function useGestionDocumentos(modulo: string) {
     });
     setDocs(map);
     setLoading(false);
-  }, [modulo]);
+  }, [modulo, userId]);
 
   useEffect(() => {
     fetchAll();

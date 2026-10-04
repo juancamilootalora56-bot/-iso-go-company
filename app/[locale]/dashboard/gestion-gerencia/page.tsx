@@ -1,6 +1,7 @@
 "use client";
 
 import GestionDocumentos, { type ItemGestion } from "@/components/dashboard/GestionDocumentos";
+import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 
 const ITEMS: ItemGestion[] = [
   {
@@ -97,12 +98,14 @@ const ITEMS: ItemGestion[] = [
 ];
 
 export default function GestionGerenciaPage() {
+  const { user } = useDashboardUser();
   return (
     <GestionDocumentos
       modulo="gerencia"
       titulo="Gestión de la Gerencia"
       descripcion="Completá cada actividad del direccionamiento estratégico de tu sistema de gestión."
       items={ITEMS}
+      userId={user?.id ?? null}
     />
   );
 }

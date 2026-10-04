@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useParams, useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/hooks/useUser";
+import { DashboardUserProvider } from "@/components/dashboard/DashboardUserContext";
 
 const navItems = [
   { href: "", label: "Inicio", icon: "🏠" },
@@ -195,7 +196,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-6">
+          <DashboardUserProvider value={{ user, profile }}>{children}</DashboardUserProvider>
+        </main>
       </div>
     </div>
   );
