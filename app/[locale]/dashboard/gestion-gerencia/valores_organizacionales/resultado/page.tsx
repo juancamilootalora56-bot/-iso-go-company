@@ -27,7 +27,7 @@ export default function ValoresResultadoPage() {
   }
 
   const valores = parseValores(docs[ITEM_KEY_VALORES] ?? "");
-  const hayValores = valores.some((v) => v.trim().length > 0);
+  const hayValores = valores.some((v) => v.nombre.trim().length > 0);
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -61,7 +61,7 @@ export default function ValoresResultadoPage() {
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 p-6 sm:p-10">
           <div className="flex flex-col gap-[3px]">
-            {valores.map((texto, idx) => {
+            {valores.map((valor, idx) => {
               const anchoPropio = ANCHOS_NIVEL[idx];
               const anchoPrevio = idx === 0 ? 0 : ANCHOS_NIVEL[idx - 1];
               // Recorte en forma de trapecio: el tope coincide con el ancho del nivel anterior,
@@ -72,17 +72,17 @@ export default function ValoresResultadoPage() {
                   ? "polygon(50% 0, 100% 100%, 0% 100%)"
                   : `polygon(${insetTopo}% 0, ${100 - insetTopo}% 0, 100% 100%, 0% 100%)`;
               const color = COLORES_VALORES[idx];
-              const tieneTexto = texto.trim().length > 0;
+              const tieneTexto = valor.nombre.trim().length > 0;
 
               return (
-                <div key={idx} className="flex items-center">
+                <div key={idx} className="flex items-stretch">
                   {/* Columna fija de la pirámide: cada nivel centrado sobre el mismo eje */}
                   <div
-                    className="flex-shrink-0 h-11 sm:h-12 flex justify-center"
+                    className="flex-shrink-0 py-[1.5px] flex justify-center"
                     style={{ width: ANCHO_COLUMNA_PX }}
                   >
                     <div
-                      className="h-full"
+                      className="w-full h-full"
                       style={{
                         width: `${anchoPropio}%`,
                         backgroundColor: tieneTexto ? color : "#E5E7EB",
@@ -93,17 +93,22 @@ export default function ValoresResultadoPage() {
 
                   {/* Etiqueta del valor */}
                   <div
-                    className={`flex-1 min-w-0 rounded-full flex items-center justify-between gap-2 pl-5 pr-2 py-2.5 shadow-sm ${
+                    className={`flex-1 min-w-0 rounded-2xl flex items-center gap-2 pl-5 pr-2 py-2.5 shadow-sm ${
                       tieneTexto ? "bg-gray-50" : "bg-gray-50/50"
                     }`}
                   >
-                    <span
-                      className={`text-xs sm:text-sm font-bold truncate ${
-                        tieneTexto ? "text-[#1A1A1A]" : "text-gray-300 italic font-normal"
-                      }`}
-                    >
-                      {tieneTexto ? texto : "Sin definir"}
-                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className={`text-xs sm:text-sm font-bold truncate ${
+                          tieneTexto ? "text-[#1A1A1A]" : "text-gray-300 italic font-normal"
+                        }`}
+                      >
+                        {tieneTexto ? valor.nombre : "Sin definir"}
+                      </p>
+                      {valor.descripcion.trim() && (
+                        <p className="text-[11px] text-gray-500 mt-0.5 line-clamp-2">{valor.descripcion}</p>
+                      )}
+                    </div>
                     <span
                       className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold"
                       style={{ backgroundColor: tieneTexto ? color : "#D1D5DB" }}

@@ -62,17 +62,27 @@ export const COLORES_VALORES = [
   "#14B8A6",
 ];
 
-export function valoresVacios(): string[] {
-  return ["", "", "", "", "", "", ""];
+export type ValorOrganizacional = { nombre: string; descripcion: string };
+
+function valorVacio(): ValorOrganizacional {
+  return { nombre: "", descripcion: "" };
 }
 
-export function parseValores(contenido: string): string[] {
+export function valoresVacios(): ValorOrganizacional[] {
+  return Array.from({ length: 7 }, valorVacio);
+}
+
+export function parseValores(contenido: string): ValorOrganizacional[] {
   if (!contenido) return valoresVacios();
   try {
     const parsed = JSON.parse(contenido);
     if (Array.isArray(parsed)) {
-      const arr = [...parsed];
-      while (arr.length < 7) arr.push("");
+      const arr = parsed.map((v) =>
+        typeof v === "string"
+          ? { nombre: v, descripcion: "" }
+          : { nombre: v?.nombre ?? "", descripcion: v?.descripcion ?? "" }
+      );
+      while (arr.length < 7) arr.push(valorVacio());
       return arr.slice(0, 7);
     }
   } catch {

@@ -31,7 +31,7 @@ function estaCompleto(itemKey: string, docs: Record<string, string>) {
     );
   }
   if (itemKey === "valores_organizacionales") {
-    return parseValores(docs["valores_lista"] ?? "").some((v) => v.trim().length > 0);
+    return parseValores(docs["valores_lista"] ?? "").some((v) => v.nombre.trim().length > 0);
   }
   return (docs[itemKey] ?? "").trim().length > 0;
 }
