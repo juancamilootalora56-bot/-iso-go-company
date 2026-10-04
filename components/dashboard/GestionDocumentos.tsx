@@ -1,91 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
-import CompromisoDireccionCard from "./CompromisoDireccionCard";
+import type { ItemGestion } from "@/lib/gestionGerenciaItems";
 
-export type ItemGestion = {
-  key: string;
-  titulo: string;
-  icono: string;
-  descripcion: string;
-  placeholder: string;
-};
-
-function ItemCard({
-  item,
-  contenido,
-  onSave,
-}: {
-  item: ItemGestion;
-  contenido: string;
-  onSave: (key: string, valor: string) => Promise<void>;
-}) {
-  const [open, setOpen] = useState(false);
-  const [valor, setValor] = useState(contenido);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  async function handleSave() {
-    setSaving(true);
-    setSaved(false);
-    await onSave(item.key, valor);
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  }
-
-  const completo = contenido.trim().length > 0;
-
-  return (
-    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 p-4 text-left hover:bg-gray-50 transition-colors"
-      >
-        <span className="text-2xl flex-shrink-0">{item.icono}</span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h2 className="font-semibold text-sm text-[#1A1A1A]">{item.titulo}</h2>
-            <span
-              className={`text-[10px] uppercase tracking-wide font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
-                completo ? "text-green-700 bg-green-100" : "text-[#F5A623] bg-[#F5A623]/10"
-              }`}
-            >
-              {completo ? "Completo" : "Pendiente"}
-            </span>
-          </div>
-          <p className="text-xs text-gray-500 mt-0.5">{item.descripcion}</p>
-        </div>
-        <span className={`text-gray-400 transition-transform flex-shrink-0 ${open ? "rotate-180" : ""}`}>▾</span>
-      </button>
-
-      {open && (
-        <div className="p-4 border-t border-gray-100">
-          <textarea
-            value={valor}
-            onChange={(e) => setValor(e.target.value)}
-            placeholder={item.placeholder}
-            rows={6}
-            className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] placeholder-gray-400 focus:outline-none focus:border-[#F5A623] resize-y"
-          />
-          <div className="flex items-center gap-3 mt-3">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410] disabled:opacity-60"
-            >
-              {saving ? "Guardando..." : "Guardar"}
-            </button>
-            {saved && <span className="text-green-600 text-sm">✓ Guardado</span>}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+export type { ItemGestion };
 
 export default function GestionDocumentos({
   modulo,
@@ -93,16 +12,16 @@ export default function GestionDocumentos({
   descripcion,
   items,
   userId,
-  empresa,
+  basePath,
 }: {
   modulo: string;
   titulo: string;
   descripcion: string;
   items: ItemGestion[];
   userId: string | null;
-  empresa?: string;
+  basePath: string;
 }) {
-  const { docs, loading, save } = useGestionDocumentos(modulo, userId);
+  const { docs, loading } = useGestionDocumentos(modulo, userId);
 
   const completados = items.filter((i) => (docs[i.key] ?? "").trim().length > 0).length;
 
@@ -131,19 +50,33 @@ export default function GestionDocumentos({
       {loading ? (
         <p className="text-gray-400 text-sm">Cargando...</p>
       ) : (
-        <div className="space-y-3">
-          {items.map((item) =>
-            item.key === "compromiso_direccion" ? (
-              <CompromisoDireccionCard
+        <div className="space-y-2">
+          {items.map((item) => {
+            const completo = (docs[item.key] ?? "").trim().length > 0;
+            return (
+              <Link
                 key={item.key}
-                empresa={empresa ?? ""}
-                contenido={docs[item.key] ?? ""}
-                onSave={(valor) => save(item.key, valor)}
-              />
-            ) : (
-              <ItemCard key={item.key} item={item} contenido={docs[item.key] ?? ""} onSave={save} />
-            )
-          )}
+                href={`${basePath}/${item.key}`}
+                className="flex items-center gap-3 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 transition-colors"
+              >
+                <span className="text-2xl flex-shrink-0">{item.icono}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-semibold text-sm text-[#1A1A1A]">{item.titulo}</h2>
+                    <span
+                      className={`text-[10px] uppercase tracking-wide font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+                        completo ? "text-green-700 bg-green-100" : "text-[#F5A623] bg-[#F5A623]/10"
+                      }`}
+                    >
+                      {completo ? "Completo" : "Pendiente"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5">{item.descripcion}</p>
+                </div>
+                <span className="text-gray-300 flex-shrink-0">›</span>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
