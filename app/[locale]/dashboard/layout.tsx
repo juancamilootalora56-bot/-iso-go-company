@@ -9,10 +9,13 @@ import { useUser } from "@/hooks/useUser";
 
 const navItems = [
   { href: "", label: "Inicio", icon: "🏠" },
-  { href: "/mi-certificacion", label: "Mi Certificación", icon: "📋" },
-  { href: "/demos", label: "Demos disponibles", icon: "🎮" },
-  { href: "/progreso", label: "Mi progreso", icon: "📊" },
-  { href: "/perfil", label: "Mi perfil", icon: "⚙️" },
+  { href: "/gestion-gerencia", label: "Gestión de la Gerencia", icon: "🏛️" },
+  { href: "/gestion-talento-humano", label: "Gestión del Talento Humano", icon: "👥" },
+  { href: "/gestion-compras", label: "Gestión de Compras", icon: "🛒" },
+  { href: "/gestion-comercial", label: "Gestión Comercial", icon: "📈" },
+  { href: "/gestion-operativa", label: "Gestión Operativa", icon: "⚙️" },
+  { href: "/gestion-diseno-desarrollo", label: "Gestión de Diseño y Desarrollo", icon: "🧩" },
+  { href: "/perfil", label: "Perfil", icon: "👤" },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
