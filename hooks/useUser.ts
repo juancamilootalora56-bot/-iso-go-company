@@ -59,25 +59,14 @@ export function useUser(): UseUserResult {
     // pantalla de "Cargando..." eterna.
     const safety = setTimeout(() => setLoading(false), 6000);
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-        setProfile(data);
-      } else {
-        setProfile(null);
-      }
-    });
-
+    // Nota: a propósito NO nos suscribimos a onAuthStateChange acá.
+    // Esa suscripción, combinada con otras consultas .from(...) hechas
+    // en paralelo en otros componentes, generaba un deadlock interno
+    // en el cliente de Supabase (las consultas se quedaban colgadas
+    // para siempre sin error). El patrón del CRM, que tampoco se
+    // suscribe, nunca tuvo este problema.
     return () => {
       clearTimeout(safety);
-      subscription.unsubscribe();
     };
   }, []);
 

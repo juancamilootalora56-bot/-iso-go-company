@@ -25,13 +25,10 @@ export default function Header() {
         setUser(data.session?.user ?? null);
         setAuthLoading(false);
       });
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        setUser(session?.user ?? null);
-      });
-      return () => {
-        clearTimeout(safety);
-        subscription.unsubscribe();
-      };
+      // Nota: sin suscripción a onAuthStateChange a propósito — ver
+      // el comentario en hooks/useUser.ts (deadlock con consultas
+      // .from(...) concurrentes).
+      return () => clearTimeout(safety);
     } catch {
       setAuthLoading(false);
     }

@@ -8,37 +8,26 @@ export function useGestionDocumentos(modulo: string, userId: string | null) {
   const [loading, setLoading] = useState(true);
 
   const fetchAll = useCallback(async () => {
-    console.log("[gestionDocs] fetchAll start, userId=", userId, "modulo=", modulo);
     if (!userId) {
-      console.log("[gestionDocs] no userId, bailing");
       setLoading(false);
       return;
     }
-    try {
-      const supabase = createClient();
-      console.log("[gestionDocs] client created, querying...");
-      const { data, error } = await supabase
-        .from("gestion_documentos")
-        .select("item_key, contenido")
-        .eq("profile_id", userId)
-        .eq("modulo", modulo);
-      console.log("[gestionDocs] query resolved", { data, error });
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("gestion_documentos")
+      .select("item_key, contenido")
+      .eq("profile_id", userId)
+      .eq("modulo", modulo);
 
-      const map: Record<string, string> = {};
-      (data ?? []).forEach((row) => {
-        map[row.item_key] = row.contenido ?? "";
-      });
-      setDocs(map);
-    } catch (e) {
-      console.log("[gestionDocs] threw", e);
-    } finally {
-      console.log("[gestionDocs] finally, loading=false");
-      setLoading(false);
-    }
+    const map: Record<string, string> = {};
+    (data ?? []).forEach((row) => {
+      map[row.item_key] = row.contenido ?? "";
+    });
+    setDocs(map);
+    setLoading(false);
   }, [modulo, userId]);
 
   useEffect(() => {
-    console.log("[gestionDocs] effect fired, calling fetchAll");
     fetchAll();
   }, [fetchAll]);
 
