@@ -8,8 +8,11 @@ import { COLORES_VALORES, parseValores } from "@/lib/valoresEstructura";
 
 const ITEM_KEY_VALORES = "valores_lista";
 
-// Ancho de cada nivel de la pirámide, del vértice (índice 0) a la base (índice 6).
+// Ancho de cada nivel de la pirámide, del vértice (índice 0) a la base (índice 6),
+// como porcentaje del ancho total de la columna de la pirámide.
 const ANCHOS_NIVEL = [22, 35, 48, 61, 74, 87, 100];
+
+const ANCHO_COLUMNA_PX = 220;
 
 export default function ValoresResultadoPage() {
   const { user } = useDashboardUser();
@@ -73,14 +76,15 @@ export default function ValoresResultadoPage() {
 
               return (
                 <div key={idx} className="flex items-center">
-                  {/* Franja de la pirámide */}
+                  {/* Columna fija de la pirámide: cada nivel centrado sobre el mismo eje */}
                   <div
-                    className="flex-shrink-0 h-11 sm:h-12"
-                    style={{ width: `${anchoPropio}%`, maxWidth: 260 }}
+                    className="flex-shrink-0 h-11 sm:h-12 flex justify-center"
+                    style={{ width: ANCHO_COLUMNA_PX }}
                   >
                     <div
-                      className="w-full h-full"
+                      className="h-full"
                       style={{
+                        width: `${anchoPropio}%`,
                         backgroundColor: tieneTexto ? color : "#E5E7EB",
                         clipPath,
                       }}
@@ -89,7 +93,7 @@ export default function ValoresResultadoPage() {
 
                   {/* Etiqueta del valor */}
                   <div
-                    className={`flex-1 min-w-0 -ml-3 rounded-full flex items-center justify-between gap-2 pl-5 pr-2 py-2.5 shadow-sm ${
+                    className={`flex-1 min-w-0 rounded-full flex items-center justify-between gap-2 pl-5 pr-2 py-2.5 shadow-sm ${
                       tieneTexto ? "bg-gray-50" : "bg-gray-50/50"
                     }`}
                   >
