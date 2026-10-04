@@ -24,6 +24,11 @@ function estaCompleto(itemKey: string, docs: Record<string, string>) {
   if (itemKey === "mapa_procesos") {
     return parseListaProcesos(docs["mapa_procesos_seleccion"] ?? "").length > 0;
   }
+  if (itemKey === "matriz_gestion_riesgos") {
+    return Object.keys(docs).some(
+      (k) => k.startsWith("riesgos_matriz_") && docs[k] && docs[k] !== "[]"
+    );
+  }
   return (docs[itemKey] ?? "").trim().length > 0;
 }
 
