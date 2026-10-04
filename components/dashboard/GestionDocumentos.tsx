@@ -3,8 +3,16 @@
 import Link from "next/link";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import type { ItemGestion } from "@/lib/gestionGerenciaItems";
+import { FODA_CATEGORIAS, itemKeyFoda } from "@/lib/fodaItems";
 
 export type { ItemGestion };
+
+function estaCompleto(itemKey: string, docs: Record<string, string>) {
+  if (itemKey === "foda") {
+    return FODA_CATEGORIAS.some((c) => (docs[itemKeyFoda(c.key)] ?? "").trim().length > 0);
+  }
+  return (docs[itemKey] ?? "").trim().length > 0;
+}
 
 export default function GestionDocumentos({
   modulo,
@@ -23,7 +31,7 @@ export default function GestionDocumentos({
 }) {
   const { docs, loading } = useGestionDocumentos(modulo, userId);
 
-  const completados = items.filter((i) => (docs[i.key] ?? "").trim().length > 0).length;
+  const completados = items.filter((i) => estaCompleto(i.key, docs)).length;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -52,7 +60,7 @@ export default function GestionDocumentos({
       ) : (
         <div className="space-y-2">
           {items.map((item) => {
-            const completo = (docs[item.key] ?? "").trim().length > 0;
+            const completo = estaCompleto(item.key, docs);
             return (
               <Link
                 key={item.key}
