@@ -8,8 +8,8 @@ import { COLORES_VALORES, parseValores } from "@/lib/valoresEstructura";
 
 const ITEM_KEY_VALORES = "valores_lista";
 
-// Filas de la pirámide, de arriba (vértice) hacia abajo (base): 1, 2, 4 = 7 valores.
-const FILAS = [1, 2, 4];
+// Ancho de cada nivel de la pirámide, del vértice (índice 0) a la base (índice 6).
+const ANCHOS_NIVEL = [22, 35, 48, 61, 74, 87, 100];
 
 export default function ValoresResultadoPage() {
   const { user } = useDashboardUser();
@@ -25,19 +25,6 @@ export default function ValoresResultadoPage() {
 
   const valores = parseValores(docs[ITEM_KEY_VALORES] ?? "");
   const hayValores = valores.some((v) => v.trim().length > 0);
-
-  let cursor = 0;
-  const filasConValores = FILAS.map((cantidad) => {
-    const items = valores.slice(cursor, cursor + cantidad).map((texto, i) => ({
-      texto,
-      color: COLORES_VALORES[cursor + i],
-    }));
-    cursor += cantidad;
-    return items;
-  });
-
-  // Ancho de cada escalón (vértice angosto -> base ancha), centrado.
-  const anchos = ["32%", "62%", "92%"];
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -69,43 +56,60 @@ export default function ValoresResultadoPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 p-10">
-          <div className="flex flex-col items-center">
-            {filasConValores.map((fila, filaIdx) => (
-              <div
-                key={filaIdx}
-                className="flex items-stretch justify-center gap-[3px]"
-                style={{ width: anchos[filaIdx], marginTop: filaIdx === 0 ? 0 : -6 }}
-              >
-                {fila.map((item, i) =>
-                  item.texto.trim() ? (
+        <div className="bg-white rounded-xl border border-gray-100 p-6 sm:p-10">
+          <div className="flex flex-col gap-[3px]">
+            {valores.map((texto, idx) => {
+              const anchoPropio = ANCHOS_NIVEL[idx];
+              const anchoPrevio = idx === 0 ? 0 : ANCHOS_NIVEL[idx - 1];
+              // Recorte en forma de trapecio: el tope coincide con el ancho del nivel anterior,
+              // la base coincide con el ancho propio. El primer nivel queda como un triángulo.
+              const insetTopo = ((anchoPropio - anchoPrevio) / anchoPropio / 2) * 100;
+              const clipPath =
+                idx === 0
+                  ? "polygon(50% 0, 100% 100%, 0% 100%)"
+                  : `polygon(${insetTopo}% 0, ${100 - insetTopo}% 0, 100% 100%, 0% 100%)`;
+              const color = COLORES_VALORES[idx];
+              const tieneTexto = texto.trim().length > 0;
+
+              return (
+                <div key={idx} className="flex items-center">
+                  {/* Franja de la pirámide */}
+                  <div
+                    className="flex-shrink-0 h-11 sm:h-12"
+                    style={{ width: `${anchoPropio}%`, maxWidth: 260 }}
+                  >
                     <div
-                      key={i}
-                      className="flex-1 text-white text-[11px] sm:text-sm font-bold text-center px-2 py-4 rounded-t-md leading-tight flex items-center justify-center"
+                      className="w-full h-full"
                       style={{
-                        backgroundColor: item.color,
-                        boxShadow:
-                          "inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -5px 0 rgba(0,0,0,0.18), 0 2px 3px rgba(0,0,0,0.12)",
+                        backgroundColor: tieneTexto ? color : "#E5E7EB",
+                        clipPath,
                       }}
+                    />
+                  </div>
+
+                  {/* Etiqueta del valor */}
+                  <div
+                    className={`flex-1 min-w-0 -ml-3 rounded-full flex items-center justify-between gap-2 pl-5 pr-2 py-2.5 shadow-sm ${
+                      tieneTexto ? "bg-gray-50" : "bg-gray-50/50"
+                    }`}
+                  >
+                    <span
+                      className={`text-xs sm:text-sm font-bold truncate ${
+                        tieneTexto ? "text-[#1A1A1A]" : "text-gray-300 italic font-normal"
+                      }`}
                     >
-                      {item.texto}
-                    </div>
-                  ) : (
-                    <div
-                      key={i}
-                      className="flex-1 border border-dashed border-gray-200 text-gray-300 text-xs text-center px-2 py-4 rounded-t-md flex items-center justify-center"
+                      {tieneTexto ? texto : "Sin definir"}
+                    </span>
+                    <span
+                      className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold"
+                      style={{ backgroundColor: tieneTexto ? color : "#D1D5DB" }}
                     >
-                      —
-                    </div>
-                  )
-                )}
-              </div>
-            ))}
-            {/* Base de la pirámide */}
-            <div
-              className="h-2 bg-gray-200 rounded-b-sm"
-              style={{ width: anchos[anchos.length - 1] }}
-            />
+                      {idx + 1}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
