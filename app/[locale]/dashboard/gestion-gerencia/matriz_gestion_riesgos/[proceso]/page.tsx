@@ -19,7 +19,7 @@ import {
   type RiesgoFila,
 } from "@/lib/riesgos";
 
-const CATS_GERENCIA = ["fortalezas", "debilidades", "oportunidades", "amenazas"] as const;
+const CATS_GERENCIA = ["debilidades", "amenazas"] as const;
 
 export default function MatrizRiesgosProcesoPage() {
   const { user } = useDashboardUser();

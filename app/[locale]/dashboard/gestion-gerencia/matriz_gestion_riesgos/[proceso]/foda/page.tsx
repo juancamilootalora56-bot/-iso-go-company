@@ -19,9 +19,7 @@ import {
 } from "@/lib/riesgos";
 
 const CATS: { key: DofaCat; label: string; placeholder: string }[] = [
-  { key: "fortalezas", label: "Fortalezas", placeholder: "Una por línea. Ej:\nEquipo con experiencia\nBuena relación con clientes" },
   { key: "debilidades", label: "Debilidades", placeholder: "Una por línea. Ej:\nFalta de personal\nProcesos no documentados" },
-  { key: "oportunidades", label: "Oportunidades", placeholder: "Una por línea. Ej:\nNuevos mercados\nAlianzas estratégicas" },
   { key: "amenazas", label: "Amenazas", placeholder: "Una por línea. Ej:\nCompetencia\nCambios regulatorios" },
 ];
 
