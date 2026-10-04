@@ -9,6 +9,7 @@ import { parseProductos } from "@/lib/productosEstrella";
 import { parseLista as parseListaProcesos } from "@/lib/mapaProcesos";
 import { parseValores } from "@/lib/valoresEstructura";
 import { parseObjetivos } from "@/lib/objetivosCalidad";
+import { parseNodos } from "@/lib/estructuraOrganizacional";
 
 export type { ItemGestion };
 
@@ -36,6 +37,9 @@ function estaCompleto(itemKey: string, docs: Record<string, string>) {
   }
   if (itemKey === "objetivos_calidad") {
     return parseObjetivos(docs[itemKey] ?? "").length > 0;
+  }
+  if (itemKey === "estructura_organizacional") {
+    return parseNodos(docs[itemKey] ?? "").length > 0;
   }
   return (docs[itemKey] ?? "").trim().length > 0;
 }
