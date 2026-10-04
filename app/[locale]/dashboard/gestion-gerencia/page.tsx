@@ -98,7 +98,7 @@ const ITEMS: ItemGestion[] = [
 ];
 
 export default function GestionGerenciaPage() {
-  const { user } = useDashboardUser();
+  const { user, profile } = useDashboardUser();
   return (
     <GestionDocumentos
       modulo="gerencia"
@@ -106,6 +106,7 @@ export default function GestionGerenciaPage() {
       descripcion="Completá cada actividad del direccionamiento estratégico de tu sistema de gestión."
       items={ITEMS}
       userId={user?.id ?? null}
+      empresa={profile?.company_name ?? ""}
     />
   );
 }

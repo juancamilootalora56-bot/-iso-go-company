@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import CompromisoDireccionCard from "./CompromisoDireccionCard";
 
 export type ItemGestion = {
   key: string;
@@ -92,12 +93,14 @@ export default function GestionDocumentos({
   descripcion,
   items,
   userId,
+  empresa,
 }: {
   modulo: string;
   titulo: string;
   descripcion: string;
   items: ItemGestion[];
   userId: string | null;
+  empresa?: string;
 }) {
   const { docs, loading, save } = useGestionDocumentos(modulo, userId);
 
@@ -129,9 +132,18 @@ export default function GestionDocumentos({
         <p className="text-gray-400 text-sm">Cargando...</p>
       ) : (
         <div className="space-y-3">
-          {items.map((item) => (
-            <ItemCard key={item.key} item={item} contenido={docs[item.key] ?? ""} onSave={save} />
-          ))}
+          {items.map((item) =>
+            item.key === "compromiso_direccion" ? (
+              <CompromisoDireccionCard
+                key={item.key}
+                empresa={empresa ?? ""}
+                contenido={docs[item.key] ?? ""}
+                onSave={(valor) => save(item.key, valor)}
+              />
+            ) : (
+              <ItemCard key={item.key} item={item} contenido={docs[item.key] ?? ""} onSave={save} />
+            )
+          )}
         </div>
       )}
     </div>
