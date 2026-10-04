@@ -36,18 +36,18 @@ export const ITEMS_GERENCIA: ItemGestion[] = [
     placeholder: "Producto / servicio | Participación | Importancia estratégica\n...",
   },
   {
-    key: "matriz_gestion_riesgos",
-    titulo: "Matriz de la Gestión de Riesgos",
-    icono: "⚠️",
-    descripcion: "Riesgos y oportunidades identificados, su valoración y tratamiento.",
-    placeholder: "Riesgo / oportunidad | Probabilidad | Impacto | Acción de tratamiento\n...",
-  },
-  {
     key: "mapa_procesos",
     titulo: "Mapa de Procesos",
     icono: "🗺️",
     descripcion: "Procesos estratégicos, operativos y de apoyo de la organización.",
     placeholder: "Procesos estratégicos: ...\nProcesos operativos: ...\nProcesos de apoyo: ...",
+  },
+  {
+    key: "matriz_gestion_riesgos",
+    titulo: "Matriz de la Gestión de Riesgos",
+    icono: "⚠️",
+    descripcion: "Riesgos y oportunidades identificados, su valoración y tratamiento.",
+    placeholder: "Riesgo / oportunidad | Probabilidad | Impacto | Acción de tratamiento\n...",
   },
   {
     key: "mision",
