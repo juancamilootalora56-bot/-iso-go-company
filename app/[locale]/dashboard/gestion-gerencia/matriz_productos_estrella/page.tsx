@@ -131,11 +131,11 @@ export default function MatrizProductosEstrellaPage() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="relative w-20 h-20 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden"
+            className="relative w-20 h-20 rounded-lg bg-white border border-gray-200 flex items-center justify-center overflow-hidden"
           >
             {form.foto ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={form.foto} alt="Producto" className="w-full h-full object-cover" />
+              <img src={form.foto} alt="Producto" className="max-w-full max-h-full object-contain" />
             ) : (
               <svg className="w-8 h-8 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
@@ -231,10 +231,10 @@ export default function MatrizProductosEstrellaPage() {
                 key={p.id}
                 className="flex items-center gap-3 bg-white rounded-xl border border-gray-100 p-3"
               >
-                <div className="w-10 h-10 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden relative">
+                <div className="w-12 h-12 rounded-lg bg-white border border-gray-100 flex-shrink-0 overflow-hidden relative flex items-center justify-center">
                   {p.foto && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.foto} alt={p.nombre} className="w-full h-full object-cover" />
+                    <img src={p.foto} alt={p.nombre} className="max-w-full max-h-full object-contain" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

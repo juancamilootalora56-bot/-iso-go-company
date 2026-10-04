@@ -68,10 +68,10 @@ export default function MatrizProductosEstrellaResultadoPage() {
               {productos.map((p) => (
                 <tr key={p.id} className="border-b border-gray-50 align-top">
                   <td className="p-2">
-                    <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden relative">
+                    <div className="w-14 h-14 rounded-lg bg-white border border-gray-100 overflow-hidden relative flex items-center justify-center">
                       {p.foto && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.foto} alt={p.nombre} className="w-full h-full object-cover" />
+                        <img src={p.foto} alt={p.nombre} className="max-w-full max-h-full object-contain" />
                       )}
                     </div>
                   </td>
