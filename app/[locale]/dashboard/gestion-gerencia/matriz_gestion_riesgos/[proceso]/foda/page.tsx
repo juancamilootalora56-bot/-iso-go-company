@@ -19,9 +19,14 @@ import {
 } from "@/lib/riesgos";
 
 const CATS: { key: DofaCat; label: string; placeholder: string }[] = [
+  { key: "fortalezas", label: "Fortalezas", placeholder: "Una por línea. Ej:\nEquipo con experiencia\nBuena relación con clientes" },
   { key: "debilidades", label: "Debilidades", placeholder: "Una por línea. Ej:\nFalta de personal\nProcesos no documentados" },
+  { key: "oportunidades", label: "Oportunidades", placeholder: "Una por línea. Ej:\nNuevos mercados\nAlianzas estratégicas" },
   { key: "amenazas", label: "Amenazas", placeholder: "Una por línea. Ej:\nCompetencia\nCambios regulatorios" },
 ];
+
+// La matriz de riesgos (Excel) solo toma Debilidades y Amenazas.
+const CATS_RIESGO: DofaCat[] = ["debilidades", "amenazas"];
 
 export default function RiesgosFodaPage() {
   const { user } = useDashboardUser();
@@ -58,8 +63,8 @@ export default function RiesgosFodaPage() {
     const existentesPorTexto = new Map(existentes.map((f) => [f.riesgo, f]));
 
     const nuevasFilas: RiesgoFila[] = [];
-    CATS.forEach((cat) => {
-      form[cat.key]
+    CATS_RIESGO.forEach((cat) => {
+      form[cat]
         .split("\n")
         .map((l) => l.trim())
         .filter(Boolean)
@@ -70,10 +75,10 @@ export default function RiesgosFodaPage() {
               id: crypto.randomUUID(),
               riesgo: linea,
               proceso: procesoNombre,
-              tipo: DOFA_TIPO[cat.key],
-              dofa: DOFA_LABEL[cat.key],
+              tipo: DOFA_TIPO[cat],
+              dofa: DOFA_LABEL[cat],
               descripcion: "",
-              efecto: DOFA_EFECTO[cat.key],
+              efecto: DOFA_EFECTO[cat],
               impacto: "",
               probabilidad: "",
               control: "",
