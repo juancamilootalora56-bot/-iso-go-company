@@ -7,6 +7,7 @@ import { FODA_CATEGORIAS, itemKeyFoda } from "@/lib/fodaItems";
 import { parseSeleccion } from "@/lib/partesInteresadasItems";
 import { parseProductos } from "@/lib/productosEstrella";
 import { parseLista as parseListaProcesos } from "@/lib/mapaProcesos";
+import { parseValores } from "@/lib/valoresEstructura";
 
 export type { ItemGestion };
 
@@ -28,6 +29,9 @@ function estaCompleto(itemKey: string, docs: Record<string, string>) {
     return Object.keys(docs).some(
       (k) => k.startsWith("riesgos_matriz_") && docs[k] && docs[k] !== "[]"
     );
+  }
+  if (itemKey === "valores_organizacionales") {
+    return parseValores(docs["valores_lista"] ?? "").some((v) => v.trim().length > 0);
   }
   return (docs[itemKey] ?? "").trim().length > 0;
 }
