@@ -36,7 +36,8 @@ export default function ValoresResultadoPage() {
     return items;
   });
 
-  const anchos = ["w-[30%]", "w-[60%]", "w-[90%]"];
+  // Ancho de cada escalón (vértice angosto -> base ancha), centrado.
+  const anchos = ["32%", "62%", "92%"];
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -68,27 +69,43 @@ export default function ValoresResultadoPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 p-8">
-          <div className="flex flex-col items-center gap-2">
+        <div className="bg-white rounded-xl border border-gray-100 p-10">
+          <div className="flex flex-col items-center">
             {filasConValores.map((fila, filaIdx) => (
-              <div key={filaIdx} className={`flex items-center justify-center gap-2 ${anchos[filaIdx]}`}>
+              <div
+                key={filaIdx}
+                className="flex items-stretch justify-center gap-[3px]"
+                style={{ width: anchos[filaIdx], marginTop: filaIdx === 0 ? 0 : -6 }}
+              >
                 {fila.map((item, i) =>
                   item.texto.trim() ? (
                     <div
                       key={i}
-                      className="flex-1 text-white text-xs sm:text-sm font-bold text-center px-3 py-3 rounded-lg shadow-sm"
-                      style={{ backgroundColor: item.color }}
+                      className="flex-1 text-white text-[11px] sm:text-sm font-bold text-center px-2 py-4 rounded-t-md leading-tight flex items-center justify-center"
+                      style={{
+                        backgroundColor: item.color,
+                        boxShadow:
+                          "inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -5px 0 rgba(0,0,0,0.18), 0 2px 3px rgba(0,0,0,0.12)",
+                      }}
                     >
                       {item.texto}
                     </div>
                   ) : (
-                    <div key={i} className="flex-1 border border-dashed border-gray-200 text-gray-300 text-xs text-center px-3 py-3 rounded-lg">
+                    <div
+                      key={i}
+                      className="flex-1 border border-dashed border-gray-200 text-gray-300 text-xs text-center px-2 py-4 rounded-t-md flex items-center justify-center"
+                    >
                       —
                     </div>
                   )
                 )}
               </div>
             ))}
+            {/* Base de la pirámide */}
+            <div
+              className="h-2 bg-gray-200 rounded-b-sm"
+              style={{ width: anchos[anchos.length - 1] }}
+            />
           </div>
         </div>
       )}
