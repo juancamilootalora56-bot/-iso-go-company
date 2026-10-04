@@ -22,7 +22,7 @@ const navItems = [
 // Portal del cliente todavía en desarrollo (sistema ISO 9001 en construcción).
 // Mientras tanto, solo esta cuenta puede entrar a probarlo. No tiene relación
 // con los colaboradores internos del CRM (esos se manejan aparte).
-const ALLOWED_CLIENT_EMAILS = ["juan@isogo.company", "qa-temp9@isogo.company"];
+const ALLOWED_CLIENT_EMAILS = ["juan@isogo.company"];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const params = useParams();
