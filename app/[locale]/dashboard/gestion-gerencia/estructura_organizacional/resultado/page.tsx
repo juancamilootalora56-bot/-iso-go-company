@@ -23,6 +23,37 @@ const COLOR_LINEA_EXTERNA = "#F5A623";
 
 type FormularioState = { modo: "agregar" | "editar"; draft: NodoOrganigrama } | null;
 
+type RectoRelativo = { left: number; top: number; width: number; height: number };
+
+// Arma un camino en ángulo recto entre dos tarjetas, saliendo/entrando por sus bordes
+// (nunca por el centro) para no pasar la línea sobre las fotos o el texto.
+function rutaConector(a: RectoRelativo, b: RectoRelativo): string {
+  const aCx = a.left + a.width / 2;
+  const aCy = a.top + a.height / 2;
+  const bCx = b.left + b.width / 2;
+  const bCy = b.top + b.height / 2;
+  const dx = bCx - aCx;
+  const dy = bCy - aCy;
+
+  // Si la separación vertical predomina, conectamos por arriba/abajo de las tarjetas;
+  // si predomina la horizontal, conectamos por los costados.
+  if (Math.abs(dy) >= Math.abs(dx) * 0.6) {
+    const x1 = aCx;
+    const y1 = dy >= 0 ? a.top + a.height : a.top;
+    const x2 = bCx;
+    const y2 = dy >= 0 ? b.top : b.top + b.height;
+    const midY = y1 + (y2 - y1) / 2;
+    return `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`;
+  }
+
+  const x1 = dx >= 0 ? a.left + a.width : a.left;
+  const y1 = aCy;
+  const x2 = dx >= 0 ? b.left : b.left + b.width;
+  const y2 = bCy;
+  const midX = x1 + (x2 - x1) / 2;
+  return `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
+}
+
 function TarjetaNodo({
   nodo,
   onClick,
@@ -146,7 +177,7 @@ export default function EstructuraOrganizacionalResultadoPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lineasExtra, setLineasExtra] = useState<
-    { id: string; x1: number; y1: number; x2: number; y2: number; color: string; dash: boolean }[]
+    { id: string; d: string; color: string; dash: boolean }[]
   >([]);
 
   useEffect(() => {
@@ -166,19 +197,23 @@ export default function EstructuraOrganizacionalResultadoPage() {
         return;
       }
       const canvasRect = canvas.getBoundingClientRect();
+      const relRect = (r: DOMRect) => ({
+        left: r.left - canvasRect.left + canvas.scrollLeft,
+        top: r.top - canvasRect.top + canvas.scrollTop,
+        width: r.width,
+        height: r.height,
+      });
+
       const nuevas = conexiones
         .map((c) => {
           const elOrigen = document.getElementById(`nodo-${c.origenId}`);
           const elDestino = document.getElementById(`nodo-${c.destinoId}`);
           if (!elOrigen || !elDestino) return null;
-          const r1 = elOrigen.getBoundingClientRect();
-          const r2 = elDestino.getBoundingClientRect();
+          const r1 = relRect(elOrigen.getBoundingClientRect());
+          const r2 = relRect(elDestino.getBoundingClientRect());
           return {
             id: c.id,
-            x1: r1.left + r1.width / 2 - canvasRect.left + canvas.scrollLeft,
-            y1: r1.top + r1.height / 2 - canvasRect.top + canvas.scrollTop,
-            x2: r2.left + r2.width / 2 - canvasRect.left + canvas.scrollLeft,
-            y2: r2.top + r2.height / 2 - canvasRect.top + canvas.scrollTop,
+            d: rutaConector(r1, r2),
             color: c.tipo === "externa" ? COLOR_LINEA_EXTERNA : "#3B82F6",
             dash: c.tipo === "externa",
           };
@@ -375,14 +410,14 @@ export default function EstructuraOrganizacionalResultadoPage() {
         {lineasExtra.length > 0 && (
           <svg className="absolute inset-0 pointer-events-none" style={{ width: "100%", height: "100%", overflow: "visible" }}>
             {lineasExtra.map((l) => (
-              <line
+              <path
                 key={l.id}
-                x1={l.x1}
-                y1={l.y1}
-                x2={l.x2}
-                y2={l.y2}
+                d={l.d}
+                fill="none"
                 stroke={l.color}
                 strokeWidth={2}
+                strokeLinejoin="round"
+                strokeLinecap="round"
                 strokeDasharray={l.dash ? "5,4" : undefined}
               />
             ))}
