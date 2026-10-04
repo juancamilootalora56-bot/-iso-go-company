@@ -5,7 +5,7 @@ import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import type { ItemGestion } from "@/lib/gestionGerenciaItems";
 import { FODA_CATEGORIAS, itemKeyFoda } from "@/lib/fodaItems";
 import { parseSeleccion } from "@/lib/partesInteresadasItems";
-import { parseFilas } from "@/lib/productosEstrella";
+import { parseProductos } from "@/lib/productosEstrella";
 
 export type { ItemGestion };
 
@@ -18,7 +18,7 @@ function estaCompleto(itemKey: string, docs: Record<string, string>) {
     return Object.values(seleccion).some((arr) => arr.length > 0);
   }
   if (itemKey === "matriz_productos_estrella") {
-    return parseFilas(docs[itemKey] ?? "").length > 0;
+    return parseProductos(docs[itemKey] ?? "").length > 0;
   }
   return (docs[itemKey] ?? "").trim().length > 0;
 }

@@ -1,15 +1,26 @@
-export type FilaProductoEstrella = {
-  producto: string;
-  participacion: "" | "Alta" | "Media" | "Baja";
-  importancia: "" | "Alta" | "Media" | "Baja";
-  comentario: string;
+export type ProductoEstrella = {
+  id: string;
+  foto: string | null; // data URL (base64)
+  nombre: string;
+  descripcion: string;
+  caracteristicas: string;
+  ventajas: string;
+  beneficios: string;
 };
 
-export function filaVacia(): FilaProductoEstrella {
-  return { producto: "", participacion: "", importancia: "", comentario: "" };
+export function productoVacio(): ProductoEstrella {
+  return {
+    id: crypto.randomUUID(),
+    foto: null,
+    nombre: "",
+    descripcion: "",
+    caracteristicas: "",
+    ventajas: "",
+    beneficios: "",
+  };
 }
 
-export function parseFilas(contenido: string): FilaProductoEstrella[] {
+export function parseProductos(contenido: string): ProductoEstrella[] {
   if (!contenido) return [];
   try {
     const parsed = JSON.parse(contenido);
