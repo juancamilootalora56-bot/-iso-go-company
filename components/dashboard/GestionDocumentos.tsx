@@ -6,6 +6,7 @@ import type { ItemGestion } from "@/lib/gestionGerenciaItems";
 import { FODA_CATEGORIAS, itemKeyFoda } from "@/lib/fodaItems";
 import { parseSeleccion } from "@/lib/partesInteresadasItems";
 import { parseProductos } from "@/lib/productosEstrella";
+import { parseLista as parseListaProcesos } from "@/lib/mapaProcesos";
 
 export type { ItemGestion };
 
@@ -19,6 +20,9 @@ function estaCompleto(itemKey: string, docs: Record<string, string>) {
   }
   if (itemKey === "matriz_productos_estrella") {
     return parseProductos(docs[itemKey] ?? "").length > 0;
+  }
+  if (itemKey === "mapa_procesos") {
+    return parseListaProcesos(docs["mapa_procesos_seleccion"] ?? "").length > 0;
   }
   return (docs[itemKey] ?? "").trim().length > 0;
 }
