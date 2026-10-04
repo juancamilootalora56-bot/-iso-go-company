@@ -1,18 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
-import { parseLista } from "@/lib/mapaProcesos";
 import { itemKeyFoda as itemKeyFodaSeleccion, parseFodaItems } from "@/lib/fodaItems";
 import {
   IMPACTO_OPCIONES,
   PROBABILIDAD_OPCIONES,
   calcularNivelRiesgo,
   parseFilasRiesgo,
-  slugify,
   DOFA_LABEL,
   DOFA_TIPO,
   DOFA_EFECTO,
@@ -21,45 +19,37 @@ import {
 
 const CATS_GERENCIA = ["debilidades", "amenazas"] as const;
 
-export default function MatrizRiesgosProcesoPage() {
+type FilaConFuente = RiesgoFila & { _sourceKey: string };
+
+export default function MatrizRiesgosResultadoPage() {
   const { user } = useDashboardUser();
   const params = useParams();
-  const router = useRouter();
   const locale = params.locale as string;
-  const procesoSlug = params.proceso as string;
   const basePath = `/${locale}/dashboard/gestion-gerencia`;
 
   const { docs, loading, save } = useGestionDocumentos("gerencia", user?.id ?? null);
 
-  const [filas, setFilas] = useState<RiesgoFila[]>([]);
+  const [filas, setFilas] = useState<FilaConFuente[]>([]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [inicializado, setInicializado] = useState(false);
 
-  const itemKeyMatriz = `riesgos_matriz_${procesoSlug}`;
-  const esGerencia = procesoSlug === "gerencia";
-  const procesosMapa = parseLista(docs["mapa_procesos_seleccion"] ?? "");
-  const procesoNombre = esGerencia
-    ? "Gerencia / Dueños"
-    : procesosMapa.find((p) => slugify(p) === procesoSlug) ?? procesoSlug;
-
   useEffect(() => {
     if (loading || inicializado) return;
 
-    const guardadas = parseFilasRiesgo(docs[itemKeyMatriz] ?? "");
-    if (guardadas.length > 0) {
-      setFilas(guardadas);
-      setInicializado(true);
-      return;
-    }
+    const todas: FilaConFuente[] = [];
+    Object.keys(docs)
+      .filter((k) => k.startsWith("riesgos_matriz_"))
+      .forEach((k) => {
+        parseFilasRiesgo(docs[k] ?? "").forEach((f) => todas.push({ ...f, _sourceKey: k }));
+      });
 
-    if (esGerencia) {
-      // Primera vez: generar filas desde el FODA general (Gerencia / Dueños).
-      const generadas: RiesgoFila[] = [];
+    // Si Gerencia todavía no generó sus filas, armarlas ahora desde el FODA general.
+    if (!docs["riesgos_matriz_gerencia"]) {
       CATS_GERENCIA.forEach((cat) => {
         const items = parseFodaItems(docs[itemKeyFodaSeleccion(cat)] ?? "");
         items.forEach((texto) => {
-          generadas.push({
+          todas.push({
             id: crypto.randomUUID(),
             riesgo: texto,
             proceso: "Gerencia / Dueños",
@@ -72,11 +62,13 @@ export default function MatrizRiesgosProcesoPage() {
             control: "",
             porcentaje: 0,
             estado: "",
+            _sourceKey: "riesgos_matriz_gerencia",
           });
         });
       });
-      setFilas(generadas);
     }
+
+    setFilas(todas);
     setInicializado(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, inicializado]);
@@ -88,7 +80,15 @@ export default function MatrizRiesgosProcesoPage() {
 
   async function handleGuardar() {
     setSaving(true);
-    await save(itemKeyMatriz, JSON.stringify(filas));
+    const porFuente = new Map<string, RiesgoFila[]>();
+    filas.forEach((f) => {
+      const { _sourceKey, ...resto } = f;
+      if (!porFuente.has(_sourceKey)) porFuente.set(_sourceKey, []);
+      porFuente.get(_sourceKey)!.push(resto);
+    });
+    await Promise.all(
+      Array.from(porFuente.entries()).map(([key, arr]) => save(key, JSON.stringify(arr)))
+    );
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -104,45 +104,32 @@ export default function MatrizRiesgosProcesoPage() {
         ← Matriz de la Gestión de Riesgos
       </Link>
 
-      <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">Matriz de Riesgos — {procesoNombre}</h1>
-          <p className="text-gray-500 text-sm mt-1">Completá Impacto, Probabilidad y Control para cada riesgo.</p>
-        </div>
-        {!esGerencia && (
-          <Link
-            href={`${basePath}/matriz_gestion_riesgos/${procesoSlug}/foda`}
-            className="text-sm text-[#F5A623] font-semibold hover:text-[#e09410]"
-          >
-            ✎ Editar FODA
-          </Link>
-        )}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">Matriz de Riesgos</h1>
+        <p className="text-gray-500 text-sm mt-1">Todos los riesgos de todos los procesos, en una sola matriz.</p>
       </div>
 
       {filas.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
-          <p className="text-gray-500 text-sm mb-4">
-            {esGerencia
-              ? "Todavía no completaste el FODA general."
-              : "Todavía no completaste el FODA de este proceso."}
-          </p>
+          <p className="text-gray-500 text-sm mb-4">Todavía no cargaste riesgos de ningún proceso.</p>
           <Link
-            href={esGerencia ? `${basePath}/foda` : `${basePath}/matriz_gestion_riesgos/${procesoSlug}/foda`}
+            href={`${basePath}/matriz_gestion_riesgos`}
             className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] text-sm"
           >
-            Completar FODA
+            Elegir un proceso
           </Link>
         </div>
       ) : (
         <>
           <div className="bg-white rounded-xl border border-gray-100 overflow-x-auto">
-            <table className="w-full text-xs min-w-[1400px] border-collapse">
+            <table className="w-full text-xs min-w-[1500px] border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-left text-gray-500">
                   <th className="p-2 font-semibold border-b border-gray-100 w-8">#</th>
+                  <th className="p-2 font-semibold border-b border-gray-100 w-40">Proceso</th>
                   <th className="p-2 font-semibold border-b border-gray-100 w-48">Riesgo</th>
-                  <th className="p-2 font-semibold border-b border-gray-100 w-28">Tipo</th>
-                  <th className="p-2 font-semibold border-b border-gray-100 w-28">DOFA</th>
+                  <th className="p-2 font-semibold border-b border-gray-100 w-24">Tipo</th>
+                  <th className="p-2 font-semibold border-b border-gray-100 w-24">DOFA</th>
                   <th className="p-2 font-semibold border-b border-gray-100 w-56">Descripción</th>
                   <th className="p-2 font-semibold border-b border-gray-100 w-24">Efecto</th>
                   <th className="p-2 font-semibold border-b border-gray-100 w-32">Impacto</th>
@@ -159,6 +146,7 @@ export default function MatrizRiesgosProcesoPage() {
                   return (
                     <tr key={f.id} className="border-b border-gray-50 align-top">
                       <td className="p-2 text-gray-400">{idx + 1}</td>
+                      <td className="p-2 text-gray-600 font-medium">{f.proceso}</td>
                       <td className="p-2 font-medium text-[#1A1A1A]">{f.riesgo}</td>
                       <td className="p-2 text-gray-600">{f.tipo}</td>
                       <td className="p-2 text-gray-600">{f.dofa}</td>
@@ -255,6 +243,12 @@ export default function MatrizRiesgosProcesoPage() {
               {saving ? "Guardando..." : "Guardar"}
             </button>
             {saved && <span className="text-green-600 text-sm">✓ Guardado</span>}
+            <Link
+              href={`${basePath}/matriz_gestion_riesgos`}
+              className="text-sm text-[#F5A623] font-semibold hover:text-[#e09410] ml-auto"
+            >
+              + Agregar riesgos de otro proceso
+            </Link>
           </div>
         </>
       )}

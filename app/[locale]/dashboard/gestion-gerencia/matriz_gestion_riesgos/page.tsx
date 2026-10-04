@@ -28,20 +28,33 @@ export default function MatrizGestionRiesgosPage() {
     ...procesosMapa.map((p) => ({ slug: slugify(p), label: p })),
   ];
 
+  const totalRiesgos = Object.keys(docs)
+    .filter((k) => k.startsWith("riesgos_matriz_"))
+    .reduce((s, k) => s + parseFilasRiesgo(docs[k] ?? "").length, 0);
+
   return (
     <div className="max-w-3xl mx-auto">
       <Link href={basePath} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
         ← Gestión de la Gerencia
       </Link>
 
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1A1A1A] flex items-center gap-2">
-          <span>⚠️</span> Matriz de la Gestión de Riesgos
-        </h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Elegí un proceso para describir sus riesgos. Gerencia / Dueños ya usa el FODA general que
-          completaste antes.
-        </p>
+      <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-[#1A1A1A] flex items-center gap-2">
+            <span>⚠️</span> Matriz de la Gestión de Riesgos
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Elegí un proceso para cargar sus debilidades y amenazas. Todo se junta en una sola matriz.
+          </p>
+        </div>
+        {totalRiesgos > 0 && (
+          <Link
+            href={`${basePath}/matriz_gestion_riesgos/resultado`}
+            className="text-sm text-[#F5A623] font-semibold hover:text-[#e09410]"
+          >
+            Ver matriz completa ({totalRiesgos}) →
+          </Link>
+        )}
       </div>
 
       {procesosMapa.length === 0 && (
@@ -62,7 +75,7 @@ export default function MatrizGestionRiesgosPage() {
               key={b.slug}
               href={
                 b.slug === "gerencia"
-                  ? `${basePath}/matriz_gestion_riesgos/gerencia`
+                  ? `${basePath}/matriz_gestion_riesgos/resultado`
                   : `${basePath}/matriz_gestion_riesgos/${b.slug}/foda`
               }
               className="flex items-center justify-between bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 transition-colors"

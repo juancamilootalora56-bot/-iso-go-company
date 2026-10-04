@@ -86,7 +86,7 @@ export default function RiesgosFodaPage() {
 
     await save(itemKeyMatriz, JSON.stringify(nuevasFilas));
     setSaving(false);
-    router.push(`${basePath}/matriz_gestion_riesgos/${procesoSlug}`);
+    router.push(`${basePath}/matriz_gestion_riesgos/resultado`);
   }
 
   if (loading) {
