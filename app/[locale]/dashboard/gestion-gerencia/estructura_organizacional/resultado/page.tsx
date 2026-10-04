@@ -142,6 +142,7 @@ export default function EstructuraOrganizacionalResultadoPage() {
   const [form, setForm] = useState<FormularioState>(null);
   const [nuevaConexionDestino, setNuevaConexionDestino] = useState("");
   const [nuevaConexionTipo, setNuevaConexionTipo] = useState<"interna" | "externa">("externa");
+  const [conexionCreada, setConexionCreada] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lineasExtra, setLineasExtra] = useState<
@@ -202,11 +203,13 @@ export default function EstructuraOrganizacionalResultadoPage() {
     setForm({ modo: "editar", draft: { ...n } });
     setNuevaConexionDestino("");
     setNuevaConexionTipo("externa");
+    setConexionCreada(false);
   }
 
   function cerrarForm() {
     setForm(null);
     setError(null);
+    setConexionCreada(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -289,6 +292,7 @@ export default function EstructuraOrganizacionalResultadoPage() {
     };
     guardarConexiones([...conexiones, nueva]);
     setNuevaConexionDestino("");
+    setConexionCreada(true);
   }
 
   function eliminarConexion(id: string) {
@@ -526,6 +530,11 @@ export default function EstructuraOrganizacionalResultadoPage() {
                       + Unir
                     </button>
                   </div>
+                )}
+                {conexionCreada && (
+                  <p className="text-xs font-semibold text-green-600 mt-2">
+                    ✓ Conexión creada — cerrá este cuadro para verla en el organigrama
+                  </p>
                 )}
               </div>
             )}
