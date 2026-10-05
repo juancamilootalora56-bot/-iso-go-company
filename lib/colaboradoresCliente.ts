@@ -17,6 +17,7 @@ export type Colaborador = {
   apellido: string;
   cargo: string | null;
   identificacion: string | null;
+  email: string | null;
   foto: string | null;
   permisos: string[];
   activo: boolean;

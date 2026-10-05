@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
 import { MODULOS_PERMISOS, type Colaborador } from "@/lib/colaboradoresCliente";
@@ -23,6 +25,8 @@ function colaboradorVacio() {
 
 export default function PerfilPage() {
   const { user, profile } = useUser();
+  const params = useParams();
+  const locale = params.locale as string;
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const fotoColabInputRef = useRef<HTMLInputElement>(null);
@@ -314,11 +318,21 @@ export default function PerfilPage() {
 
       {/* Colaboradores */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-5">
-        <div>
-          <h2 className="font-semibold text-[#1A1A1A]">Colaboradores</h2>
-          <p className="text-xs text-gray-500 mt-1">
-            Creá accesos para tu equipo. A cada colaborador le asignás qué módulos de Gestión puede trabajar.
-          </p>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h2 className="font-semibold text-[#1A1A1A]">Colaboradores</h2>
+            <p className="text-xs text-gray-500 mt-1">
+              Creá accesos para tu equipo. A cada colaborador le asignás qué módulos de Gestión puede trabajar.
+            </p>
+          </div>
+          {colaboradores.length > 0 && (
+            <Link
+              href={`/${locale}/dashboard/perfil/colaboradores/resultado`}
+              className="text-sm text-[#F5A623] font-semibold hover:text-[#e09410] flex-shrink-0"
+            >
+              Ver matriz ({colaboradores.length}) →
+            </Link>
+          )}
         </div>
 
         {errorColab && (

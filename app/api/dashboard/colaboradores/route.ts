@@ -63,6 +63,7 @@ export async function POST(request: Request) {
     apellido,
     cargo: cargo || null,
     identificacion: identificacion || null,
+    email,
     foto: foto || null,
     permisos: Array.isArray(permisos) ? permisos : [],
     activo: true,
@@ -71,6 +72,45 @@ export async function POST(request: Request) {
   if (insertError) {
     await admin.auth.admin.deleteUser(created.user.id);
     return NextResponse.json({ error: insertError.message }, { status: 400 });
+  }
+
+  return NextResponse.json({ ok: true, password });
+}
+
+export async function PATCH(request: Request) {
+  const { id } = await request.json();
+
+  if (!id) {
+    return NextResponse.json({ error: "Falta el id" }, { status: 400 });
+  }
+
+  const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  }
+
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  // Solo el dueño de ese colaborador puede restablecer su contraseña.
+  const { data: colaborador } = await admin
+    .from("client_colaboradores")
+    .select("owner_id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!colaborador || colaborador.owner_id !== user.id) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  }
+
+  const password = generarPassword();
+  const { error } = await admin.auth.admin.updateUserById(id, { password });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
   return NextResponse.json({ ok: true, password });
