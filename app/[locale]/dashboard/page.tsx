@@ -149,28 +149,26 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Avance por módulo */}
-        <AvanceModulosChart docsGerencia={docsGerencia} loading={loadingGerencia} />
+      {/* Avance por módulo */}
+      <AvanceModulosChart docsGerencia={docsGerencia} loading={loadingGerencia} />
 
-        {/* CTA card */}
-        <div className="bg-[#1A1A1A] rounded-xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#F5A623]/10 rounded-full -translate-y-8 translate-x-8" />
-          <div className="relative">
-            <p className="text-[#F5A623] text-sm font-semibold mb-2">¿Listo para comenzar?</p>
-            <h3 className="text-white text-xl font-bold mb-3">
-              Agenda tu diagnóstico gratuito
-            </h3>
-            <p className="text-gray-400 text-sm mb-5">
-              Un experto ISO analizará tu empresa y te dirá exactamente qué necesitas para certificarte.
-            </p>
-            <Link
-              href={`/${locale}/contacto`}
-              className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm"
-            >
-              Agendar ahora →
-            </Link>
-          </div>
+      {/* CTA card */}
+      <div className="bg-[#1A1A1A] rounded-xl p-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#F5A623]/10 rounded-full -translate-y-8 translate-x-8" />
+        <div className="relative">
+          <p className="text-[#F5A623] text-sm font-semibold mb-2">¿Listo para comenzar?</p>
+          <h3 className="text-white text-xl font-bold mb-3">
+            Agenda tu diagnóstico gratuito
+          </h3>
+          <p className="text-gray-400 text-sm mb-5">
+            Un experto ISO analizará tu empresa y te dirá exactamente qué necesitas para certificarte.
+          </p>
+          <Link
+            href={`/${locale}/contacto`}
+            className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm"
+          >
+            Agendar ahora →
+          </Link>
         </div>
       </div>
 
