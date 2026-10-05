@@ -150,120 +150,118 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
       </Seccion>
 
       {viendoRef && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center p-4 pt-10 overflow-y-auto" onClick={() => setViendoRef(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-xl my-8 shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            {/* Encabezado del informe */}
-            <div className="bg-[#1A1A1A] p-6 relative overflow-hidden">
-              <div
-                className="absolute inset-0 opacity-[0.06]"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
-                  backgroundSize: "28px 28px",
-                }}
-              />
-              <div className="relative flex items-start justify-between gap-3">
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          {/* Encabezado del informe */}
+          <div className="bg-[#1A1A1A] p-6 relative overflow-hidden">
+            <div
+              className="absolute inset-0 opacity-[0.06]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+                backgroundSize: "28px 28px",
+              }}
+            />
+            <div className="relative flex items-start justify-between gap-3">
+              <div>
+                <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-[10px] font-extrabold uppercase tracking-wide px-3 py-1 rounded-full mb-3">
+                  Informe de Referencia Laboral
+                </span>
+                <h2 className="text-white text-xl font-extrabold">{viendoRef.nombreReferente || "Sin nombre"}</h2>
+                <p className="text-gray-400 text-sm mt-1">
+                  {viendoRef.cargoReferente && <>{viendoRef.cargoReferente} · </>}
+                  {viendoRef.empresaReferente || "—"}
+                  {viendoRef.relacion && <> · {viendoRef.relacion}</>}
+                </p>
+              </div>
+              {viendoRef.calificacionGeneral && (
+                <span
+                  className="flex-shrink-0 text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full text-white whitespace-nowrap"
+                  style={{ backgroundColor: colorCalificacion(viendoRef.calificacionGeneral) }}
+                >
+                  {viendoRef.calificacionGeneral}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="p-6 space-y-5">
+            <div>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Datos del referente</h3>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <Dato label="Teléfono" valor={viendoRef.telefono} />
+                <Dato label="Email" valor={viendoRef.email} />
+                <Dato label="Fecha de verificación" valor={fechaLegible(viendoRef.fechaVerificacion)} />
+                <Dato label="Verificado por" valor={viendoRef.verificadoPor} />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Datos laborales confirmados</h3>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <Dato label="Cargo confirmado" valor={viendoRef.cargoConfirmado} />
+                <Dato label="Motivo de salida" valor={viendoRef.motivoSalidaSegunReferente} />
+                <Dato label="Fecha de ingreso" valor={fechaLegible(viendoRef.fechaIngresoConfirmada)} />
+                <Dato label="Fecha de egreso" valor={fechaLegible(viendoRef.fechaEgresoConfirmada)} />
+              </div>
+              {viendoRef.funcionesConfirmadas && (
+                <div className="mt-3">
+                  <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Funciones confirmadas</p>
+                  <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoRef.funcionesConfirmadas}</p>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Evaluación</h3>
+              <div className="grid sm:grid-cols-2 gap-3 mb-3">
+                <Dato label="Desempeño" valor={viendoRef.desempeno} />
+                <Dato label="Problemas de asistencia" valor={viendoRef.problemasAsistencia} />
+                <Dato label="¿Volvería a contratarlo/a?" valor={viendoRef.volveriaContratar} />
+              </div>
+              {viendoRef.fortalezas && (
+                <div className="mb-3">
+                  <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Fortalezas</p>
+                  <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoRef.fortalezas}</p>
+                </div>
+              )}
+              {viendoRef.areasMejora && (
+                <div className="mb-3">
+                  <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Áreas de mejora</p>
+                  <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoRef.areasMejora}</p>
+                </div>
+              )}
+              {viendoRef.relacionCompaneros && (
+                <div className="mb-3">
+                  <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Relación con compañeros</p>
+                  <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoRef.relacionCompaneros}</p>
+                </div>
+              )}
+              {viendoRef.comentariosAdicionales && (
                 <div>
-                  <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-[10px] font-extrabold uppercase tracking-wide px-3 py-1 rounded-full mb-3">
-                    Informe de Referencia Laboral
-                  </span>
-                  <h2 className="text-white text-xl font-extrabold">{viendoRef.nombreReferente || "Sin nombre"}</h2>
-                  <p className="text-gray-400 text-sm mt-1">
-                    {viendoRef.cargoReferente && <>{viendoRef.cargoReferente} · </>}
-                    {viendoRef.empresaReferente || "—"}
-                    {viendoRef.relacion && <> · {viendoRef.relacion}</>}
-                  </p>
+                  <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Comentarios adicionales</p>
+                  <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoRef.comentariosAdicionales}</p>
                 </div>
-                {viendoRef.calificacionGeneral && (
-                  <span
-                    className="flex-shrink-0 text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full text-white whitespace-nowrap"
-                    style={{ backgroundColor: colorCalificacion(viendoRef.calificacionGeneral) }}
-                  >
-                    {viendoRef.calificacionGeneral}
-                  </span>
+              )}
+              {!viendoRef.desempeno &&
+                !viendoRef.fortalezas &&
+                !viendoRef.areasMejora &&
+                !viendoRef.relacionCompaneros &&
+                !viendoRef.comentariosAdicionales && (
+                  <p className="text-sm text-gray-400">Todavía no se cargó la evaluación.</p>
                 )}
-              </div>
             </div>
+          </div>
 
-            <div className="p-6 space-y-5 max-h-[65vh] overflow-y-auto">
-              <div>
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Datos del referente</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <Dato label="Teléfono" valor={viendoRef.telefono} />
-                  <Dato label="Email" valor={viendoRef.email} />
-                  <Dato label="Fecha de verificación" valor={fechaLegible(viendoRef.fechaVerificacion)} />
-                  <Dato label="Verificado por" valor={viendoRef.verificadoPor} />
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Datos laborales confirmados</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <Dato label="Cargo confirmado" valor={viendoRef.cargoConfirmado} />
-                  <Dato label="Motivo de salida" valor={viendoRef.motivoSalidaSegunReferente} />
-                  <Dato label="Fecha de ingreso" valor={fechaLegible(viendoRef.fechaIngresoConfirmada)} />
-                  <Dato label="Fecha de egreso" valor={fechaLegible(viendoRef.fechaEgresoConfirmada)} />
-                </div>
-                {viendoRef.funcionesConfirmadas && (
-                  <div className="mt-3">
-                    <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Funciones confirmadas</p>
-                    <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoRef.funcionesConfirmadas}</p>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Evaluación</h3>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <Dato label="Desempeño" valor={viendoRef.desempeno} />
-                  <Dato label="Problemas de asistencia" valor={viendoRef.problemasAsistencia} />
-                  <Dato label="¿Volvería a contratarlo/a?" valor={viendoRef.volveriaContratar} />
-                </div>
-                {viendoRef.fortalezas && (
-                  <div className="mb-3">
-                    <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Fortalezas</p>
-                    <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoRef.fortalezas}</p>
-                  </div>
-                )}
-                {viendoRef.areasMejora && (
-                  <div className="mb-3">
-                    <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Áreas de mejora</p>
-                    <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoRef.areasMejora}</p>
-                  </div>
-                )}
-                {viendoRef.relacionCompaneros && (
-                  <div className="mb-3">
-                    <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Relación con compañeros</p>
-                    <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoRef.relacionCompaneros}</p>
-                  </div>
-                )}
-                {viendoRef.comentariosAdicionales && (
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Comentarios adicionales</p>
-                    <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoRef.comentariosAdicionales}</p>
-                  </div>
-                )}
-                {!viendoRef.desempeno &&
-                  !viendoRef.fortalezas &&
-                  !viendoRef.areasMejora &&
-                  !viendoRef.relacionCompaneros &&
-                  !viendoRef.comentariosAdicionales && (
-                    <p className="text-sm text-gray-400">Todavía no se cargó la evaluación.</p>
-                  )}
-              </div>
-            </div>
-
-            <div className="p-4 border-t border-gray-100 flex items-center justify-between">
-              <button
-                onClick={() => abrirEditar(viendoRef)}
-                className="text-sm font-semibold text-[#F5A623] hover:text-[#e09410]"
-              >
-                ✎ Editar referencia
-              </button>
-              <button onClick={() => setViendoRef(null)} className="text-sm text-gray-400 hover:text-gray-600">
-                Cerrar
-              </button>
-            </div>
+          <div className="p-4 border-t border-gray-100 flex items-center justify-between">
+            <button
+              onClick={() => abrirEditar(viendoRef)}
+              className="text-sm font-semibold text-[#F5A623] hover:text-[#e09410]"
+            >
+              ✎ Editar referencia
+            </button>
+            <button onClick={() => setViendoRef(null)} className="text-sm text-gray-400 hover:text-gray-600">
+              Cerrar
+            </button>
           </div>
         </div>
       )}
