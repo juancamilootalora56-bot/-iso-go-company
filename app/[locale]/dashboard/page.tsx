@@ -169,14 +169,17 @@ export default function DashboardPage() {
         <AvanceModulosChart docsGerencia={docsGerencia} loading={loadingGerencia} />
 
         {/* CTA card */}
-        <div className="bg-[#1A1A1A] rounded-xl p-6 relative overflow-hidden">
+        <div
+          className="rounded-xl p-6 relative overflow-hidden"
+          style={{ background: `linear-gradient(to bottom right, ${tema.bgFrom}, ${tema.bgTo})` }}
+        >
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#F5A623]/10 rounded-full -translate-y-8 translate-x-8" />
           <div className="relative">
             <p className="text-[#F5A623] text-sm font-semibold mb-2">¿Listo para comenzar?</p>
-            <h3 className="text-white text-xl font-bold mb-3">
+            <h3 className="text-xl font-bold mb-3" style={{ color: tema.textPrimary }}>
               Agenda tu diagnóstico gratuito
             </h3>
-            <p className="text-gray-400 text-sm mb-5">
+            <p className="text-sm mb-5" style={{ color: tema.textMuted }}>
               Un experto ISO analizará tu empresa y te dirá exactamente qué necesitas para certificarte.
             </p>
             <Link
