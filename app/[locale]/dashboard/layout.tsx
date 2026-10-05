@@ -115,12 +115,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href={`/${locale}`} className="flex items-center gap-3">
             {profile?.logo_url ? (
               <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={profile.logo_url}
-                  alt={profile.company_name || "Logo"}
-                  className="w-10 h-10 rounded object-contain bg-white flex-shrink-0"
-                />
+                <div className="w-10 h-10 rounded bg-white flex items-center justify-center overflow-hidden flex-shrink-0 p-1">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={profile.logo_url}
+                    alt={profile.company_name || "Logo"}
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
                 <div className="min-w-0">
                   <p className="text-white font-bold text-sm leading-tight truncate">
                     {profile.company_name || "Mi empresa"}
