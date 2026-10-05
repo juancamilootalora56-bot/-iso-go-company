@@ -35,6 +35,7 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
   const [referencias, setReferencias] = useState<Referencia[]>([]);
   const [formRef, setFormRef] = useState<Referencia | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading) setReferencias(parseReferencias(docs[itemKey] ?? ""));
@@ -49,15 +50,22 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
   }
 
   function abrirNueva() {
+    setError(null);
     setFormRef(referenciaVacia());
   }
 
   function abrirEditar(r: Referencia) {
+    setError(null);
     setFormRef({ ...r });
   }
 
   async function guardarReferencia() {
-    if (!formRef || !formRef.nombreReferente.trim()) return;
+    if (!formRef) return;
+    if (!formRef.nombreReferente.trim()) {
+      setError("El nombre del referente es obligatorio.");
+      return;
+    }
+    setError(null);
     const existe = referencias.some((r) => r.id === formRef.id);
     const actualizadas = existe
       ? referencias.map((r) => (r.id === formRef.id ? formRef : r))
@@ -132,6 +140,10 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
             <h2 className="text-sm font-bold text-[#1A1A1A]">
               {referencias.some((r) => r.id === formRef.id) ? "Editar referencia" : "Nueva referencia laboral"}
             </h2>
+
+            {error && (
+              <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">{error}</div>
+            )}
 
             {/* Datos del referente */}
             <div>
@@ -255,30 +267,35 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-              <div className="flex gap-3">
-                <button
-                  onClick={guardarReferencia}
-                  disabled={saving}
-                  className="bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60 text-sm"
-                >
-                  {saving ? "Guardando..." : "Guardar"}
-                </button>
-                <button onClick={() => setFormRef(null)} className="text-sm text-gray-400 hover:text-gray-600">
-                  Cancelar
-                </button>
-              </div>
-              {referencias.some((r) => r.id === formRef.id) && (
-                <button
-                  onClick={() => {
-                    eliminarReferencia(formRef.id);
-                    setFormRef(null);
-                  }}
-                  className="text-xs text-red-400 hover:text-red-600"
-                >
-                  Eliminar
-                </button>
+            <div className="pt-2 border-t border-gray-100 space-y-2">
+              {error && (
+                <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">{error}</div>
               )}
+              <div className="flex items-center justify-between">
+                <div className="flex gap-3">
+                  <button
+                    onClick={guardarReferencia}
+                    disabled={saving}
+                    className="bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60 text-sm"
+                  >
+                    {saving ? "Guardando..." : "Guardar"}
+                  </button>
+                  <button onClick={() => setFormRef(null)} className="text-sm text-gray-400 hover:text-gray-600">
+                    Cancelar
+                  </button>
+                </div>
+                {referencias.some((r) => r.id === formRef.id) && (
+                  <button
+                    onClick={() => {
+                      eliminarReferencia(formRef.id);
+                      setFormRef(null);
+                    }}
+                    className="text-xs text-red-400 hover:text-red-600"
+                  >
+                    Eliminar
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
