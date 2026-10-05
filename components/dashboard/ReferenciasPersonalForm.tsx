@@ -16,8 +16,17 @@ import {
 } from "@/lib/referenciasPersonal";
 
 const inputClass =
-  "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F5A623] transition-colors";
+  "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F5A623] transition-colors";
 const labelClass = "block text-xs font-medium text-gray-500 mb-1";
+
+function SubHeader({ icono, titulo }: { icono: string; titulo: string }) {
+  return (
+    <div className="flex items-center gap-2 bg-[#1A1A1A] text-white text-[11px] font-bold uppercase tracking-wide px-3 py-2 rounded-lg mb-3">
+      <span>{icono}</span>
+      {titulo}
+    </div>
+  );
+}
 
 export default function ReferenciasPersonalForm({ userId, empleado }: { userId: string | null; empleado: Empleado }) {
   const itemKey = `referencias_${empleado.id}`;
@@ -119,15 +128,15 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
 
       {formRef && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setFormRef(null)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-xl my-8 shadow-2xl space-y-5" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-xl my-8 shadow-2xl space-y-4" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-sm font-bold text-[#1A1A1A]">
               {referencias.some((r) => r.id === formRef.id) ? "Editar referencia" : "Nueva referencia laboral"}
             </h2>
 
             {/* Datos del referente */}
             <div>
-              <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2">Datos del referente</h3>
-              <div className="grid grid-cols-2 gap-3">
+              <SubHeader icono="👤" titulo="Datos del referente" />
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
                   <label className={labelClass}><span className="text-red-500">*</span> Nombre</label>
                   <input value={formRef.nombreReferente} onChange={(e) => setFormRef((f) => f && { ...f, nombreReferente: e.target.value })} className={inputClass} />
@@ -168,8 +177,8 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
 
             {/* Datos laborales a confirmar */}
             <div>
-              <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2">Datos laborales a confirmar</h3>
-              <div className="grid grid-cols-2 gap-3 mb-3">
+              <SubHeader icono="💼" titulo="Datos laborales a confirmar" />
+              <div className="grid grid-cols-2 gap-2.5 mb-3">
                 <div>
                   <label className={labelClass}>Cargo confirmado</label>
                   <input value={formRef.cargoConfirmado} onChange={(e) => setFormRef((f) => f && { ...f, cargoConfirmado: e.target.value })} className={inputClass} />
@@ -193,8 +202,8 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
 
             {/* Evaluación */}
             <div>
-              <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2">Evaluación del referente</h3>
-              <div className="grid grid-cols-2 gap-3 mb-3">
+              <SubHeader icono="⭐" titulo="Evaluación del referente" />
+              <div className="grid grid-cols-2 gap-2.5 mb-3">
                 <div>
                   <label className={labelClass}>¿Cómo calificaría su desempeño?</label>
                   <select value={formRef.desempeno} onChange={(e) => setFormRef((f) => f && { ...f, desempeno: e.target.value })} className={inputClass}>
@@ -210,7 +219,7 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
                   </select>
                 </div>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <div>
                   <label className={labelClass}>Principales fortalezas</label>
                   <textarea value={formRef.fortalezas} onChange={(e) => setFormRef((f) => f && { ...f, fortalezas: e.target.value })} rows={2} className={`${inputClass} resize-y`} />
@@ -224,7 +233,7 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
                   <textarea value={formRef.relacionCompaneros} onChange={(e) => setFormRef((f) => f && { ...f, relacionCompaneros: e.target.value })} rows={2} className={`${inputClass} resize-y`} />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3 mt-3">
+              <div className="grid grid-cols-2 gap-2.5 mt-3">
                 <div>
                   <label className={labelClass}>¿Volvería a contratarlo/a?</label>
                   <select value={formRef.volveriaContratar} onChange={(e) => setFormRef((f) => f && { ...f, volveriaContratar: e.target.value })} className={inputClass}>
