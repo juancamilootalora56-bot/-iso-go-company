@@ -135,7 +135,7 @@ export default function ReferenciasPersonalForm({ userId, empleado }: { userId: 
       </Seccion>
 
       {formRef && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setFormRef(null)}>
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center p-4 pt-10 overflow-y-auto" onClick={() => setFormRef(null)}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-xl my-8 shadow-2xl space-y-4" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-sm font-bold text-[#1A1A1A]">
               {referencias.some((r) => r.id === formRef.id) ? "Editar referencia" : "Nueva referencia laboral"}

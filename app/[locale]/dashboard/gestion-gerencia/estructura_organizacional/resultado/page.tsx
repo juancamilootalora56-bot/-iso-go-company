@@ -426,7 +426,7 @@ export default function EstructuraOrganizacionalResultadoPage() {
       </div>
 
       {form && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={cerrarForm}>
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center p-4 pt-10 overflow-y-auto" onClick={cerrarForm}>
           <div
             className="bg-white rounded-xl p-6 w-full max-w-sm space-y-4 shadow-2xl my-8"
             onClick={(e) => e.stopPropagation()}
