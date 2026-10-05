@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
+import { Seccion } from "@/components/dashboard/SeccionDocumento";
 import type { Empleado } from "@/lib/personal";
 import {
   manualVacio,
@@ -16,28 +17,6 @@ import {
 const inputClass =
   "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F5A623] transition-colors";
 const labelClass = "block text-xs font-medium text-gray-500 mb-1";
-
-function Seccion({
-  numero,
-  titulo,
-  children,
-}: {
-  numero: string;
-  titulo: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <div className="flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-[#1A1A1A] to-[#2A2A2A]">
-        <span className="w-6 h-6 rounded-md bg-[#F5A623] text-[#1A1A1A] text-[11px] font-extrabold flex items-center justify-center flex-shrink-0">
-          {numero}
-        </span>
-        <h3 className="text-white text-xs font-bold uppercase tracking-wide">{titulo}</h3>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  );
-}
 
 function ListaEditable({
   items,

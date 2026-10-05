@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parsePersonal } from "@/lib/personal";
+import { Seccion, Dato } from "@/components/dashboard/SeccionDocumento";
 import EntrevistaPersonalForm from "@/components/dashboard/EntrevistaPersonalForm";
 import ManualFuncionesForm from "@/components/dashboard/ManualFuncionesForm";
 
@@ -18,16 +19,6 @@ const TABS = [
   { key: "funciones", label: "Funciones" },
   { key: "capacitacion", label: "Capacitación" },
 ];
-
-function Dato({ label, valor }: { label: string; valor?: string }) {
-  if (!valor) return null;
-  return (
-    <div>
-      <p className="text-[10px] uppercase tracking-wide font-semibold text-gray-400">{label}</p>
-      <p className="text-sm text-[#1A1A1A]">{valor}</p>
-    </div>
-  );
-}
 
 function fechaLegible(iso?: string) {
   if (!iso) return undefined;
@@ -69,23 +60,33 @@ export default function PerfilPersonalPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <Link href={`${basePath}/gestion_personal`} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
+    <div className="max-w-4xl mx-auto space-y-4">
+      <Link href={`${basePath}/gestion_personal`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
         ← Gestión del Personal
       </Link>
 
       {/* Encabezado */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-4 flex flex-col sm:flex-row sm:items-center gap-5">
-        <div className="relative w-24 h-24 rounded-full bg-gray-100 flex-shrink-0 overflow-hidden mx-auto sm:mx-0">
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-5">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 bg-[#F5A623]/20 rounded-full blur-3xl" />
+
+        <div className="relative w-24 h-24 rounded-full bg-white/10 border-2 border-white/20 flex-shrink-0 overflow-hidden mx-auto sm:mx-0 z-10">
           {p.foto && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={p.foto} alt={p.nombre} className="w-full h-full object-cover" />
           )}
         </div>
-        <div className="flex-1 min-w-0 text-center sm:text-left">
-          <h1 className="text-xl font-bold text-[#1A1A1A]">{p.nombre} {p.apellido}</h1>
+        <div className="relative flex-1 min-w-0 text-center sm:text-left z-10">
+          <h1 className="text-xl font-bold text-white">{p.nombre} {p.apellido}</h1>
           <p className="text-[#F5A623] font-semibold text-sm">{p.cargo || "—"}</p>
-          <div className="flex items-center justify-center sm:justify-start gap-x-4 gap-y-1 flex-wrap text-xs text-gray-500 mt-2">
+          <div className="flex items-center justify-center sm:justify-start gap-x-4 gap-y-1 flex-wrap text-xs text-gray-400 mt-2">
             {p.area && <span>🏢 {p.area}</span>}
             {p.identificacion && <span>🪪 {p.identificacion}</span>}
             {p.nacionalidad && <span>🌎 {p.nacionalidad}</span>}
@@ -94,15 +95,15 @@ export default function PerfilPersonalPage() {
         </div>
         <Link
           href={`${basePath}/alta_personal`}
-          className="text-xs font-semibold text-[#F5A623] hover:text-[#e09410] flex-shrink-0 self-center sm:self-start"
+          className="relative z-10 text-xs font-semibold text-[#F5A623] hover:text-[#e09410] flex-shrink-0 self-center sm:self-start bg-white/5 border border-white/10 px-3 py-1.5 rounded-full"
         >
           ✎ Editar datos
         </Link>
       </div>
 
       {/* Pestañas */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div className="flex overflow-x-auto border-b border-gray-100">
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-x-auto sticky top-0 z-20">
+        <div className="flex">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -117,84 +118,78 @@ export default function PerfilPersonalPage() {
             </button>
           ))}
         </div>
+      </div>
 
-        <div className="p-6">
-          {tab === "generales" && (
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Datos personales</h3>
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <Dato label="Identificación" valor={p.identificacion} />
-                  <Dato label="Fecha de nacimiento" valor={fechaLegible(p.fechaNacimiento)} />
-                  <Dato label="Género" valor={p.genero} />
-                  <Dato label="Estado civil" valor={p.estadoCivil} />
-                  <Dato label="Nacionalidad" valor={p.nacionalidad} />
-                  <Dato label="Teléfono" valor={p.telefono} />
-                  <Dato label="Email" valor={p.email} />
-                  <Dato label="Dirección" valor={p.direccion} />
-                </div>
-              </div>
-
-              {(p.contactoEmergenciaNombre || p.contactoEmergenciaTelefono) && (
-                <div>
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Contacto de emergencia</h3>
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    <Dato label="Nombre" valor={p.contactoEmergenciaNombre} />
-                    <Dato label="Parentesco" valor={p.contactoEmergenciaParentesco} />
-                    <Dato label="Teléfono" valor={p.contactoEmergenciaTelefono} />
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Datos laborales</h3>
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <Dato label="Fecha de ingreso" valor={fechaLegible(p.fechaIngreso)} />
-                  <Dato label="Jefe directo" valor={p.jefeDirecto} />
-                  <Dato label="Tipo de contrato" valor={p.tipoContrato} />
-                  <Dato label="Jornada" valor={p.jornada} />
-                  <Dato label="Salario" valor={p.salario} />
-                </div>
-              </div>
-
-              {(p.nivelEducativo || p.profesion) && (
-                <div>
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Formación</h3>
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    <Dato label="Nivel educativo" valor={p.nivelEducativo} />
-                    <Dato label="Profesión / Título" valor={p.profesion} />
-                  </div>
-                </div>
-              )}
-
-              {p.observaciones && (
-                <div>
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Observaciones</h3>
-                  <p className="text-sm text-gray-600 whitespace-pre-wrap">{p.observaciones}</p>
-                </div>
-              )}
+      {/* Contenido */}
+      {tab === "generales" && (
+        <div className="space-y-4">
+          <Seccion icono="🪪" titulo="Datos personales">
+            <div className="grid sm:grid-cols-3 gap-3">
+              <Dato icono="🪪" label="Identificación" valor={p.identificacion} />
+              <Dato icono="🎂" label="Fecha de nacimiento" valor={fechaLegible(p.fechaNacimiento)} />
+              <Dato icono="⚧" label="Género" valor={p.genero} />
+              <Dato icono="💍" label="Estado civil" valor={p.estadoCivil} />
+              <Dato icono="🌎" label="Nacionalidad" valor={p.nacionalidad} />
+              <Dato icono="📞" label="Teléfono" valor={p.telefono} />
+              <Dato icono="✉️" label="Email" valor={p.email} />
+              <Dato icono="📍" label="Dirección" valor={p.direccion} />
             </div>
+          </Seccion>
+
+          {(p.contactoEmergenciaNombre || p.contactoEmergenciaTelefono) && (
+            <Seccion icono="🚨" titulo="Contacto de emergencia">
+              <div className="grid sm:grid-cols-3 gap-3">
+                <Dato label="Nombre" valor={p.contactoEmergenciaNombre} />
+                <Dato label="Parentesco" valor={p.contactoEmergenciaParentesco} />
+                <Dato label="Teléfono" valor={p.contactoEmergenciaTelefono} />
+              </div>
+            </Seccion>
           )}
 
-          {tab === "entrevista" && <EntrevistaPersonalForm userId={user?.id ?? null} empleado={p} />}
-          {tab === "funciones" && <ManualFuncionesForm userId={user?.id ?? null} empleado={p} />}
-
-          {tab !== "generales" && tab !== "entrevista" && tab !== "funciones" && (
-            <div className="flex flex-col items-center justify-center py-14 text-center">
-              <span className="text-3xl mb-3">
-                {tab === "referencias" && "📇"}
-                {tab === "capacitacion" && "🎓"}
-              </span>
-              <p className="text-gray-500 text-sm font-medium">
-                {TABS.find((t) => t.key === tab)?.label} — Próximamente
-              </p>
-              <p className="text-gray-400 text-xs mt-1 max-w-xs">
-                Esta sección del perfil de {p.nombre} va a estar disponible pronto.
-              </p>
+          <Seccion icono="💼" titulo="Datos laborales">
+            <div className="grid sm:grid-cols-3 gap-3">
+              <Dato icono="📅" label="Fecha de ingreso" valor={fechaLegible(p.fechaIngreso)} />
+              <Dato icono="🧑‍💼" label="Jefe directo" valor={p.jefeDirecto} />
+              <Dato icono="📄" label="Tipo de contrato" valor={p.tipoContrato} />
+              <Dato icono="⏰" label="Jornada" valor={p.jornada} />
+              <Dato icono="💵" label="Salario" valor={p.salario} />
             </div>
+          </Seccion>
+
+          {(p.nivelEducativo || p.profesion) && (
+            <Seccion icono="🎓" titulo="Formación">
+              <div className="grid sm:grid-cols-3 gap-3">
+                <Dato label="Nivel educativo" valor={p.nivelEducativo} />
+                <Dato label="Profesión / Título" valor={p.profesion} />
+              </div>
+            </Seccion>
+          )}
+
+          {p.observaciones && (
+            <Seccion icono="📝" titulo="Observaciones">
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{p.observaciones}</p>
+            </Seccion>
           )}
         </div>
-      </div>
+      )}
+
+      {tab === "entrevista" && <EntrevistaPersonalForm userId={user?.id ?? null} empleado={p} />}
+      {tab === "funciones" && <ManualFuncionesForm userId={user?.id ?? null} empleado={p} />}
+
+      {tab !== "generales" && tab !== "entrevista" && tab !== "funciones" && (
+        <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-14 text-center">
+          <span className="text-3xl mb-3">
+            {tab === "referencias" && "📇"}
+            {tab === "capacitacion" && "🎓"}
+          </span>
+          <p className="text-gray-500 text-sm font-medium">
+            {TABS.find((t) => t.key === tab)?.label} — Próximamente
+          </p>
+          <p className="text-gray-400 text-xs mt-1 max-w-xs">
+            Esta sección del perfil de {p.nombre} va a estar disponible pronto.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
