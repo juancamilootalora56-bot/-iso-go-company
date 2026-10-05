@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import type { ItemGestion } from "@/lib/gestionGerenciaItems";
 import CompromisoDireccionCard from "./CompromisoDireccionCard";
+import EncabezadoDocumento from "./EncabezadoDocumento";
 
 export default function GestionDocumentoDetalle({
   modulo,
@@ -65,6 +66,7 @@ export default function GestionDocumentoDetalle({
         </>
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 p-6">
+          <EncabezadoDocumento />
           <div className="flex items-center gap-3 mb-4">
             <span className="text-2xl flex-shrink-0">{item.icono}</span>
             <div>

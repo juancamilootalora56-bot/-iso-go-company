@@ -110,14 +110,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 lg:static lg:z-auto`}
       >
-        {/* Logo */}
+        {/* Logo: el del cliente si ya lo subió en Perfil, si no el de Iso Go por defecto */}
         <div className="p-5 border-b border-white/5">
           <Link href={`/${locale}`} className="flex items-center gap-3">
-            <Image src="/logo.jpg" alt="Iso Go" width={40} height={44} className="rounded" />
-            <div>
-              <p className="text-white font-bold text-sm leading-tight">Iso Go</p>
-              <p className="text-gray-500 text-xs">Company</p>
-            </div>
+            {profile?.logo_url ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={profile.logo_url}
+                  alt={profile.company_name || "Logo"}
+                  className="w-10 h-10 rounded object-contain bg-white flex-shrink-0"
+                />
+                <div className="min-w-0">
+                  <p className="text-white font-bold text-sm leading-tight truncate">
+                    {profile.company_name || "Mi empresa"}
+                  </p>
+                  <p className="text-gray-500 text-xs">Sistema de Gestión</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <Image src="/logo.jpg" alt="Iso Go" width={40} height={44} className="rounded" />
+                <div>
+                  <p className="text-white font-bold text-sm leading-tight">Iso Go</p>
+                  <p className="text-gray-500 text-xs">Company</p>
+                </div>
+              </>
+            )}
           </Link>
         </div>
 

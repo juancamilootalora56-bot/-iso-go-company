@@ -14,6 +14,12 @@ interface Profile {
   interested_norms: string[] | null;
   plan: string | null;
   created_at: string;
+  logo_url: string | null;
+  razon_social: string | null;
+  representante_legal: string | null;
+  ruc: string | null;
+  descripcion_empresa: string | null;
+  procesos_empresa: string | null;
 }
 
 interface UseUserResult {

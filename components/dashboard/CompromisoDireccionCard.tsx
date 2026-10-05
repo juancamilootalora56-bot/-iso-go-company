@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useDashboardUser } from "./DashboardUserContext";
 
 function defaultTexto(empresa: string) {
   const nombre = empresa || "[Nombre de la empresa]";
@@ -20,6 +21,7 @@ export default function CompromisoDireccionCard({
   contenido: string;
   onSave: (valor: string) => Promise<void>;
 }) {
+  const { profile } = useDashboardUser();
   const textoActual = contenido.trim() ? contenido : defaultTexto(empresa);
   const [editing, setEditing] = useState(false);
   const [valor, setValor] = useState(textoActual);
@@ -87,7 +89,12 @@ export default function CompromisoDireccionCard({
         {/* Panel izquierdo */}
         <div className="bg-[#F5A623] text-white p-6 sm:w-[38%] flex flex-col justify-between">
           <div className="bg-white rounded-md p-3 w-fit mb-6">
-            <Image src="/logo.jpg" alt="Iso Go" width={70} height={78} className="rounded" />
+            {profile?.logo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={profile.logo_url} alt={profile.company_name || "Logo"} className="w-[70px] h-[78px] object-contain" />
+            ) : (
+              <Image src="/logo.jpg" alt="Iso Go" width={70} height={78} className="rounded" />
+            )}
           </div>
           <div>
             <div className="border-t border-white/40 mb-3" />

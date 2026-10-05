@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import EncabezadoDocumento from "@/components/dashboard/EncabezadoDocumento";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { ESTRUCTURA_ALCANCE, parseEstructura } from "@/lib/alcanceEstructura";
@@ -85,6 +86,7 @@ export default function RedactarAlcancePage() {
       )}
 
       <div className="bg-white rounded-xl border border-gray-100 p-6">
+        <EncabezadoDocumento />
         <label className="block text-xs font-medium text-gray-500 mb-1">Declaración de Alcance</label>
         <textarea
           value={texto}
