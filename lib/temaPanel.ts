@@ -1,4 +1,13 @@
-export type TemaPanelKey = "oscuro" | "azul" | "blanco" | "verde";
+export type TemaPanelKey =
+  | "oscuro"
+  | "azul"
+  | "blanco"
+  | "verde"
+  | "bordo"
+  | "grafito"
+  | "purpura"
+  | "petroleo"
+  | "chocolate";
 
 export type TemaPanel = {
   label: string;
@@ -59,6 +68,66 @@ export const TEMAS_PANEL: Record<TemaPanelKey, TemaPanel> = {
     gridColor: "#ffffff",
     textPrimary: "#FFFFFF",
     textMuted: "#9FC2AE",
+    cardBg: "rgba(255,255,255,0.06)",
+    cardBorder: "rgba(255,255,255,0.1)",
+  },
+  bordo: {
+    label: "Bordó",
+    swatch: "#5A1A2E",
+    isLight: false,
+    bgFrom: "#3D0F20",
+    bgTo: "#5C1830",
+    gridColor: "#ffffff",
+    textPrimary: "#FFFFFF",
+    textMuted: "#D4A8B5",
+    cardBg: "rgba(255,255,255,0.06)",
+    cardBorder: "rgba(255,255,255,0.1)",
+  },
+  grafito: {
+    label: "Grafito",
+    swatch: "#2B3036",
+    isLight: false,
+    bgFrom: "#20242A",
+    bgTo: "#2E333A",
+    gridColor: "#ffffff",
+    textPrimary: "#FFFFFF",
+    textMuted: "#A8ADB4",
+    cardBg: "rgba(255,255,255,0.06)",
+    cardBorder: "rgba(255,255,255,0.1)",
+  },
+  purpura: {
+    label: "Púrpura",
+    swatch: "#3B1C64",
+    isLight: false,
+    bgFrom: "#271144",
+    bgTo: "#3E1D6B",
+    gridColor: "#ffffff",
+    textPrimary: "#FFFFFF",
+    textMuted: "#C3AEE0",
+    cardBg: "rgba(255,255,255,0.07)",
+    cardBorder: "rgba(255,255,255,0.12)",
+  },
+  petroleo: {
+    label: "Petróleo",
+    swatch: "#0D3C42",
+    isLight: false,
+    bgFrom: "#082A2F",
+    bgTo: "#114750",
+    gridColor: "#ffffff",
+    textPrimary: "#FFFFFF",
+    textMuted: "#9EC9CE",
+    cardBg: "rgba(255,255,255,0.06)",
+    cardBorder: "rgba(255,255,255,0.1)",
+  },
+  chocolate: {
+    label: "Chocolate",
+    swatch: "#3E2417",
+    isLight: false,
+    bgFrom: "#2B1A10",
+    bgTo: "#432A19",
+    gridColor: "#ffffff",
+    textPrimary: "#FFFFFF",
+    textMuted: "#CBAA93",
     cardBg: "rgba(255,255,255,0.06)",
     cardBorder: "rgba(255,255,255,0.1)",
   },
