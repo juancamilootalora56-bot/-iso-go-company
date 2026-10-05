@@ -3,46 +3,9 @@
 import Link from "next/link";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import type { ItemGestion } from "@/lib/gestionGerenciaItems";
-import { FODA_CATEGORIAS, itemKeyFoda } from "@/lib/fodaItems";
-import { parseSeleccion } from "@/lib/partesInteresadasItems";
-import { parseProductos } from "@/lib/productosEstrella";
-import { parseLista as parseListaProcesos } from "@/lib/mapaProcesos";
-import { parseValores } from "@/lib/valoresEstructura";
-import { parseObjetivos } from "@/lib/objetivosCalidad";
-import { parseNodos } from "@/lib/estructuraOrganizacional";
+import { estaCompletoActividad as estaCompleto } from "@/lib/gestionGerenciaCompletitud";
 
 export type { ItemGestion };
-
-function estaCompleto(itemKey: string, docs: Record<string, string>) {
-  if (itemKey === "foda") {
-    return FODA_CATEGORIAS.some((c) => (docs[itemKeyFoda(c.key)] ?? "").trim().length > 0);
-  }
-  if (itemKey === "matriz_cliente_partes_interesadas") {
-    const seleccion = parseSeleccion(docs["matriz_cliente_partes_interesadas_seleccion"] ?? "");
-    return Object.values(seleccion).some((arr) => arr.length > 0);
-  }
-  if (itemKey === "matriz_productos_estrella") {
-    return parseProductos(docs[itemKey] ?? "").length > 0;
-  }
-  if (itemKey === "mapa_procesos") {
-    return parseListaProcesos(docs["mapa_procesos_seleccion"] ?? "").length > 0;
-  }
-  if (itemKey === "matriz_gestion_riesgos") {
-    return Object.keys(docs).some(
-      (k) => k.startsWith("riesgos_matriz_") && docs[k] && docs[k] !== "[]"
-    );
-  }
-  if (itemKey === "valores_organizacionales") {
-    return parseValores(docs["valores_lista"] ?? "").some((v) => v.nombre.trim().length > 0);
-  }
-  if (itemKey === "objetivos_calidad") {
-    return parseObjetivos(docs[itemKey] ?? "").length > 0;
-  }
-  if (itemKey === "estructura_organizacional") {
-    return parseNodos(docs[itemKey] ?? "").length > 0;
-  }
-  return (docs[itemKey] ?? "").trim().length > 0;
-}
 
 export default function GestionDocumentos({
   modulo,
