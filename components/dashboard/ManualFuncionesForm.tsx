@@ -112,19 +112,18 @@ export default function ManualFuncionesForm({ userId, empleado }: { userId: stri
           }}
         />
         <div className="absolute -top-16 -right-16 w-56 h-56 bg-[#F5A623]/20 rounded-full blur-3xl" />
-        {profile?.logo_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={profile.logo_url}
-            alt=""
-            className="absolute right-4 bottom-0 w-32 h-32 object-contain opacity-[0.08] pointer-events-none"
-          />
-        )}
+
         <div className="relative p-6">
+          {profile?.logo_url && (
+            <div className="absolute top-6 right-6 w-14 h-14 rounded-xl bg-white flex items-center justify-center overflow-hidden p-2 shadow-lg">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={profile.logo_url} alt={profile.company_name || "Logo"} className="max-w-full max-h-full object-contain" />
+            </div>
+          )}
           <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-[10px] font-extrabold uppercase tracking-wide px-3 py-1 rounded-full mb-3">
             Manual de Funciones
           </span>
-          <h1 className="text-white text-2xl font-extrabold leading-tight">{empleado.cargo || "Cargo sin definir"}</h1>
+          <h1 className="text-white text-2xl font-extrabold leading-tight pr-16">{empleado.cargo || "Cargo sin definir"}</h1>
           <p className="text-gray-400 text-sm mt-1">{empleado.nombre} {empleado.apellido}</p>
 
           <div className="grid grid-cols-3 gap-3 mt-5">
