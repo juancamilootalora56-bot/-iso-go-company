@@ -10,6 +10,7 @@ import { Seccion, Dato } from "@/components/dashboard/SeccionDocumento";
 import EntrevistaPersonalForm from "@/components/dashboard/EntrevistaPersonalForm";
 import ManualFuncionesForm from "@/components/dashboard/ManualFuncionesForm";
 import CapacitacionPersonalForm from "@/components/dashboard/CapacitacionPersonalForm";
+import ReferenciasPersonalForm from "@/components/dashboard/ReferenciasPersonalForm";
 
 const ITEM_KEY = "personal_lista";
 
@@ -177,12 +178,10 @@ export default function PerfilPersonalPage() {
       {tab === "entrevista" && <EntrevistaPersonalForm userId={user?.id ?? null} empleado={p} />}
       {tab === "funciones" && <ManualFuncionesForm userId={user?.id ?? null} empleado={p} />}
       {tab === "capacitacion" && <CapacitacionPersonalForm userId={user?.id ?? null} empleado={p} />}
+      {tab === "referencias" && <ReferenciasPersonalForm userId={user?.id ?? null} empleado={p} />}
 
-      {tab !== "generales" && tab !== "entrevista" && tab !== "funciones" && tab !== "capacitacion" && (
+      {tab !== "generales" && tab !== "entrevista" && tab !== "funciones" && tab !== "capacitacion" && tab !== "referencias" && (
         <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-14 text-center">
-          <span className="text-3xl mb-3">
-            {tab === "referencias" && "📇"}
-          </span>
           <p className="text-gray-500 text-sm font-medium">
             {TABS.find((t) => t.key === tab)?.label} — Próximamente
           </p>
