@@ -4,24 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useUser } from "@/hooks/useUser";
-import { useMiProceso } from "@/hooks/useMiProceso";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { createClient } from "@/lib/supabase/client";
 import { ITEMS_GERENCIA } from "@/lib/gestionGerenciaItems";
 import { estaCompletoActividad, contarRiesgos } from "@/lib/gestionGerenciaCompletitud";
 import { parseObjetivos } from "@/lib/objetivosCalidad";
-
-const ETAPA_INFO: Record<string, { label: string; color: string; probabilidad: number }> = {
-  lead_nuevo: { label: "Lead nuevo", color: "#60A5FA", probabilidad: 10 },
-  contactado: { label: "Contactado", color: "#FBBF24", probabilidad: 25 },
-  reunion: { label: "Reunión agendada", color: "#22D3EE", probabilidad: 40 },
-  presentacion: { label: "Presentación", color: "#2DD4BF", probabilidad: 55 },
-  demo: { label: "Demo en curso", color: "#A78BFA", probabilidad: 70 },
-  negociacion: { label: "Negociación", color: "#F5A623", probabilidad: 85 },
-  ganado: { label: "Cliente activo", color: "#4ADE80", probabilidad: 100 },
-  perdido: { label: "Cerrado", color: "#F87171", probabilidad: 0 },
-};
+import AvanceModulosChart from "@/components/dashboard/AvanceModulosChart";
 
 const NORM_SLUGS: Record<string, string> = {
   "ISO 9001": "iso-9001",
@@ -51,7 +40,6 @@ export default function DashboardPage() {
   const locale = params.locale as string;
   const { user, profile } = useUser();
   const { user: effectiveUser, profile: effectiveProfile } = useDashboardUser();
-  const { cliente, lead, loading: procesoLoading } = useMiProceso();
   const { docs: docsGerencia, loading: loadingGerencia } = useGestionDocumentos("gerencia", effectiveUser?.id ?? null);
   const [colaboradoresCount, setColaboradoresCount] = useState(0);
 
@@ -162,112 +150,8 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Certification progress card */}
-        <div className="bg-white rounded-xl p-6 border border-gray-100">
-          {procesoLoading ? (
-            <p className="text-gray-400 text-sm">Cargando tu proceso...</p>
-          ) : cliente ? (
-            <>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-semibold text-[#1A1A1A]">Tu proceso de certificación</h2>
-                <span className="text-xs bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded-full font-medium">
-                  Cliente activo
-                </span>
-              </div>
-              <div className="space-y-2 text-sm">
-                {cliente.norma_interes && (
-                  <p className="text-[#1A1A1A]"><span className="text-gray-500">Norma / servicio:</span> {cliente.norma_interes}</p>
-                )}
-                {lead?.tipo_producto && (
-                  <p className="text-[#1A1A1A]">
-                    <span className="text-gray-500">Modalidad:</span>{" "}
-                    {lead.tipo_producto === "solo_software" ? "Solo software" : "Software + coordinación"}
-                  </p>
-                )}
-                {lead?.fecha_inicio_servicio && (
-                  <p className="text-[#1A1A1A]">
-                    <span className="text-gray-500">Inicio:</span>{" "}
-                    {new Date(lead.fecha_inicio_servicio).toLocaleDateString("es")}
-                  </p>
-                )}
-              </div>
-            </>
-          ) : lead ? (
-            <>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-semibold text-[#1A1A1A]">Tu proceso de certificación</h2>
-                <span
-                  className="text-xs px-2 py-1 rounded-full font-medium"
-                  style={{
-                    backgroundColor: `${(ETAPA_INFO[lead.etapa] ?? ETAPA_INFO.lead_nuevo).color}1A`,
-                    color: (ETAPA_INFO[lead.etapa] ?? ETAPA_INFO.lead_nuevo).color,
-                  }}
-                >
-                  {(ETAPA_INFO[lead.etapa] ?? ETAPA_INFO.lead_nuevo).label}
-                </span>
-              </div>
-              <div className="w-full h-1.5 bg-gray-100 rounded-full mb-4 overflow-hidden">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${(ETAPA_INFO[lead.etapa] ?? ETAPA_INFO.lead_nuevo).probabilidad}%`,
-                    backgroundColor: (ETAPA_INFO[lead.etapa] ?? ETAPA_INFO.lead_nuevo).color,
-                  }}
-                />
-              </div>
-              <div className="space-y-2 text-sm">
-                {lead.norma_interes && (
-                  <p className="text-[#1A1A1A]"><span className="text-gray-500">Norma de interés:</span> {lead.norma_interes}</p>
-                )}
-                {lead.etapa === "reunion" && lead.reunion_fecha && (
-                  <p className="text-[#1A1A1A]">
-                    <span className="text-gray-500">Reunión:</span>{" "}
-                    {new Date(lead.reunion_fecha).toLocaleString("es", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
-                    {lead.reunion_lugar ? ` · ${lead.reunion_lugar}` : ""}
-                  </p>
-                )}
-                {lead.etapa === "presentacion" && lead.presentacion_fecha && (
-                  <p className="text-[#1A1A1A]">
-                    <span className="text-gray-500">Presentación:</span>{" "}
-                    {new Date(lead.presentacion_fecha).toLocaleString("es", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
-                  </p>
-                )}
-                {lead.etapa === "demo" && lead.demo_fecha_entrega && (
-                  <p className="text-[#1A1A1A]">
-                    <span className="text-gray-500">Demo entregada:</span>{" "}
-                    {new Date(lead.demo_fecha_entrega).toLocaleDateString("es")}
-                    {lead.demo_dias_acceso ? ` · ${lead.demo_dias_acceso} días de acceso` : ""}
-                  </p>
-                )}
-                {(lead.reunion_proximos_pasos || lead.presentacion_proximos_pasos || lead.demo_proximos_pasos) && (
-                  <p className="text-[#1A1A1A]">
-                    <span className="text-gray-500">Próximos pasos:</span>{" "}
-                    {lead.reunion_proximos_pasos || lead.presentacion_proximos_pasos || lead.demo_proximos_pasos}
-                  </p>
-                )}
-              </div>
-              <Link
-                href={`/${locale}/dashboard/mi-certificacion`}
-                className="mt-4 block text-sm text-[#F5A623] font-medium hover:text-[#e09410]"
-              >
-                Ver detalle completo →
-              </Link>
-            </>
-          ) : (
-            <>
-              <h2 className="font-semibold text-[#1A1A1A] mb-2">Tu proceso de certificación</h2>
-              <p className="text-gray-500 text-sm mb-4">
-                Todavía no iniciaste un proceso con nosotros. Agenda un diagnóstico gratuito para empezar.
-              </p>
-              <Link
-                href={`/${locale}/contacto`}
-                className="text-sm text-[#F5A623] font-medium hover:text-[#e09410]"
-              >
-                Hablar con un asesor →
-              </Link>
-            </>
-          )}
-        </div>
+        {/* Avance por módulo */}
+        <AvanceModulosChart docsGerencia={docsGerencia} loading={loadingGerencia} />
 
         {/* CTA card */}
         <div className="bg-[#1A1A1A] rounded-xl p-6 relative overflow-hidden">
