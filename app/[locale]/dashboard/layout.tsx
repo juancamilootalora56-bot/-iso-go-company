@@ -9,14 +9,14 @@ import { useUser } from "@/hooks/useUser";
 import { DashboardUserProvider } from "@/components/dashboard/DashboardUserContext";
 
 const navItems = [
-  { href: "", label: "Inicio", icon: "🏠" },
-  { href: "/gestion-gerencia", label: "Gestión de la Gerencia", icon: "🏛️" },
-  { href: "/gestion-talento-humano", label: "Gestión del Talento Humano", icon: "👥" },
-  { href: "/gestion-compras", label: "Gestión de Compras", icon: "🛒" },
-  { href: "/gestion-comercial", label: "Gestión Comercial", icon: "📈" },
-  { href: "/gestion-operativa", label: "Gestión Operativa", icon: "⚙️" },
-  { href: "/gestion-diseno-desarrollo", label: "Gestión de Diseño y Desarrollo", icon: "🧩" },
-  { href: "/perfil", label: "Perfil", icon: "👤" },
+  { href: "", label: "Inicio", icon: "🏠", modulo: null as string | null, soloOwner: false },
+  { href: "/gestion-gerencia", label: "Gestión de la Gerencia", icon: "🏛️", modulo: "gerencia", soloOwner: false },
+  { href: "/gestion-talento-humano", label: "Gestión del Talento Humano", icon: "👥", modulo: "talento_humano", soloOwner: false },
+  { href: "/gestion-compras", label: "Gestión de Compras", icon: "🛒", modulo: "compras", soloOwner: false },
+  { href: "/gestion-comercial", label: "Gestión Comercial", icon: "📈", modulo: "comercial", soloOwner: false },
+  { href: "/gestion-operativa", label: "Gestión Operativa", icon: "⚙️", modulo: "operativa", soloOwner: false },
+  { href: "/gestion-diseno-desarrollo", label: "Gestión de Diseño y Desarrollo", icon: "🧩", modulo: "diseno_desarrollo", soloOwner: false },
+  { href: "/perfil", label: "Perfil", icon: "👤", modulo: null, soloOwner: true },
 ];
 
 // Portal del cliente todavía en desarrollo (sistema ISO 9001 en construcción).
@@ -24,19 +24,52 @@ const navItems = [
 // con los colaboradores internos del CRM (esos se manejan aparte).
 const ALLOWED_CLIENT_EMAILS = ["juan@isogo.company"];
 
+type ColaboradorInfo = { ownerId: string; permisos: string[]; activo: boolean };
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const params = useParams();
   const locale = params.locale as string;
   const router = useRouter();
   const pathname = usePathname();
-  const { user, profile, loading } = useUser();
+  const { user: rawUser, profile: rawProfile, loading } = useUser();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const [colaboradorInfo, setColaboradorInfo] = useState<ColaboradorInfo | null>(null);
+  const [ownerProfile, setOwnerProfile] = useState<typeof rawProfile>(null);
+  const [resolviendoColaborador, setResolviendoColaborador] = useState(true);
+
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !rawUser) {
       router.push(`/${locale}/auth/login`);
     }
-  }, [user, loading, locale, router]);
+  }, [rawUser, loading, locale, router]);
+
+  useEffect(() => {
+    if (loading || !rawUser) {
+      setResolviendoColaborador(false);
+      return;
+    }
+    const emailAutorizadoDirecto = rawUser.email && ALLOWED_CLIENT_EMAILS.includes(rawUser.email.toLowerCase());
+    if (emailAutorizadoDirecto) {
+      setResolviendoColaborador(false);
+      return;
+    }
+    (async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("client_colaboradores")
+        .select("owner_id, permisos, activo")
+        .eq("id", rawUser.id)
+        .maybeSingle();
+
+      if (data) {
+        setColaboradorInfo({ ownerId: data.owner_id, permisos: data.permisos ?? [], activo: data.activo });
+        const { data: ownerProf } = await supabase.from("profiles").select("*").eq("id", data.owner_id).maybeSingle();
+        setOwnerProfile(ownerProf);
+      }
+      setResolviendoColaborador(false);
+    })();
+  }, [loading, rawUser]);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -45,7 +78,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.refresh();
   }
 
-  if (loading) {
+  if (loading || resolviendoColaborador) {
     return (
       <div className="min-h-screen bg-[#F4F4F4] flex items-center justify-center">
         <div className="text-center">
@@ -56,9 +89,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  const emailAutorizado = user?.email && ALLOWED_CLIENT_EMAILS.includes(user.email.toLowerCase());
+  const esColaborador = !!colaboradorInfo;
+  const emailAutorizado = rawUser?.email && ALLOWED_CLIENT_EMAILS.includes(rawUser.email.toLowerCase());
+  const accesoPermitido = emailAutorizado || (esColaborador && colaboradorInfo!.activo);
 
-  if (user && !emailAutorizado) {
+  if (rawUser && !accesoPermitido) {
     return (
       <div className="min-h-screen bg-[#1A1A1A] flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-[#242424] rounded-2xl p-10 shadow-2xl border border-white/5 text-center">
@@ -70,16 +105,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           <h1 className="text-2xl font-bold text-white mb-3">
-            Plataforma en construcción
+            {esColaborador ? "Acceso desactivado" : "Plataforma en construcción"}
           </h1>
           <p className="text-gray-400 text-sm leading-relaxed mb-8">
-            Estamos terminando de armar tu sistema de gestión ISO 9001. Pronto vas a tener acceso completo a tu panel.
+            {esColaborador
+              ? "Tu acceso a este sistema fue desactivado. Contactá al administrador de tu empresa."
+              : "Estamos terminando de armar tu sistema de gestión ISO 9001. Pronto vas a tener acceso completo a tu panel."}
           </p>
 
-          <div className="bg-[#F5A623]/10 border border-[#F5A623]/20 rounded-xl p-4 mb-8">
-            <p className="text-[#F5A623] font-semibold text-sm">🚀 Lanzamiento próximo</p>
-            <p className="text-gray-500 text-xs mt-1">Te vamos a avisar apenas esté listo.</p>
-          </div>
+          {!esColaborador && (
+            <div className="bg-[#F5A623]/10 border border-[#F5A623]/20 rounded-xl p-4 mb-8">
+              <p className="text-[#F5A623] font-semibold text-sm">🚀 Lanzamiento próximo</p>
+              <p className="text-gray-500 text-xs mt-1">Te vamos a avisar apenas esté listo.</p>
+            </div>
+          )}
 
           <button
             onClick={handleLogout}
@@ -92,7 +131,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  const displayName = profile?.full_name || user?.email?.split("@")[0] || "Usuario";
+  // Para colaboradores, los datos de gestión (gestion_documentos) y la marca
+  // (logo, nombre de empresa) son los del dueño — solo el nombre/email que se
+  // muestran en el panel siguen siendo los propios del colaborador.
+  const effectiveUser = esColaborador && rawUser ? { ...rawUser, id: colaboradorInfo!.ownerId } : rawUser;
+  const effectiveProfile =
+    esColaborador && ownerProfile
+      ? { ...ownerProfile, full_name: rawProfile?.full_name ?? ownerProfile.full_name }
+      : rawProfile;
+
+  const itemsVisibles = navItems.filter((item) => {
+    if (!esColaborador) return true;
+    if (item.soloOwner) return false;
+    if (!item.modulo) return true;
+    return colaboradorInfo!.permisos.includes(item.modulo);
+  });
+
+  const displayName = rawProfile?.full_name || rawUser?.email?.split("@")[0] || "Usuario";
 
   return (
     <div className="min-h-screen bg-[#F4F4F4] flex">
@@ -113,19 +168,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Logo: el del cliente si ya lo subió en Perfil, si no el de Iso Go por defecto */}
         <div className="p-5 border-b border-white/5">
           <Link href={`/${locale}`} className="flex items-center gap-3">
-            {profile?.logo_url ? (
+            {effectiveProfile?.logo_url ? (
               <>
                 <div className="w-10 h-10 rounded bg-white flex items-center justify-center overflow-hidden flex-shrink-0 p-1">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={profile.logo_url}
-                    alt={profile.company_name || "Logo"}
+                    src={effectiveProfile.logo_url}
+                    alt={effectiveProfile.company_name || "Logo"}
                     className="max-w-full max-h-full object-contain"
                   />
                 </div>
                 <div className="min-w-0">
                   <p className="text-white font-bold text-sm leading-tight truncate">
-                    {profile.company_name || "Mi empresa"}
+                    {effectiveProfile.company_name || "Mi empresa"}
                   </p>
                   <p className="text-gray-500 text-xs">Sistema de Gestión</p>
                 </div>
@@ -144,7 +199,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => {
+          {itemsVisibles.map((item) => {
             const href = `/${locale}/dashboard${item.href}`;
             const isActive = pathname === href || (item.href === "" && pathname === `/${locale}/dashboard`);
             return (
@@ -173,7 +228,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             <div className="min-w-0">
               <p className="text-white text-sm font-medium truncate">{displayName}</p>
-              <p className="text-gray-500 text-xs truncate">{user?.email}</p>
+              <p className="text-gray-500 text-xs truncate">{rawUser?.email}</p>
             </div>
           </div>
           <button
@@ -218,7 +273,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Page content */}
         <main className="flex-1 p-6">
-          <DashboardUserProvider value={{ user, profile }}>{children}</DashboardUserProvider>
+          <DashboardUserProvider value={{ user: effectiveUser, profile: effectiveProfile }}>{children}</DashboardUserProvider>
         </main>
       </div>
     </div>
