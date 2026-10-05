@@ -37,6 +37,8 @@ export const MESES = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
 ];
 
+export const MESES_CORTOS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
 const OBJETIVO_PROGRAMA_DEFECTO =
   "Garantizar que el colaborador cuente con las competencias necesarias para desempeñar su cargo conforme " +
   "a los requisitos del Sistema de Gestión de Calidad (ISO 9001:2015, numerales 7.2 Competencia y 7.3 Toma " +
