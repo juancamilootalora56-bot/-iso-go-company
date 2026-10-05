@@ -20,6 +20,7 @@ interface Profile {
   ruc: string | null;
   descripcion_empresa: string | null;
   procesos_empresa: string | null;
+  tema_panel: string | null;
 }
 
 interface UseUserResult {

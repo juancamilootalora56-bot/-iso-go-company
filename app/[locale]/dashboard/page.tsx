@@ -11,6 +11,7 @@ import { ITEMS_GERENCIA } from "@/lib/gestionGerenciaItems";
 import { estaCompletoActividad, contarRiesgos } from "@/lib/gestionGerenciaCompletitud";
 import { parseObjetivos } from "@/lib/objetivosCalidad";
 import AvanceModulosChart from "@/components/dashboard/AvanceModulosChart";
+import { temaPanelDe } from "@/lib/temaPanel";
 
 const NORM_SLUGS: Record<string, string> = {
   "ISO 9001": "iso-9001",
@@ -61,17 +62,23 @@ export default function DashboardPage() {
   const actividadesCompletas = ITEMS_GERENCIA.filter((i) => estaCompletoActividad(i.key, docsGerencia)).length;
   const objetivosCount = parseObjetivos(docsGerencia["objetivos_calidad"] ?? "").length;
   const riesgosCount = contarRiesgos(docsGerencia);
+  const tema = temaPanelDe(effectiveProfile?.tema_panel);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Hero */}
-      <div className="relative bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] rounded-2xl overflow-hidden border border-white/5">
+      <div
+        className="relative rounded-2xl overflow-hidden"
+        style={{
+          background: `linear-gradient(to bottom right, ${tema.bgFrom}, ${tema.bgTo})`,
+          border: `1px solid ${tema.cardBorder}`,
+        }}
+      >
         {/* Grilla de fondo */}
         <div
           className="absolute inset-0 opacity-[0.07]"
           style={{
-            backgroundImage:
-              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundImage: `linear-gradient(to right, ${tema.gridColor} 1px, transparent 1px), linear-gradient(to bottom, ${tema.gridColor} 1px, transparent 1px)`,
             backgroundSize: "32px 32px",
           }}
         />
@@ -94,17 +101,20 @@ export default function DashboardPage() {
             <span className="bg-[#F5A623] text-[#1A1A1A] text-[11px] font-extrabold uppercase tracking-wide px-3 py-1.5 rounded-full">
               Sistema de Gestión ISO 9001
             </span>
-            <span className="flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 text-green-400 text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400" /> Sincronizado
+            <span className="flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 text-green-600 text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Sincronizado
             </span>
-            <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-300 text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full">
+            <span
+              className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full"
+              style={{ backgroundColor: tema.cardBg, border: `1px solid ${tema.cardBorder}`, color: tema.textMuted }}
+            >
               🔒 Datos protegidos
             </span>
           </div>
 
           {/* Título */}
-          <p className="text-gray-400 text-sm mb-1">Bienvenido, {displayName}</p>
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-white leading-tight">
+          <p className="text-sm mb-1" style={{ color: tema.textMuted }}>Bienvenido, {displayName}</p>
+          <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight" style={{ color: tema.textPrimary }}>
             {effectiveProfile?.company_name || "Tu empresa"}
           </h1>
           <p className="text-[#F5A623] text-sm sm:text-base font-semibold mt-1">Panel de Gestión de Calidad</p>
@@ -117,17 +127,21 @@ export default function DashboardPage() {
               { icon: "⚠️", value: loadingGerencia ? "—" : riesgosCount, label: "Riesgos identificados" },
               { icon: "👥", value: colaboradoresCount, label: "Colaboradores" },
             ].map((stat) => (
-              <div key={stat.label} className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <div
+                key={stat.label}
+                className="rounded-xl p-4"
+                style={{ backgroundColor: tema.cardBg, border: `1px solid ${tema.cardBorder}` }}
+              >
                 <p className="text-xl mb-1">{stat.icon}</p>
-                <p className="text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{stat.label}</p>
+                <p className="text-2xl font-bold" style={{ color: tema.textPrimary }}>{stat.value}</p>
+                <p className="text-xs mt-0.5" style={{ color: tema.textMuted }}>{stat.label}</p>
               </div>
             ))}
           </div>
 
           {/* Accesos rápidos */}
           <div className="mt-8">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-gray-500 mb-3">Accesos rápidos</p>
+            <p className="text-[11px] font-bold uppercase tracking-wide mb-3" style={{ color: tema.textMuted }}>Accesos rápidos</p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {[
                 { href: "/gestion-gerencia", icon: "🏛️", label: "Gestión de la Gerencia" },
@@ -138,7 +152,8 @@ export default function DashboardPage() {
                 <Link
                   key={item.href}
                   href={`/${locale}/dashboard${item.href}`}
-                  className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-200 hover:bg-white/10 hover:border-[#F5A623]/30 transition-colors"
+                  className="flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm transition-colors hover:border-[#F5A623]/40"
+                  style={{ backgroundColor: tema.cardBg, border: `1px solid ${tema.cardBorder}`, color: tema.textPrimary }}
                 >
                   <span>{item.icon}</span>
                   <span className="truncate">{item.label}</span>

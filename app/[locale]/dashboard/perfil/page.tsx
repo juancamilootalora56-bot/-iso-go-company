@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
 import { MODULOS_PERMISOS, type Colaborador } from "@/lib/colaboradoresCliente";
+import { TEMAS_PANEL, type TemaPanelKey } from "@/lib/temaPanel";
 
 const MAX_LOGO_BYTES = 800_000; // ~800KB
 const MAX_FOTO_BYTES = 800_000;
@@ -38,6 +39,7 @@ export default function PerfilPage() {
   const [ruc, setRuc] = useState("");
   const [descripcionEmpresa, setDescripcionEmpresa] = useState("");
   const [procesosEmpresa, setProcesosEmpresa] = useState("");
+  const [temaPanel, setTemaPanel] = useState<TemaPanelKey>("oscuro");
   const [savingEmpresa, setSavingEmpresa] = useState(false);
   const [savedEmpresa, setSavedEmpresa] = useState(false);
   const [errorEmpresa, setErrorEmpresa] = useState<string | null>(null);
@@ -58,6 +60,7 @@ export default function PerfilPage() {
       setRuc(profile.ruc || "");
       setDescripcionEmpresa(profile.descripcion_empresa || "");
       setProcesosEmpresa(profile.procesos_empresa || "");
+      setTemaPanel((profile.tema_panel as TemaPanelKey) || "oscuro");
     }
   }, [profile]);
 
@@ -105,6 +108,7 @@ export default function PerfilPage() {
           ruc,
           descripcion_empresa: descripcionEmpresa,
           procesos_empresa: procesosEmpresa,
+          tema_panel: temaPanel,
           updated_at: new Date().toISOString(),
         })
         .eq("id", user!.id);
@@ -305,6 +309,34 @@ export default function PerfilPage() {
             placeholder="Principales procesos o áreas con las que opera la empresa..."
             className={`${inputClass} resize-y`}
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Color de fondo del panel</label>
+          <div className="flex items-center gap-3 flex-wrap">
+            {(Object.entries(TEMAS_PANEL) as [TemaPanelKey, (typeof TEMAS_PANEL)[TemaPanelKey]][]).map(([key, t]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setTemaPanel(key)}
+                className="flex flex-col items-center gap-1.5"
+              >
+                <span
+                  className="w-11 h-11 rounded-full flex items-center justify-center transition-all"
+                  style={{
+                    backgroundColor: t.swatch,
+                    border: t.isLight ? "1px solid #E5E7EB" : "1px solid rgba(255,255,255,0.15)",
+                    boxShadow: temaPanel === key ? "0 0 0 3px #F5A623" : "none",
+                  }}
+                >
+                  {temaPanel === key && (
+                    <span style={{ color: t.isLight ? "#1A1A1A" : "#fff" }}>✓</span>
+                  )}
+                </span>
+                <span className="text-[11px] text-gray-500">{t.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         <button
