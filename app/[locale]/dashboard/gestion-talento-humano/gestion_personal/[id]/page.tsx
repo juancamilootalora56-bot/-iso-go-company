@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parsePersonal } from "@/lib/personal";
+import EntrevistaPersonalForm from "@/components/dashboard/EntrevistaPersonalForm";
 
 const ITEM_KEY = "personal_lista";
 
@@ -174,10 +175,11 @@ export default function PerfilPersonalPage() {
             </div>
           )}
 
-          {tab !== "generales" && (
+          {tab === "entrevista" && <EntrevistaPersonalForm userId={user?.id ?? null} empleado={p} />}
+
+          {tab !== "generales" && tab !== "entrevista" && (
             <div className="flex flex-col items-center justify-center py-14 text-center">
               <span className="text-3xl mb-3">
-                {tab === "entrevista" && "🗣️"}
                 {tab === "referencias" && "📇"}
                 {tab === "funciones" && "📋"}
                 {tab === "capacitacion" && "🎓"}
