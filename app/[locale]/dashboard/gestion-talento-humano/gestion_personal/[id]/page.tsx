@@ -9,6 +9,7 @@ import { parsePersonal } from "@/lib/personal";
 import { Seccion, Dato } from "@/components/dashboard/SeccionDocumento";
 import EntrevistaPersonalForm from "@/components/dashboard/EntrevistaPersonalForm";
 import ManualFuncionesForm from "@/components/dashboard/ManualFuncionesForm";
+import CapacitacionPersonalForm from "@/components/dashboard/CapacitacionPersonalForm";
 
 const ITEM_KEY = "personal_lista";
 
@@ -175,12 +176,12 @@ export default function PerfilPersonalPage() {
 
       {tab === "entrevista" && <EntrevistaPersonalForm userId={user?.id ?? null} empleado={p} />}
       {tab === "funciones" && <ManualFuncionesForm userId={user?.id ?? null} empleado={p} />}
+      {tab === "capacitacion" && <CapacitacionPersonalForm userId={user?.id ?? null} empleado={p} />}
 
-      {tab !== "generales" && tab !== "entrevista" && tab !== "funciones" && (
+      {tab !== "generales" && tab !== "entrevista" && tab !== "funciones" && tab !== "capacitacion" && (
         <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-14 text-center">
           <span className="text-3xl mb-3">
             {tab === "referencias" && "📇"}
-            {tab === "capacitacion" && "🎓"}
           </span>
           <p className="text-gray-500 text-sm font-medium">
             {TABS.find((t) => t.key === tab)?.label} — Próximamente
