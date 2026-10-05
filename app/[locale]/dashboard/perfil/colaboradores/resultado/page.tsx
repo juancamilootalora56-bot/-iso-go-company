@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
 import { MODULOS_PERMISOS, type Colaborador } from "@/lib/colaboradoresCliente";
 
+const MAX_FOTO_BYTES = 800_000;
+
 export default function ColaboradoresResultadoPage() {
   const { user } = useUser();
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/perfil`;
+  const fotoInputRef = useRef<HTMLInputElement>(null);
 
   const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,18 +22,25 @@ export default function ColaboradoresResultadoPage() {
   const [passwordsNuevas, setPasswordsNuevas] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const [editando, setEditando] = useState<Colaborador | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [errorEdit, setErrorEdit] = useState<string | null>(null);
+
+  async function cargarColaboradores() {
     if (!user) return;
-    (async () => {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("client_colaboradores")
-        .select("*")
-        .eq("owner_id", user.id)
-        .order("created_at", { ascending: false });
-      setColaboradores(data ?? []);
-      setLoading(false);
-    })();
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("client_colaboradores")
+      .select("*")
+      .eq("owner_id", user.id)
+      .order("created_at", { ascending: false });
+    setColaboradores(data ?? []);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    cargarColaboradores();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   function labelsPermisos(permisos: string[]) {
@@ -60,6 +70,75 @@ export default function ColaboradoresResultadoPage() {
       setReseteando(null);
     }
   }
+
+  function abrirEditar(c: Colaborador) {
+    setErrorEdit(null);
+    setEditando({ ...c });
+  }
+
+  function cerrarEditar() {
+    setEditando(null);
+    setErrorEdit(null);
+    if (fotoInputRef.current) fotoInputRef.current.value = "";
+  }
+
+  function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !editando) return;
+    if (file.size > MAX_FOTO_BYTES) {
+      setErrorEdit("La foto es muy pesada. Usá una imagen de menos de 800KB.");
+      return;
+    }
+    setErrorEdit(null);
+    const reader = new FileReader();
+    reader.onload = () => setEditando((c) => (c ? { ...c, foto: reader.result as string } : c));
+    reader.readAsDataURL(file);
+  }
+
+  function togglePermisoEdit(modulo: string) {
+    setEditando((c) =>
+      c
+        ? {
+            ...c,
+            permisos: c.permisos.includes(modulo)
+              ? c.permisos.filter((m) => m !== modulo)
+              : [...c.permisos, modulo],
+          }
+        : c
+    );
+  }
+
+  async function guardarEdicion() {
+    if (!editando) return;
+    if (!editando.nombre.trim() || !editando.apellido.trim()) {
+      setErrorEdit("Nombre y apellido son obligatorios.");
+      return;
+    }
+    setSavingEdit(true);
+    setErrorEdit(null);
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("client_colaboradores")
+      .update({
+        nombre: editando.nombre,
+        apellido: editando.apellido,
+        cargo: editando.cargo,
+        identificacion: editando.identificacion,
+        foto: editando.foto,
+        permisos: editando.permisos,
+      })
+      .eq("id", editando.id);
+    setSavingEdit(false);
+    if (error) {
+      setErrorEdit("No se pudo guardar. Intentá de nuevo.");
+      return;
+    }
+    await cargarColaboradores();
+    cerrarEditar();
+  }
+
+  const inputClass =
+    "w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F5A623]";
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -93,7 +172,7 @@ export default function ColaboradoresResultadoPage() {
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 overflow-x-auto">
-          <table className="w-full text-xs min-w-[1000px] border-collapse">
+          <table className="w-full text-xs min-w-[1100px] border-collapse">
             <thead>
               <tr className="bg-gray-50 text-left text-gray-500">
                 <th className="p-3 font-semibold border-b border-gray-100 w-14">Foto</th>
@@ -105,6 +184,7 @@ export default function ColaboradoresResultadoPage() {
                 <th className="p-3 font-semibold border-b border-gray-100">Módulos</th>
                 <th className="p-3 font-semibold border-b border-gray-100">Estado</th>
                 <th className="p-3 font-semibold border-b border-gray-100 w-56">Contraseña</th>
+                <th className="p-3 font-semibold border-b border-gray-100 w-16"></th>
               </tr>
             </thead>
             <tbody>
@@ -142,10 +222,118 @@ export default function ColaboradoresResultadoPage() {
                       </button>
                     )}
                   </td>
+                  <td className="p-3">
+                    <button onClick={() => abrirEditar(c)} className="text-gray-400 hover:text-[#1A1A1A] font-semibold">
+                      ✎ Editar
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {editando && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={cerrarEditar}>
+          <div
+            className="bg-white rounded-xl p-6 w-full max-w-sm space-y-4 shadow-2xl my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-sm font-bold text-[#1A1A1A]">Editar colaborador</h2>
+
+            {errorEdit && (
+              <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">{errorEdit}</div>
+            )}
+
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => fotoInputRef.current?.click()}
+                className="relative w-20 h-20 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden"
+              >
+                {editando.foto ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={editando.foto} alt="Foto" className="w-full h-full object-cover" />
+                ) : (
+                  <svg className="w-8 h-8 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                )}
+                <span className="absolute bottom-0 right-0 bg-white rounded-full p-1 border border-gray-200 text-xs">✎</span>
+              </button>
+              <input ref={fotoInputRef} type="file" accept="image/*" onChange={handleFoto} className="hidden" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Nombre</label>
+                <input
+                  value={editando.nombre}
+                  onChange={(e) => setEditando((c) => c && { ...c, nombre: e.target.value })}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Apellido</label>
+                <input
+                  value={editando.apellido}
+                  onChange={(e) => setEditando((c) => c && { ...c, apellido: e.target.value })}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Cargo</label>
+              <input
+                value={editando.cargo ?? ""}
+                onChange={(e) => setEditando((c) => c && { ...c, cargo: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Identificación</label>
+              <input
+                value={editando.identificacion ?? ""}
+                onChange={(e) => setEditando((c) => c && { ...c, identificacion: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-2">Módulos que puede trabajar</label>
+              <div className="space-y-1.5">
+                {MODULOS_PERMISOS.map((m) => (
+                  <label key={m.modulo} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editando.permisos.includes(m.modulo)}
+                      onChange={() => togglePermisoEdit(m.modulo)}
+                      className="w-4 h-4 accent-[#F5A623]"
+                    />
+                    <span className="text-sm text-gray-700">
+                      {m.icon} {m.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                onClick={guardarEdicion}
+                disabled={savingEdit}
+                className="bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60 text-sm"
+              >
+                {savingEdit ? "Guardando..." : "Guardar"}
+              </button>
+              <button onClick={cerrarEditar} className="text-sm text-gray-400 hover:text-gray-600">
+                Cancelar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
