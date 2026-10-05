@@ -12,11 +12,11 @@ const MODULOS = [
   { label: "Diseño y Desarrollo", corto: "D&D" },
 ];
 
-const WIDTH = 460;
-const HEIGHT = 190;
-const PAD_X = 28;
-const PAD_TOP = 24;
-const PAD_BOTTOM = 34;
+const WIDTH = 920;
+const HEIGHT = 300;
+const PAD_X = 50;
+const PAD_TOP = 36;
+const PAD_BOTTOM = 50;
 
 function y(pct: number) {
   const usable = HEIGHT - PAD_TOP - PAD_BOTTOM;
@@ -74,43 +74,45 @@ export default function AvanceModulosChart({
       {loading ? (
         <p className="text-gray-400 text-sm py-10 text-center">Cargando...</p>
       ) : (
-        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full h-auto">
-          <defs>
-            <linearGradient id="avanceGradiente" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#F5A623" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#F5A623" stopOpacity="0" />
-            </linearGradient>
-          </defs>
+        <div className="max-w-lg mx-auto">
+          <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full h-auto">
+            <defs>
+              <linearGradient id="avanceGradiente" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#F5A623" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#F5A623" stopOpacity="0" />
+              </linearGradient>
+            </defs>
 
-          {/* Líneas guía horizontales (0 / 50 / 100%) */}
-          {[0, 50, 100].map((v) => (
-            <g key={v}>
-              <line x1={PAD_X} x2={WIDTH - PAD_X} y1={y(v)} y2={y(v)} stroke="#F1F1F1" strokeWidth={1} />
-              <text x={2} y={y(v) + 3} fontSize={9} fill="#B0B0B0">
-                {v}%
-              </text>
-            </g>
-          ))}
+            {/* Líneas guía horizontales (0 / 50 / 100%) */}
+            {[0, 50, 100].map((v) => (
+              <g key={v}>
+                <line x1={PAD_X} x2={WIDTH - PAD_X} y1={y(v)} y2={y(v)} stroke="#F2F2F2" strokeWidth={1} />
+                <text x={4} y={y(v) + 4} fontSize={13} fill="#C4C4C4">
+                  {v}%
+                </text>
+              </g>
+            ))}
 
-          {/* Área bajo la curva */}
-          <path d={area} fill="url(#avanceGradiente)" />
+            {/* Área bajo la curva */}
+            <path d={area} fill="url(#avanceGradiente)" />
 
-          {/* Línea suave */}
-          <path d={linea} fill="none" stroke="#F5A623" strokeWidth={2.5} strokeLinecap="round" />
+            {/* Línea suave */}
+            <path d={linea} fill="none" stroke="#F5A623" strokeWidth={2.5} strokeLinecap="round" />
 
-          {/* Puntos + etiquetas */}
-          {puntos.map((p, i) => (
-            <g key={i}>
-              <circle cx={p.x} cy={p.y} r={4} fill="#fff" stroke="#F5A623" strokeWidth={2.5} />
-              <text x={p.x} y={p.y - 10} fontSize={10} fontWeight={700} fill="#1A1A1A" textAnchor="middle">
-                {p.pct}%
-              </text>
-              <text x={p.x} y={HEIGHT - 10} fontSize={9} fill="#9CA3AF" textAnchor="middle">
-                {MODULOS[i].corto}
-              </text>
-            </g>
-          ))}
-        </svg>
+            {/* Puntos + etiquetas */}
+            {puntos.map((p, i) => (
+              <g key={i}>
+                <circle cx={p.x} cy={p.y} r={5} fill="#fff" stroke="#F5A623" strokeWidth={2.5} />
+                <text x={p.x} y={p.y - 16} fontSize={14} fontWeight={700} fill="#1A1A1A" textAnchor="middle">
+                  {p.pct}%
+                </text>
+                <text x={p.x} y={HEIGHT - 16} fontSize={12} fill="#AEAEAE" textAnchor="middle">
+                  {MODULOS[i].corto}
+                </text>
+              </g>
+            ))}
+          </svg>
+        </div>
       )}
     </div>
   );
