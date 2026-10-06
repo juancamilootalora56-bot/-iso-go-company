@@ -13,10 +13,10 @@ export default function GestionOperativaPage() {
       titulo="Gestión Operativa"
       descripcion="Procesos, indicadores y mejora continua de tu operación."
       subsecciones={[
-        { icon: "🔄", titulo: "Mapa de procesos", descripcion: "Procesos clave de tu operación diaria." },
-        { icon: "📐", titulo: "Indicadores de proceso", descripcion: "KPIs de desempeño operativo." },
-        { icon: "⚠️", titulo: "No conformidades", descripcion: "Registro y tratamiento de no conformidades." },
-        { icon: "🚀", titulo: "Mejora continua", descripcion: "Acciones de mejora y su seguimiento." },
+        { icon: "🔄", imagen: "/gestion-operativa/mapa_procesos.jpg", titulo: "Mapa de procesos", descripcion: "Procesos clave de tu operación diaria." },
+        { icon: "📐", imagen: "/gestion-operativa/indicadores_proceso.jpg", titulo: "Indicadores de proceso", descripcion: "KPIs de desempeño operativo." },
+        { icon: "⚠️", imagen: "/gestion-operativa/no_conformidades.jpg", titulo: "No conformidades", descripcion: "Registro y tratamiento de no conformidades." },
+        { icon: "🚀", imagen: "/gestion-operativa/mejora_continua.jpg", titulo: "Mejora continua", descripcion: "Acciones de mejora y su seguimiento." },
       ]}
     />
   );

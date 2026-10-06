@@ -13,10 +13,10 @@ export default function GestionComercialPage() {
       titulo="Gestión Comercial"
       descripcion="Clientes, satisfacción y seguimiento de ventas."
       subsecciones={[
-        { icon: "🤝", titulo: "Clientes", descripcion: "Base de clientes y seguimiento comercial." },
-        { icon: "😊", titulo: "Satisfacción del cliente", descripcion: "Encuestas y resultados de satisfacción." },
-        { icon: "📣", titulo: "Reclamos y sugerencias", descripcion: "Registro y gestión de reclamos de clientes." },
-        { icon: "💹", titulo: "Seguimiento de ventas", descripcion: "Indicadores comerciales y cumplimiento de metas." },
+        { icon: "🤝", imagen: "/gestion-comercial/clientes.jpg", titulo: "Clientes", descripcion: "Base de clientes y seguimiento comercial." },
+        { icon: "😊", imagen: "/gestion-comercial/satisfaccion_cliente.jpg", titulo: "Satisfacción del cliente", descripcion: "Encuestas y resultados de satisfacción." },
+        { icon: "📣", imagen: "/gestion-comercial/reclamos_sugerencias.jpg", titulo: "Reclamos y sugerencias", descripcion: "Registro y gestión de reclamos de clientes." },
+        { icon: "💹", imagen: "/gestion-comercial/seguimiento_ventas.jpg", titulo: "Seguimiento de ventas", descripcion: "Indicadores comerciales y cumplimiento de metas." },
       ]}
     />
   );

@@ -28,8 +28,9 @@ export default function GestionTalentoHumanoPage() {
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
         >
           <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF6E5] to-[#FDEBC8] text-xl">
-              🧾
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/gestion-talento-humano/alta_personal.jpg" alt="Alta de Personal" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
             </span>
           </span>
           <div className="flex-1 min-w-0">
@@ -46,8 +47,9 @@ export default function GestionTalentoHumanoPage() {
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
         >
           <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF6E5] to-[#FDEBC8] text-xl">
-              🪪
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/gestion-talento-humano/gestion_personal.jpg" alt="Gestión del Personal" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
             </span>
           </span>
           <div className="flex-1 min-w-0">
@@ -71,8 +73,9 @@ export default function GestionTalentoHumanoPage() {
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
         >
           <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF6E5] to-[#FDEBC8] text-xl">
-              🎓
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/gestion-talento-humano/capacitaciones_generales.jpg" alt="Capacitaciones Generales" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
             </span>
           </span>
           <div className="flex-1 min-w-0">
@@ -89,8 +92,9 @@ export default function GestionTalentoHumanoPage() {
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
         >
           <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF6E5] to-[#FDEBC8] text-xl">
-              📊
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/gestion-talento-humano/evaluaciones_generales.jpg" alt="Evaluaciones Generales" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
             </span>
           </span>
           <div className="flex-1 min-w-0">
@@ -103,12 +107,13 @@ export default function GestionTalentoHumanoPage() {
         </Link>
 
         {[
-          { icon: "🚪", titulo: "Inducción de personal", descripcion: "Proceso de incorporación de nuevos integrantes." },
+          { icon: "🚪", imagen: "/gestion-talento-humano/induccion.jpg", titulo: "Inducción de personal", descripcion: "Proceso de incorporación de nuevos integrantes." },
         ].map((s) => (
           <div key={s.titulo} className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 opacity-70">
             <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-              <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF6E5] to-[#FDEBC8] text-xl">
-                {s.icon}
+              <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={s.imagen} alt={s.titulo} className="w-full h-full object-cover rounded-full" />
               </span>
             </span>
             <div className="flex-1 min-w-0">
