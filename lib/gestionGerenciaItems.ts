@@ -2,6 +2,7 @@ export type ItemGestion = {
   key: string;
   titulo: string;
   icono: string;
+  imagen?: string;
   descripcion: string;
   placeholder: string;
 };
@@ -11,6 +12,7 @@ export const ITEMS_GERENCIA: ItemGestion[] = [
     key: "compromiso_direccion",
     titulo: "Compromiso por la Dirección",
     icono: "✍️",
+    imagen: "/gestion-gerencia/compromiso-direccion.jpg",
     descripcion: "Declaración del compromiso de la alta dirección con el sistema de gestión.",
     placeholder: "Ej: La Dirección de [empresa] se compromete a liderar, promover y asegurar los recursos necesarios para la implementación y mejora continua del sistema de gestión...",
   },
@@ -18,6 +20,7 @@ export const ITEMS_GERENCIA: ItemGestion[] = [
     key: "foda",
     titulo: "FODA",
     icono: "🧭",
+    imagen: "/gestion-gerencia/foda.jpg",
     descripcion: "Fortalezas, Oportunidades, Debilidades y Amenazas de la organización.",
     placeholder: "Fortalezas:\n- ...\n\nOportunidades:\n- ...\n\nDebilidades:\n- ...\n\nAmenazas:\n- ...",
   },
