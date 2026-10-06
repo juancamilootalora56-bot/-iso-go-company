@@ -8,7 +8,7 @@ import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
 import LineChartSimple from "@/components/dashboard/LineChartSimple";
 import { parsePersonal } from "@/lib/personal";
-import { parsePrograma, colorEstado, MESES_CORTOS, ESTADOS_CAPACITACION, type CapacitacionItem } from "@/lib/capacitacionPersonal";
+import { parsePrograma, colorEstado, MESES, MESES_CORTOS, ESTADOS_CAPACITACION, type CapacitacionItem } from "@/lib/capacitacionPersonal";
 
 type FilaMatriz = CapacitacionItem & { empleadoId: string; empleadoNombre: string; empleadoCargo: string };
 
@@ -54,6 +54,14 @@ export default function CapacitacionesGeneralesPage() {
     }).length,
   }));
 
+  const porMesCronograma = MESES.map((_, idx) =>
+    filas.filter((f) => {
+      if (!f.fechaProgramada) return false;
+      const d = new Date(f.fechaProgramada + "T00:00:00");
+      return d.getFullYear() === anioVista && d.getMonth() === idx;
+    })
+  );
+
   const porMesHoras = MESES_CORTOS.map((label, idx) => ({
     label,
     valor: Math.round(
@@ -93,6 +101,46 @@ export default function CapacitacionesGeneralesPage() {
           </div>
         ))}
       </div>
+
+      {/* Cronograma general */}
+      <Seccion icono="📅" titulo="Cronograma General de Capacitación">
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <button onClick={() => setAnioVista((a) => a - 1)} className="w-7 h-7 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 text-sm">‹</button>
+          <span className="text-sm font-bold text-[#1A1A1A] w-14 text-center">{anioVista}</span>
+          <button onClick={() => setAnioVista((a) => a + 1)} className="w-7 h-7 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 text-sm">›</button>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+          {MESES.map((mes, idx) => (
+            <div key={mes} className="bg-[#FAFAFA] rounded-xl border border-gray-100 p-3 min-h-[92px]">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2">{mes}</p>
+              <div className="space-y-1.5">
+                {porMesCronograma[idx].map((c) => (
+                  <Link
+                    key={c.id}
+                    href={`${basePath}/gestion_personal/${c.empleadoId}`}
+                    className="block text-[11px] font-semibold text-white rounded-md px-2 py-1 truncate"
+                    style={{ backgroundColor: colorEstado(c.estado) }}
+                    title={`${c.tema} — ${c.empleadoNombre}`}
+                  >
+                    {c.tema} <span className="opacity-80">· {c.empleadoNombre.split(" ")[0]}</span>
+                  </Link>
+                ))}
+                {porMesCronograma[idx].length === 0 && <p className="text-[11px] text-gray-300">—</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4 flex-wrap mt-4 text-[11px] text-gray-500">
+          {ESTADOS_CAPACITACION.map((e) => (
+            <span key={e} className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: colorEstado(e) }} />
+              {e}
+            </span>
+          ))}
+        </div>
+      </Seccion>
 
       {/* Informes */}
       <Seccion icono="📈" titulo="Informe: capacitaciones por mes">
