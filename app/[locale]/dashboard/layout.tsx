@@ -20,15 +20,15 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-const navItems: { href: string; label: string; icon: LucideIcon; modulo: string | null; soloOwner: boolean }[] = [
-  { href: "", label: "Inicio", icon: Home, modulo: null, soloOwner: false },
-  { href: "/gestion-gerencia", label: "Gestión de la Gerencia", icon: Landmark, modulo: "gerencia", soloOwner: false },
-  { href: "/gestion-talento-humano", label: "Gestión del Talento Humano", icon: Users, modulo: "talento_humano", soloOwner: false },
-  { href: "/gestion-compras", label: "Gestión de Compras", icon: ShoppingCart, modulo: "compras", soloOwner: false },
-  { href: "/gestion-comercial", label: "Gestión Comercial", icon: LineChart, modulo: "comercial", soloOwner: false },
-  { href: "/gestion-operativa", label: "Gestión Operativa", icon: Settings2, modulo: "operativa", soloOwner: false },
-  { href: "/gestion-diseno-desarrollo", label: "Gestión de Diseño y Desarrollo", icon: PenTool, modulo: "diseno_desarrollo", soloOwner: false },
-  { href: "/perfil", label: "Perfil", icon: UserCircle, modulo: null, soloOwner: true },
+const navItems: { href: string; label: string; icon: LucideIcon; color: string; modulo: string | null; soloOwner: boolean }[] = [
+  { href: "", label: "Inicio", icon: Home, color: "#F5A623", modulo: null, soloOwner: false },
+  { href: "/gestion-gerencia", label: "Gestión de la Gerencia", icon: Landmark, color: "#6366F1", modulo: "gerencia", soloOwner: false },
+  { href: "/gestion-talento-humano", label: "Gestión del Talento Humano", icon: Users, color: "#EC4899", modulo: "talento_humano", soloOwner: false },
+  { href: "/gestion-compras", label: "Gestión de Compras", icon: ShoppingCart, color: "#10B981", modulo: "compras", soloOwner: false },
+  { href: "/gestion-comercial", label: "Gestión Comercial", icon: LineChart, color: "#3B82F6", modulo: "comercial", soloOwner: false },
+  { href: "/gestion-operativa", label: "Gestión Operativa", icon: Settings2, color: "#8B5CF6", modulo: "operativa", soloOwner: false },
+  { href: "/gestion-diseno-desarrollo", label: "Gestión de Diseño y Desarrollo", icon: PenTool, color: "#14B8A6", modulo: "diseno_desarrollo", soloOwner: false },
+  { href: "/perfil", label: "Perfil", icon: UserCircle, color: "#64748B", modulo: null, soloOwner: true },
 ];
 
 // Portal del cliente todavía en desarrollo (sistema ISO 9001 en construcción).
@@ -226,7 +226,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     : "text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A]"
                 }`}
               >
-                <Icon size={18} strokeWidth={1.75} className="flex-shrink-0" />
+                <Icon size={18} strokeWidth={2} className="flex-shrink-0" style={{ color: item.color }} />
                 {item.label}
               </Link>
             );
