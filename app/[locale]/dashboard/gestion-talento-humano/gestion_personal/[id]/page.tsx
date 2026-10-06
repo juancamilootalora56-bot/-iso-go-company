@@ -11,11 +11,13 @@ import EntrevistaPersonalForm from "@/components/dashboard/EntrevistaPersonalFor
 import ManualFuncionesForm from "@/components/dashboard/ManualFuncionesForm";
 import CapacitacionPersonalForm from "@/components/dashboard/CapacitacionPersonalForm";
 import ReferenciasPersonalForm from "@/components/dashboard/ReferenciasPersonalForm";
+import DocumentacionPersonalForm from "@/components/dashboard/DocumentacionPersonalForm";
 
 const ITEM_KEY = "personal_lista";
 
 const TABS = [
   { key: "generales", label: "Datos Generales" },
+  { key: "documentacion", label: "Documentación" },
   { key: "entrevista", label: "Entrevista" },
   { key: "referencias", label: "Referencias" },
   { key: "funciones", label: "Funciones" },
@@ -175,12 +177,13 @@ export default function PerfilPersonalPage() {
         </div>
       )}
 
+      {tab === "documentacion" && <DocumentacionPersonalForm userId={user?.id ?? null} empleado={p} />}
       {tab === "entrevista" && <EntrevistaPersonalForm userId={user?.id ?? null} empleado={p} />}
       {tab === "funciones" && <ManualFuncionesForm userId={user?.id ?? null} empleado={p} />}
       {tab === "capacitacion" && <CapacitacionPersonalForm userId={user?.id ?? null} empleado={p} />}
       {tab === "referencias" && <ReferenciasPersonalForm userId={user?.id ?? null} empleado={p} />}
 
-      {tab !== "generales" && tab !== "entrevista" && tab !== "funciones" && tab !== "capacitacion" && tab !== "referencias" && (
+      {!["generales", "documentacion", "entrevista", "funciones", "capacitacion", "referencias"].includes(tab) && (
         <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-14 text-center">
           <p className="text-gray-500 text-sm font-medium">
             {TABS.find((t) => t.key === tab)?.label} — Próximamente
