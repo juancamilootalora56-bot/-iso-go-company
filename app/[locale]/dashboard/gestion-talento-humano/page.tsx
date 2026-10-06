@@ -75,8 +75,22 @@ export default function GestionTalentoHumanoPage() {
           </div>
         </Link>
 
+        <Link
+          href={`${basePath}/evaluaciones_generales`}
+          className="bg-white rounded-xl p-5 border border-gray-100 hover:border-[#F5A623]/40 transition-colors"
+        >
+          <div className="flex items-start gap-3">
+            <span className="text-2xl flex-shrink-0">📊</span>
+            <div className="min-w-0">
+              <h2 className="font-semibold text-sm text-[#1A1A1A] mb-1">Evaluaciones Generales</h2>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Matriz y gráficos del desempeño de todo el personal.
+              </p>
+            </div>
+          </div>
+        </Link>
+
         {[
-          { icon: "📝", titulo: "Evaluación de desempeño", descripcion: "Seguimiento periódico del desempeño de cada colaborador." },
           { icon: "🚪", titulo: "Inducción de personal", descripcion: "Proceso de incorporación de nuevos integrantes." },
         ].map((s) => (
           <div key={s.titulo} className="bg-white rounded-xl p-5 border border-gray-100 opacity-70">

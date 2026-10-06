@@ -12,6 +12,7 @@ import ManualFuncionesForm from "@/components/dashboard/ManualFuncionesForm";
 import CapacitacionPersonalForm from "@/components/dashboard/CapacitacionPersonalForm";
 import ReferenciasPersonalForm from "@/components/dashboard/ReferenciasPersonalForm";
 import DocumentacionPersonalForm from "@/components/dashboard/DocumentacionPersonalForm";
+import EvaluacionDesempenoForm from "@/components/dashboard/EvaluacionDesempenoForm";
 
 const ITEM_KEY = "personal_lista";
 
@@ -22,6 +23,7 @@ const TABS = [
   { key: "referencias", label: "Referencias" },
   { key: "funciones", label: "Funciones" },
   { key: "capacitacion", label: "Capacitación" },
+  { key: "evaluacion", label: "Evaluación de Desempeño" },
 ];
 
 function fechaLegible(iso?: string) {
@@ -182,8 +184,9 @@ export default function PerfilPersonalPage() {
       {tab === "funciones" && <ManualFuncionesForm userId={user?.id ?? null} empleado={p} />}
       {tab === "capacitacion" && <CapacitacionPersonalForm userId={user?.id ?? null} empleado={p} />}
       {tab === "referencias" && <ReferenciasPersonalForm userId={user?.id ?? null} empleado={p} />}
+      {tab === "evaluacion" && <EvaluacionDesempenoForm userId={user?.id ?? null} empleado={p} />}
 
-      {!["generales", "documentacion", "entrevista", "funciones", "capacitacion", "referencias"].includes(tab) && (
+      {!["generales", "documentacion", "entrevista", "funciones", "capacitacion", "referencias", "evaluacion"].includes(tab) && (
         <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-14 text-center">
           <p className="text-gray-500 text-sm font-medium">
             {TABS.find((t) => t.key === tab)?.label} — Próximamente
