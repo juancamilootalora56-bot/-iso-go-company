@@ -7,16 +7,28 @@ import { useParams, useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/hooks/useUser";
 import { DashboardUserProvider } from "@/components/dashboard/DashboardUserContext";
+import {
+  Home,
+  Landmark,
+  Users,
+  ShoppingCart,
+  LineChart,
+  Settings2,
+  PenTool,
+  UserCircle,
+  LogOut,
+  type LucideIcon,
+} from "lucide-react";
 
-const navItems = [
-  { href: "", label: "Inicio", icon: "🏠", modulo: null as string | null, soloOwner: false },
-  { href: "/gestion-gerencia", label: "Gestión de la Gerencia", icon: "🏛️", modulo: "gerencia", soloOwner: false },
-  { href: "/gestion-talento-humano", label: "Gestión del Talento Humano", icon: "👥", modulo: "talento_humano", soloOwner: false },
-  { href: "/gestion-compras", label: "Gestión de Compras", icon: "🛒", modulo: "compras", soloOwner: false },
-  { href: "/gestion-comercial", label: "Gestión Comercial", icon: "📈", modulo: "comercial", soloOwner: false },
-  { href: "/gestion-operativa", label: "Gestión Operativa", icon: "⚙️", modulo: "operativa", soloOwner: false },
-  { href: "/gestion-diseno-desarrollo", label: "Gestión de Diseño y Desarrollo", icon: "🧩", modulo: "diseno_desarrollo", soloOwner: false },
-  { href: "/perfil", label: "Perfil", icon: "👤", modulo: null, soloOwner: true },
+const navItems: { href: string; label: string; icon: LucideIcon; modulo: string | null; soloOwner: boolean }[] = [
+  { href: "", label: "Inicio", icon: Home, modulo: null, soloOwner: false },
+  { href: "/gestion-gerencia", label: "Gestión de la Gerencia", icon: Landmark, modulo: "gerencia", soloOwner: false },
+  { href: "/gestion-talento-humano", label: "Gestión del Talento Humano", icon: Users, modulo: "talento_humano", soloOwner: false },
+  { href: "/gestion-compras", label: "Gestión de Compras", icon: ShoppingCart, modulo: "compras", soloOwner: false },
+  { href: "/gestion-comercial", label: "Gestión Comercial", icon: LineChart, modulo: "comercial", soloOwner: false },
+  { href: "/gestion-operativa", label: "Gestión Operativa", icon: Settings2, modulo: "operativa", soloOwner: false },
+  { href: "/gestion-diseno-desarrollo", label: "Gestión de Diseño y Desarrollo", icon: PenTool, modulo: "diseno_desarrollo", soloOwner: false },
+  { href: "/perfil", label: "Perfil", icon: UserCircle, modulo: null, soloOwner: true },
 ];
 
 // Portal del cliente todavía en desarrollo (sistema ISO 9001 en construcción).
@@ -202,6 +214,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {itemsVisibles.map((item) => {
             const href = `/${locale}/dashboard${item.href}`;
             const isActive = pathname === href || (item.href === "" && pathname === `/${locale}/dashboard`);
+            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
@@ -213,7 +226,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     : "text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A]"
                 }`}
               >
-                <span className={isActive ? "" : "opacity-80"}>{item.icon}</span>
+                <Icon size={18} strokeWidth={1.75} className="flex-shrink-0" />
                 {item.label}
               </Link>
             );
@@ -235,7 +248,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             onClick={handleLogout}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A] transition-colors"
           >
-            <span>🚪</span>
+            <LogOut size={17} strokeWidth={1.75} />
             Cerrar sesión
           </button>
         </div>
