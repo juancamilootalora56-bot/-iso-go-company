@@ -170,12 +170,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href={`/${locale}`} className="flex items-center gap-3">
             {effectiveProfile?.logo_url ? (
               <>
-                <div className="w-10 h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0 p-1">
+                <div className="h-14 flex items-center justify-center flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={effectiveProfile.logo_url}
                     alt={effectiveProfile.company_name || "Logo"}
-                    className="max-w-full max-h-full object-contain"
+                    className="max-h-14 max-w-[150px] object-contain"
                   />
                 </div>
                 <div className="min-w-0">
