@@ -166,31 +166,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         } lg:translate-x-0 lg:static lg:z-auto`}
       >
         {/* Logo: el del cliente si ya lo subió en Perfil, si no el de Iso Go por defecto */}
-        <div className="p-5 border-b border-gray-100">
-          <Link href={`/${locale}`} className="flex items-center gap-3">
+        <div className="px-5 pt-6 pb-5 border-b border-gray-100">
+          <Link href={`/${locale}`} className="flex flex-col items-center text-center gap-2.5">
             {effectiveProfile?.logo_url ? (
               <>
-                <div className="h-14 flex items-center justify-center flex-shrink-0">
+                <div className="h-14 flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={effectiveProfile.logo_url}
                     alt={effectiveProfile.company_name || "Logo"}
-                    className="max-h-14 max-w-[150px] object-contain"
+                    className="max-h-14 max-w-[170px] object-contain"
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[#1A1A1A] font-bold text-sm leading-tight truncate">
+                  <p className="text-[#1A1A1A] font-bold text-sm leading-snug">
                     {effectiveProfile.company_name || "Mi empresa"}
                   </p>
-                  <p className="text-gray-400 text-xs">Sistema de Gestión</p>
+                  <p className="text-gray-400 text-[11px] uppercase tracking-wide mt-0.5">Sistema de Gestión</p>
                 </div>
               </>
             ) : (
               <>
-                <Image src="/logo.jpg" alt="Iso Go" width={40} height={44} className="rounded-lg border border-gray-200" />
+                <Image src="/logo.jpg" alt="Iso Go" width={48} height={53} className="rounded-lg border border-gray-200" />
                 <div>
-                  <p className="text-[#1A1A1A] font-bold text-sm leading-tight">Iso Go</p>
-                  <p className="text-gray-400 text-xs">Company</p>
+                  <p className="text-[#1A1A1A] font-bold text-sm leading-snug">Iso Go</p>
+                  <p className="text-gray-400 text-[11px] uppercase tracking-wide mt-0.5">Company</p>
                 </div>
               </>
             )}
