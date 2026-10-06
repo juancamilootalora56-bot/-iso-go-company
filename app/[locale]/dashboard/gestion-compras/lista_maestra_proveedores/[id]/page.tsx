@@ -1,13 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseProveedores, colorEstadoProveedor } from "@/lib/proveedores";
 import { Seccion, Dato } from "@/components/dashboard/SeccionDocumento";
+import DocumentacionProveedorForm from "@/components/dashboard/DocumentacionProveedorForm";
+import EvaluacionProveedorForm from "@/components/dashboard/EvaluacionProveedorForm";
 
 const ITEM_KEY = "proveedores_lista";
+
+const TABS = [
+  { key: "generales", label: "Datos Generales" },
+  { key: "documentacion", label: "Documentación" },
+  { key: "evaluacion", label: "Evaluación" },
+];
 
 function fechaLegible(iso?: string) {
   if (!iso) return undefined;
@@ -26,6 +35,7 @@ export default function PerfilProveedorPage() {
   const basePath = `/${locale}/dashboard/gestion-compras`;
 
   const { docs, loading } = useGestionDocumentos("compras", user?.id ?? null);
+  const [tab, setTab] = useState("generales");
 
   if (loading) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
@@ -99,63 +109,87 @@ export default function PerfilProveedorPage() {
         </Link>
       </div>
 
-      {/* Contenido */}
-      <div className="space-y-4">
-        <Seccion icono="🏢" titulo="Datos de la empresa">
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Dato icono="🪪" label="RUC" valor={p.ruc} />
-            <Dato icono="🏷️" label="Rubro" valor={p.rubro} />
-            <Dato icono="🏳️" label="País" valor={p.pais} />
-            <Dato icono="📍" label="Ciudad" valor={p.ciudad} />
-            <Dato icono="📍" label="Dirección" valor={p.direccion} />
-            <Dato icono="📞" label="Teléfono" valor={p.telefono} />
-            <Dato icono="✉️" label="Email" valor={p.email} />
-            <Dato icono="🌐" label="Sitio web" valor={p.sitioWeb} />
-          </div>
-        </Seccion>
-
-        {(p.contactoNombre || p.contactoTelefono || p.contactoEmail) && (
-          <Seccion icono="🧑‍💼" titulo="Persona de contacto">
-            <div className="grid sm:grid-cols-3 gap-3">
-              <Dato label="Nombre" valor={p.contactoNombre} />
-              <Dato label="Cargo" valor={p.contactoCargo} />
-              <Dato label="Teléfono" valor={p.contactoTelefono} />
-              <Dato label="Email" valor={p.contactoEmail} />
-            </div>
-          </Seccion>
-        )}
-
-        {(p.formaPago || p.moneda || p.plazoEntrega || p.montoMinimo) && (
-          <Seccion icono="📄" titulo="Condiciones comerciales">
-            <div className="grid sm:grid-cols-3 gap-3">
-              <Dato label="Forma de pago" valor={p.formaPago} />
-              <Dato label="Moneda" valor={p.moneda} />
-              <Dato label="Plazo de entrega" valor={p.plazoEntrega} />
-              <Dato label="Monto mínimo de compra" valor={p.montoMinimo} />
-            </div>
-          </Seccion>
-        )}
-
-        {(p.banco || p.numeroCuenta) && (
-          <Seccion icono="🏦" titulo="Datos bancarios">
-            <div className="grid sm:grid-cols-3 gap-3">
-              <Dato label="Banco" valor={p.banco} />
-              <Dato label="Tipo de cuenta" valor={p.tipoCuenta} />
-              <Dato label="Número de cuenta" valor={p.numeroCuenta} />
-              <Dato label="Titular" valor={p.titularCuenta} />
-            </div>
-          </Seccion>
-        )}
-
-        <Seccion icono="📝" titulo="Registro">
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Dato icono="📅" label="Fecha de registro" valor={fechaLegible(p.fechaRegistro)} />
-          </div>
-          {p.observaciones && (
-            <p className="text-sm text-gray-600 whitespace-pre-wrap mt-3 pt-3 border-t border-gray-100">{p.observaciones}</p>
-          )}
-        </Seccion>
+      {/* Pestañas */}
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-x-auto sticky top-0 z-20">
+        <div className="flex">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
+                tab === t.key
+                  ? "border-[#F5A623] text-[#1A1A1A]"
+                  : "border-transparent text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* Contenido */}
+      {tab === "generales" && (
+        <div className="space-y-4">
+          <Seccion icono="🏢" titulo="Datos de la empresa">
+            <div className="grid sm:grid-cols-3 gap-3">
+              <Dato icono="🪪" label="RUC" valor={p.ruc} />
+              <Dato icono="🏷️" label="Rubro" valor={p.rubro} />
+              <Dato icono="🏳️" label="País" valor={p.pais} />
+              <Dato icono="📍" label="Ciudad" valor={p.ciudad} />
+              <Dato icono="📍" label="Dirección" valor={p.direccion} />
+              <Dato icono="📞" label="Teléfono" valor={p.telefono} />
+              <Dato icono="✉️" label="Email" valor={p.email} />
+              <Dato icono="🌐" label="Sitio web" valor={p.sitioWeb} />
+            </div>
+          </Seccion>
+
+          {(p.contactoNombre || p.contactoTelefono || p.contactoEmail) && (
+            <Seccion icono="🧑‍💼" titulo="Persona de contacto">
+              <div className="grid sm:grid-cols-3 gap-3">
+                <Dato label="Nombre" valor={p.contactoNombre} />
+                <Dato label="Cargo" valor={p.contactoCargo} />
+                <Dato label="Teléfono" valor={p.contactoTelefono} />
+                <Dato label="Email" valor={p.contactoEmail} />
+              </div>
+            </Seccion>
+          )}
+
+          {(p.formaPago || p.moneda || p.plazoEntrega || p.montoMinimo) && (
+            <Seccion icono="📄" titulo="Condiciones comerciales">
+              <div className="grid sm:grid-cols-3 gap-3">
+                <Dato label="Forma de pago" valor={p.formaPago} />
+                <Dato label="Moneda" valor={p.moneda} />
+                <Dato label="Plazo de entrega" valor={p.plazoEntrega} />
+                <Dato label="Monto mínimo de compra" valor={p.montoMinimo} />
+              </div>
+            </Seccion>
+          )}
+
+          {(p.banco || p.numeroCuenta) && (
+            <Seccion icono="🏦" titulo="Datos bancarios">
+              <div className="grid sm:grid-cols-3 gap-3">
+                <Dato label="Banco" valor={p.banco} />
+                <Dato label="Tipo de cuenta" valor={p.tipoCuenta} />
+                <Dato label="Número de cuenta" valor={p.numeroCuenta} />
+                <Dato label="Titular" valor={p.titularCuenta} />
+              </div>
+            </Seccion>
+          )}
+
+          <Seccion icono="📝" titulo="Registro">
+            <div className="grid sm:grid-cols-3 gap-3">
+              <Dato icono="📅" label="Fecha de registro" valor={fechaLegible(p.fechaRegistro)} />
+            </div>
+            {p.observaciones && (
+              <p className="text-sm text-gray-600 whitespace-pre-wrap mt-3 pt-3 border-t border-gray-100">{p.observaciones}</p>
+            )}
+          </Seccion>
+        </div>
+      )}
+
+      {tab === "documentacion" && <DocumentacionProveedorForm userId={user?.id ?? null} proveedor={p} />}
+      {tab === "evaluacion" && <EvaluacionProveedorForm userId={user?.id ?? null} proveedor={p} />}
     </div>
   );
 }
