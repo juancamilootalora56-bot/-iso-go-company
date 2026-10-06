@@ -161,16 +161,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-60 bg-[#3D362E] z-30 flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-60 bg-white border-r border-gray-100 z-30 flex flex-col transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 lg:static lg:z-auto`}
       >
         {/* Logo: el del cliente si ya lo subió en Perfil, si no el de Iso Go por defecto */}
-        <div className="p-5 border-b border-white/5">
+        <div className="p-5 border-b border-gray-100">
           <Link href={`/${locale}`} className="flex items-center gap-3">
             {effectiveProfile?.logo_url ? (
               <>
-                <div className="w-10 h-10 rounded bg-white flex items-center justify-center overflow-hidden flex-shrink-0 p-1">
+                <div className="w-10 h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0 p-1">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={effectiveProfile.logo_url}
@@ -179,18 +179,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-white font-bold text-sm leading-tight truncate">
+                  <p className="text-[#1A1A1A] font-bold text-sm leading-tight truncate">
                     {effectiveProfile.company_name || "Mi empresa"}
                   </p>
-                  <p className="text-gray-500 text-xs">Sistema de Gestión</p>
+                  <p className="text-gray-400 text-xs">Sistema de Gestión</p>
                 </div>
               </>
             ) : (
               <>
-                <Image src="/logo.jpg" alt="Iso Go" width={40} height={44} className="rounded" />
+                <Image src="/logo.jpg" alt="Iso Go" width={40} height={44} className="rounded-lg border border-gray-200" />
                 <div>
-                  <p className="text-white font-bold text-sm leading-tight">Iso Go</p>
-                  <p className="text-gray-500 text-xs">Company</p>
+                  <p className="text-[#1A1A1A] font-bold text-sm leading-tight">Iso Go</p>
+                  <p className="text-gray-400 text-xs">Company</p>
                 </div>
               </>
             )}
@@ -209,11 +209,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-[#F5A623] text-[#1A1A1A]"
-                    : "text-gray-400 hover:bg-white/5 hover:text-white"
+                    ? "bg-[#1A1A1A] text-white shadow-sm"
+                    : "text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A]"
                 }`}
               >
-                <span>{item.icon}</span>
+                <span className={isActive ? "" : "opacity-80"}>{item.icon}</span>
                 {item.label}
               </Link>
             );
@@ -221,19 +221,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         {/* User info + logout */}
-        <div className="p-4 border-t border-white/5">
+        <div className="p-4 border-t border-gray-100">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 rounded-full bg-[#F5A623] flex items-center justify-center text-[#1A1A1A] font-bold text-sm flex-shrink-0">
               {displayName[0].toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="text-white text-sm font-medium truncate">{displayName}</p>
-              <p className="text-gray-500 text-xs truncate">{rawUser?.email}</p>
+              <p className="text-[#1A1A1A] text-sm font-semibold truncate">{displayName}</p>
+              <p className="text-gray-400 text-xs truncate">{rawUser?.email}</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A] transition-colors"
           >
             <span>🚪</span>
             Cerrar sesión
