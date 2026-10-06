@@ -9,9 +9,6 @@ function defaultTexto(empresa: string) {
   return `La Gerencia reitera el compromiso total e incondicional en dirigir y conducir la actividad empresarial de ${nombre}, cumpliendo y satisfaciendo tanto los requisitos del cliente como los legales y reglamentarios, bajo los parámetros establecidos en nuestras Políticas y Objetivos del Sistema de Gestión de Calidad. Para lograr esto, contamos con el respaldo de nuestro personal y el de los demás miembros del equipo de la dirección para implementar y hacer cumplir las estrategias establecidas y, a la vez, facilitar los recursos para lograrlos.`;
 }
 
-const CIERRE =
-  "En ese sentido, agradecemos su colaboración y oportunamente estaremos informando de cualquier requisito necesario por parte de ustedes.";
-
 export default function CompromisoDireccionCard({
   empresa,
   contenido,
@@ -88,12 +85,12 @@ export default function CompromisoDireccionCard({
       <div className="flex flex-col sm:flex-row m-4 rounded-lg overflow-hidden border border-gray-100">
         {/* Panel izquierdo */}
         <div className="bg-[#F5A623] text-white p-6 sm:w-[38%] flex flex-col justify-between">
-          <div className="bg-white rounded-md p-3 w-fit mb-6">
+          <div className="mb-6">
             {profile?.logo_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={profile.logo_url} alt={profile.company_name || "Logo"} className="w-[70px] h-[78px] object-contain" />
+              <img src={profile.logo_url} alt={profile.company_name || "Logo"} className="max-h-24 max-w-[180px] object-contain" />
             ) : (
-              <Image src="/logo.jpg" alt="Iso Go" width={70} height={78} className="rounded" />
+              <Image src="/logo.jpg" alt="Iso Go" width={110} height={122} className="object-contain" />
             )}
           </div>
           <div>
@@ -120,13 +117,11 @@ export default function CompromisoDireccionCard({
               value={valor}
               onChange={(e) => setValor(e.target.value)}
               rows={8}
-              className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F5A623] resize-y mt-2"
+              className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] text-left focus:outline-none focus:border-[#F5A623] resize-y mt-2"
             />
           ) : (
-            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{textoActual}</p>
+            <p className="text-sm text-gray-600 leading-relaxed text-left whitespace-pre-wrap">{textoActual}</p>
           )}
-
-          <p className="text-xs text-gray-400 italic mt-4 border-t border-gray-100 pt-3">{CIERRE}</p>
 
           <div className="mt-6 flex items-end justify-between">
             <div>
@@ -142,9 +137,8 @@ export default function CompromisoDireccionCard({
                 </div>
               </div>
             </div>
-            <div className="w-14 h-14 rounded-full bg-[#1A1A1A] flex flex-col items-center justify-center flex-shrink-0 text-center">
-              <span className="text-[#F5A623] text-xs font-extrabold leading-none">ISO</span>
-              <span className="text-white text-xs font-extrabold leading-none">GO</span>
+            <div className="w-14 h-14 flex-shrink-0">
+              <Image src="/logo.jpg" alt="Iso Go" width={56} height={62} className="w-full h-full object-contain" />
             </div>
           </div>
         </div>
