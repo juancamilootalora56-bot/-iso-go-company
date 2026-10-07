@@ -1,53 +1,78 @@
+export type NivelCalificacion = "" | "Excelente" | "Bueno" | "Regular" | "Malo";
+
 export type CriterioEvaluadoProveedor = {
   id: string;
   nombre: string;
-  calificacion: number; // 1 a 5, 0 = sin calificar
-  comentario: string;
+  nivel: NivelCalificacion;
   personalizado: boolean;
 };
 
 export type EvaluacionProveedor = {
   id: string;
-  periodoInicio: string;
-  periodoFin: string;
-  fechaEvaluacion: string;
+  productoServicio: string;
+  fecha: string;
+  tipoActividad: string; // "Selección y Evaluación" | "Reevaluación"
+  incluyeServicioTecnico: boolean;
   evaluador: string;
-  tipoEvaluacion: string;
   criterios: CriterioEvaluadoProveedor[];
-  fortalezas: string;
-  areasMejora: string;
-  planAccion: string;
   observaciones: string;
 };
 
-// Criterios universales para evaluar cualquier proveedor, sin importar el rubro.
-// Cada empresa puede sumar los suyos propios en "Criterios adicionales".
-export const CRITERIOS_UNIVERSALES_PROVEEDOR = [
-  "Calidad del producto o servicio",
-  "Cumplimiento de plazos de entrega",
-  "Precio y condiciones comerciales",
-  "Atención y comunicación",
-  "Cumplimiento de documentación y normas",
+// Criterios base del formulario "Selección, Evaluación y Reevaluación de Proveedores".
+// Todos pesan 10 puntos cada uno; el nivel marcado define los puntos obtenidos.
+export const CRITERIOS_BASE_PROVEEDOR = [
+  "Calidad",
+  "Cumplimiento de la entrega",
+  "Documentación",
+  "Experiencia",
+  "Garantía",
+  "Precios",
+  "Forma de pago",
+  "Descuentos",
+  "Servicio técnico",
+  "Atención",
+  "HSE",
 ];
 
-export const TIPOS_EVALUACION_PROVEEDOR = ["Evaluación inicial", "Evaluación periódica", "Reevaluación por incidente"];
+export const TIPOS_ACTIVIDAD_PROVEEDOR = ["Selección y Evaluación", "Reevaluación"];
+
+export const NIVELES_CALIFICACION: { nivel: NivelCalificacion; color: string; textoOscuro?: boolean }[] = [
+  { nivel: "Excelente", color: "#22C55E" },
+  { nivel: "Bueno", color: "#F5A623" },
+  { nivel: "Regular", color: "#FDE68A", textoOscuro: true },
+  { nivel: "Malo", color: "#EF4444" },
+];
+
+export const PESO_CRITERIO = 10;
+
+export function puntosDeNivel(nivel: NivelCalificacion): number {
+  switch (nivel) {
+    case "Excelente":
+      return 10;
+    case "Bueno":
+      return 8;
+    case "Regular":
+      return 6;
+    case "Malo":
+      return 2;
+    default:
+      return 0;
+  }
+}
 
 export function criterioProveedorVacio(nombre: string, personalizado = false): CriterioEvaluadoProveedor {
-  return { id: crypto.randomUUID(), nombre, calificacion: 0, comentario: "", personalizado };
+  return { id: crypto.randomUUID(), nombre, nivel: "", personalizado };
 }
 
 export function evaluacionProveedorVacia(): EvaluacionProveedor {
   return {
     id: crypto.randomUUID(),
-    periodoInicio: "",
-    periodoFin: "",
-    fechaEvaluacion: "",
+    productoServicio: "",
+    fecha: new Date().toISOString().slice(0, 10),
+    tipoActividad: "Selección y Evaluación",
+    incluyeServicioTecnico: true,
     evaluador: "",
-    tipoEvaluacion: "Evaluación periódica",
-    criterios: CRITERIOS_UNIVERSALES_PROVEEDOR.map((n) => criterioProveedorVacio(n)),
-    fortalezas: "",
-    areasMejora: "",
-    planAccion: "",
+    criterios: CRITERIOS_BASE_PROVEEDOR.map((n) => criterioProveedorVacio(n)),
     observaciones: "",
   };
 }
@@ -62,31 +87,51 @@ export function parseEvaluacionesProveedor(contenido: string): EvaluacionProveed
   }
 }
 
-export function promedioEvaluacionProveedor(e: EvaluacionProveedor): number {
-  const calificados = e.criterios.filter((c) => c.calificacion > 0);
-  if (calificados.length === 0) return 0;
-  return calificados.reduce((acc, c) => acc + c.calificacion, 0) / calificados.length;
+// Si "Servicio técnico" no aplica a esta evaluación, se califica Excelente automáticamente
+// (no resta puntos al proveedor por un servicio que no se contrató).
+export function criteriosEfectivos(e: EvaluacionProveedor): CriterioEvaluadoProveedor[] {
+  return e.criterios.map((c) =>
+    c.nombre === "Servicio técnico" && !e.incluyeServicioTecnico ? { ...c, nivel: "Excelente" as NivelCalificacion } : c
+  );
 }
 
-export function resultadoEvaluacionProveedor(promedio: number): string {
-  if (promedio === 0) return "Sin calificar";
-  if (promedio >= 4.5) return "Excelente";
-  if (promedio >= 3.5) return "Bueno";
-  if (promedio >= 2.5) return "Regular";
-  return "Deficiente";
+export function resultadoEvaluacionProveedor(e: EvaluacionProveedor): {
+  puntosObtenidos: number;
+  puntosMaximos: number;
+  porcentaje: number;
+  calificados: number;
+  total: number;
+} {
+  const criterios = criteriosEfectivos(e);
+  const calificados = criterios.filter((c) => c.nivel !== "");
+  const puntosObtenidos = calificados.reduce((acc, c) => acc + puntosDeNivel(c.nivel), 0);
+  const puntosMaximos = criterios.length * PESO_CRITERIO;
+  const porcentaje = puntosMaximos > 0 ? (puntosObtenidos / puntosMaximos) * 100 : 0;
+  return { puntosObtenidos, puntosMaximos, porcentaje, calificados: calificados.length, total: criterios.length };
 }
 
-export function colorResultadoProveedor(resultado: string): string {
-  switch (resultado) {
+export function nivelResultado(porcentaje: number): string {
+  if (porcentaje >= 80) return "Excelente";
+  if (porcentaje >= 70) return "Bueno";
+  if (porcentaje >= 60) return "Regular";
+  return "Malo";
+}
+
+export function colorNivel(nivel: string): string {
+  switch (nivel) {
     case "Excelente":
       return "#22C55E";
     case "Bueno":
-      return "#3B82F6";
-    case "Regular":
       return "#F5A623";
-    case "Deficiente":
+    case "Regular":
+      return "#EAB308";
+    case "Malo":
       return "#EF4444";
     default:
       return "#9CA3AF";
   }
+}
+
+export function esProveedorPotencial(porcentaje: number): boolean {
+  return porcentaje >= 70;
 }
