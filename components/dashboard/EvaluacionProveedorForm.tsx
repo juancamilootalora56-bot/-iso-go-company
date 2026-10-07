@@ -113,11 +113,12 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
   const { docs, loading, save } = useGestionDocumentos("compras", userId);
 
   const [evaluaciones, setEvaluaciones] = useState<EvaluacionProveedor[]>([]);
-  const [formEval, setFormEval] = useState<EvaluacionProveedor | null>(null);
+  const [formEval, setFormEval] = useState<EvaluacionProveedor>(evaluacionProveedorVacia());
   const [viendoEval, setViendoEval] = useState<EvaluacionProveedor | null>(null);
   const [nombreCriterioNuevo, setNombreCriterioNuevo] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     if (!loading) setEvaluaciones(parseEvaluacionesProveedor(docs[itemKey] ?? ""));
@@ -131,9 +132,8 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
     setSaving(false);
   }
 
-  function abrirNueva() {
+  function limpiarFormulario() {
     setError(null);
-    setViendoEval(null);
     setFormEval(evaluacionProveedorVacia());
   }
 
@@ -141,29 +141,28 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
     setError(null);
     setViendoEval(null);
     setFormEval({ ...e, criterios: e.criterios.map((c) => ({ ...c })) });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function abrirInforme(e: EvaluacionProveedor) {
-    setFormEval(null);
     setViendoEval(e);
   }
 
   function setNivelCriterio(id: string, nivel: NivelCalificacion) {
-    setFormEval((f) => (f ? { ...f, criterios: f.criterios.map((c) => (c.id === id ? { ...c, nivel } : c)) } : f));
+    setFormEval((f) => ({ ...f, criterios: f.criterios.map((c) => (c.id === id ? { ...c, nivel } : c)) }));
   }
 
   function agregarCriterioLibre() {
     if (!nombreCriterioNuevo.trim()) return;
-    setFormEval((f) => (f ? { ...f, criterios: [...f.criterios, criterioProveedorVacio(nombreCriterioNuevo.trim(), true)] } : f));
+    setFormEval((f) => ({ ...f, criterios: [...f.criterios, criterioProveedorVacio(nombreCriterioNuevo.trim(), true)] }));
     setNombreCriterioNuevo("");
   }
 
   function quitarCriterio(id: string) {
-    setFormEval((f) => (f ? { ...f, criterios: f.criterios.filter((c) => c.id !== id) } : f));
+    setFormEval((f) => ({ ...f, criterios: f.criterios.filter((c) => c.id !== id) }));
   }
 
   async function guardarEvaluacion() {
-    if (!formEval) return;
     if (!formEval.fecha) {
       setError("La fecha de evaluación es obligatoria.");
       return;
@@ -174,11 +173,15 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
       ? evaluaciones.map((e) => (e.id === formEval.id ? formEval : e))
       : [...evaluaciones, formEval];
     await persistir(actualizadas);
-    setFormEval(null);
+    setFormEval(evaluacionProveedorVacia());
+    setSuccess(true);
+    setTimeout(() => setSuccess(false), 2000);
   }
 
   async function eliminarEvaluacion(id: string) {
     await persistir(evaluaciones.filter((e) => e.id !== id));
+    if (formEval.id === id) limpiarFormulario();
+    if (viendoEval?.id === id) setViendoEval(null);
   }
 
   if (loading) {
@@ -186,23 +189,160 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
   }
 
   const evaluacionesOrdenadas = [...evaluaciones].sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
-
-  const criteriosBase = formEval ? formEval.criterios.filter((c) => !c.personalizado) : [];
-  const criteriosLibres = formEval ? formEval.criterios.filter((c) => c.personalizado) : [];
-  const resultadoForm = formEval ? resultadoEvaluacionProveedor(formEval) : null;
+  const criteriosBase = formEval.criterios.filter((c) => !c.personalizado);
+  const criteriosLibres = formEval.criterios.filter((c) => c.personalizado);
+  const resultadoForm = resultadoEvaluacionProveedor(formEval);
+  const editando = evaluaciones.some((e) => e.id === formEval.id);
 
   return (
     <div className="space-y-4">
+      {/* Formulario permanente */}
       <Seccion icono="📊" titulo="Selección, Evaluación y Reevaluación de Proveedores">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-xs text-gray-500">
-            Historial de evaluaciones de {proveedor.razonSocial}.
-          </p>
-          <button onClick={abrirNueva} className="flex-shrink-0 text-xs font-semibold text-[#F5A623] hover:text-[#e09410] whitespace-nowrap ml-4">
-            + Nueva evaluación
-          </button>
-        </div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <p className="text-xs text-gray-500">
+              {editando ? `Editando evaluación de ${fechaLegible(formEval.fecha)}.` : `Nueva evaluación para ${proveedor.razonSocial}.`}
+            </p>
+            {editando && (
+              <button onClick={limpiarFormulario} className="text-xs font-semibold text-[#F5A623] hover:text-[#e09410] whitespace-nowrap">
+                + Nueva evaluación en blanco
+              </button>
+            )}
+          </div>
 
+          {error && <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">{error}</div>}
+          {success && <div className="p-2.5 bg-green-50 border border-green-200 rounded-lg text-green-700 text-xs">✓ Evaluación guardada</div>}
+
+          <div>
+            <SubHeader icono="🗓️" titulo="Datos de la evaluación" />
+            <div className="grid sm:grid-cols-2 gap-2.5 mb-2.5">
+              <div className="sm:col-span-2">
+                <label className={labelClass}>Producto o servicio</label>
+                <input value={formEval.productoServicio} onChange={(e) => setFormEval((f) => ({ ...f, productoServicio: e.target.value }))} className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}><span className="text-red-500">*</span> Fecha</label>
+                <input type="date" value={formEval.fecha} onChange={(e) => setFormEval((f) => ({ ...f, fecha: e.target.value }))} className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Actividad</label>
+                <select value={formEval.tipoActividad} onChange={(e) => setFormEval((f) => ({ ...f, tipoActividad: e.target.value }))} className={inputClass}>
+                  {TIPOS_ACTIVIDAD_PROVEEDOR.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div className="sm:col-span-2">
+                <label className={labelClass}>Evaluador</label>
+                <input value={formEval.evaluador} onChange={(e) => setFormEval((f) => ({ ...f, evaluador: e.target.value }))} className={inputClass} />
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-xs font-medium text-gray-600 bg-[#FAFAFA] rounded-lg p-2.5 border border-gray-100">
+              <input
+                type="checkbox"
+                checked={formEval.incluyeServicioTecnico}
+                onChange={(e) => setFormEval((f) => ({ ...f, incluyeServicioTecnico: e.target.checked }))}
+                className="accent-[#F5A623]"
+              />
+              Incluye servicio técnico
+            </label>
+          </div>
+
+          <div>
+            <SubHeader icono="⭐" titulo="Criterios de evaluación" />
+            <div className="space-y-2">
+              {criteriosBase.map((c) => {
+                const esServicioTecnico = c.nombre === "Servicio técnico";
+                const deshabilitado = esServicioTecnico && !formEval.incluyeServicioTecnico;
+                const nivelEfectivo = deshabilitado ? "Excelente" : c.nivel;
+                return (
+                  <CriterioRow
+                    key={c.id}
+                    nombre={c.nombre}
+                    nivel={nivelEfectivo}
+                    onChange={(n) => setNivelCriterio(c.id, n)}
+                    disabled={deshabilitado}
+                    puntos={puntosDeNivel(nivelEfectivo)}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <SubHeader icono="➕" titulo="Evaluar otras características (opcional)" />
+            <p className="text-[11px] text-gray-500 mb-3">
+              Agregá criterios propios si tu empresa necesita evaluar algo adicional (ej: &quot;Capacidad de producción&quot;, &quot;Sostenibilidad&quot;).
+            </p>
+            {criteriosLibres.length > 0 && (
+              <div className="space-y-2 mb-3">
+                {criteriosLibres.map((c) => (
+                  <CriterioRow
+                    key={c.id}
+                    nombre={c.nombre}
+                    nivel={c.nivel}
+                    onChange={(n) => setNivelCriterio(c.id, n)}
+                    onQuitar={() => quitarCriterio(c.id)}
+                    puntos={puntosDeNivel(c.nivel)}
+                  />
+                ))}
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <input
+                value={nombreCriterioNuevo}
+                onChange={(e) => setNombreCriterioNuevo(e.target.value)}
+                placeholder="Nombre del criterio nuevo"
+                className={inputClass}
+              />
+              <button onClick={agregarCriterioLibre} className="flex-shrink-0 bg-[#F5A623] text-[#1A1A1A] font-bold text-xs px-4 py-2 rounded-lg hover:bg-[#e09410]">
+                + Agregar
+              </button>
+            </div>
+          </div>
+
+          {/* Resultado en vivo */}
+          <div className="bg-[#1A1A1A] rounded-xl p-4 flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Calificación total</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {resultadoForm.calificados}/{resultadoForm.total} criterios calificados · {resultadoForm.puntosObtenidos}/{resultadoForm.puntosMaximos} pts
+              </p>
+            </div>
+            <span
+              className="text-lg font-extrabold px-3 py-1.5 rounded-lg"
+              style={{
+                backgroundColor: colorNivel(nivelResultado(resultadoForm.porcentaje)),
+                color: nivelResultado(resultadoForm.porcentaje) === "Regular" ? "#1A1A1A" : "#fff",
+              }}
+            >
+              {resultadoForm.porcentaje.toFixed(2)}%
+            </span>
+          </div>
+
+          <div>
+            <SubHeader icono="📝" titulo="Observaciones" />
+            <textarea value={formEval.observaciones} onChange={(e) => setFormEval((f) => ({ ...f, observaciones: e.target.value }))} rows={2} className={`${inputClass} resize-y`} />
+          </div>
+
+          <div className="pt-2 border-t border-gray-100 flex items-center justify-between flex-wrap gap-2">
+            <div className="flex gap-3">
+              <button onClick={guardarEvaluacion} disabled={saving} className="bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60 text-sm">
+                {saving ? "Guardando..." : editando ? "Guardar cambios" : "Guardar evaluación"}
+              </button>
+              <button onClick={limpiarFormulario} className="text-sm text-gray-400 hover:text-gray-600 bg-white px-3 py-2.5 rounded-lg border border-gray-100">
+                Limpiar
+              </button>
+            </div>
+            {editando && (
+              <button onClick={() => eliminarEvaluacion(formEval.id)} className="text-xs text-red-400 hover:text-red-600">
+                Eliminar esta evaluación
+              </button>
+            )}
+          </div>
+        </div>
+      </Seccion>
+
+      {/* Historial */}
+      <Seccion icono="🗂️" titulo="Historial de Evaluaciones">
         {evaluacionesOrdenadas.length === 0 ? (
           <p className="text-gray-400 text-sm text-center py-6">Todavía no se registró ninguna evaluación.</p>
         ) : (
@@ -326,154 +466,6 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
           </div>
         );
       })()}
-
-      {/* Formulario de alta/edición */}
-      {formEval && resultadoForm && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center p-4 pt-10 overflow-y-auto" onClick={() => setFormEval(null)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-xl my-8 shadow-2xl space-y-4" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-sm font-bold text-[#1A1A1A]">
-              {evaluaciones.some((e) => e.id === formEval.id) ? "Editar evaluación" : "Nueva evaluación de proveedor"}
-            </h2>
-
-            {error && <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">{error}</div>}
-
-            <div>
-              <SubHeader icono="🗓️" titulo="Datos de la evaluación" />
-              <div className="grid grid-cols-2 gap-2.5 mb-2.5">
-                <div className="col-span-2">
-                  <label className={labelClass}>Producto o servicio</label>
-                  <input value={formEval.productoServicio} onChange={(e) => setFormEval((f) => f && { ...f, productoServicio: e.target.value })} className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}><span className="text-red-500">*</span> Fecha</label>
-                  <input type="date" value={formEval.fecha} onChange={(e) => setFormEval((f) => f && { ...f, fecha: e.target.value })} className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Actividad</label>
-                  <select value={formEval.tipoActividad} onChange={(e) => setFormEval((f) => f && { ...f, tipoActividad: e.target.value })} className={inputClass}>
-                    {TIPOS_ACTIVIDAD_PROVEEDOR.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </div>
-                <div className="col-span-2">
-                  <label className={labelClass}>Evaluador</label>
-                  <input value={formEval.evaluador} onChange={(e) => setFormEval((f) => f && { ...f, evaluador: e.target.value })} className={inputClass} />
-                </div>
-              </div>
-              <label className="flex items-center gap-2 text-xs font-medium text-gray-600 bg-[#FAFAFA] rounded-lg p-2.5 border border-gray-100">
-                <input
-                  type="checkbox"
-                  checked={formEval.incluyeServicioTecnico}
-                  onChange={(e) => setFormEval((f) => f && { ...f, incluyeServicioTecnico: e.target.checked })}
-                  className="accent-[#F5A623]"
-                />
-                Incluye servicio técnico
-              </label>
-            </div>
-
-            <div>
-              <SubHeader icono="⭐" titulo="Criterios de evaluación" />
-              <div className="space-y-2">
-                {criteriosBase.map((c) => {
-                  const esServicioTecnico = c.nombre === "Servicio técnico";
-                  const deshabilitado = esServicioTecnico && !formEval.incluyeServicioTecnico;
-                  const nivelEfectivo = deshabilitado ? "Excelente" : c.nivel;
-                  return (
-                    <CriterioRow
-                      key={c.id}
-                      nombre={c.nombre}
-                      nivel={nivelEfectivo}
-                      onChange={(n) => setNivelCriterio(c.id, n)}
-                      disabled={deshabilitado}
-                      puntos={puntosDeNivel(nivelEfectivo)}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-
-            <div>
-              <SubHeader icono="➕" titulo="Evaluar otras características (opcional)" />
-              <p className="text-[11px] text-gray-500 mb-3">
-                Agregá criterios propios si tu empresa necesita evaluar algo adicional (ej: &quot;Capacidad de producción&quot;, &quot;Sostenibilidad&quot;).
-              </p>
-              {criteriosLibres.length > 0 && (
-                <div className="space-y-2 mb-3">
-                  {criteriosLibres.map((c) => (
-                    <CriterioRow
-                      key={c.id}
-                      nombre={c.nombre}
-                      nivel={c.nivel}
-                      onChange={(n) => setNivelCriterio(c.id, n)}
-                      onQuitar={() => quitarCriterio(c.id)}
-                      puntos={puntosDeNivel(c.nivel)}
-                    />
-                  ))}
-                </div>
-              )}
-              <div className="flex items-center gap-2">
-                <input
-                  value={nombreCriterioNuevo}
-                  onChange={(e) => setNombreCriterioNuevo(e.target.value)}
-                  placeholder="Nombre del criterio nuevo"
-                  className={inputClass}
-                />
-                <button onClick={agregarCriterioLibre} className="flex-shrink-0 bg-[#F5A623] text-[#1A1A1A] font-bold text-xs px-4 py-2 rounded-lg hover:bg-[#e09410]">
-                  + Agregar
-                </button>
-              </div>
-            </div>
-
-            {/* Resultado en vivo */}
-            <div className="bg-[#1A1A1A] rounded-xl p-4 flex items-center justify-between">
-              <div>
-                <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Calificación total</p>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {resultadoForm.calificados}/{resultadoForm.total} criterios calificados · {resultadoForm.puntosObtenidos}/{resultadoForm.puntosMaximos} pts
-                </p>
-              </div>
-              <span
-                className="text-lg font-extrabold px-3 py-1.5 rounded-lg"
-                style={{
-                  backgroundColor: colorNivel(nivelResultado(resultadoForm.porcentaje)),
-                  color: nivelResultado(resultadoForm.porcentaje) === "Regular" ? "#1A1A1A" : "#fff",
-                }}
-              >
-                {resultadoForm.porcentaje.toFixed(2)}%
-              </span>
-            </div>
-
-            <div>
-              <SubHeader icono="📝" titulo="Observaciones" />
-              <textarea value={formEval.observaciones} onChange={(e) => setFormEval((f) => f && { ...f, observaciones: e.target.value })} rows={2} className={`${inputClass} resize-y`} />
-            </div>
-
-            <div className="pt-2 border-t border-gray-100 space-y-2">
-              {error && <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">{error}</div>}
-              <div className="flex items-center justify-between">
-                <div className="flex gap-3">
-                  <button onClick={guardarEvaluacion} disabled={saving} className="bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60 text-sm">
-                    {saving ? "Guardando..." : "Guardar"}
-                  </button>
-                  <button onClick={() => setFormEval(null)} className="text-sm text-gray-400 hover:text-gray-600">
-                    Cancelar
-                  </button>
-                </div>
-                {evaluaciones.some((e) => e.id === formEval.id) && (
-                  <button
-                    onClick={() => {
-                      eliminarEvaluacion(formEval.id);
-                      setFormEval(null);
-                    }}
-                    className="text-xs text-red-400 hover:text-red-600"
-                  >
-                    Eliminar
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
