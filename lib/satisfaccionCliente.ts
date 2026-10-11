@@ -72,6 +72,9 @@ export const CATEGORIAS_SATISFACCION: { categoria: string; icono: string; pregun
 
 export const CANALES_ENCUESTA = ["Presencial", "Telefónica", "Email", "Formulario digital", "Otro"];
 
+// Lista plana de las 13 preguntas base, en orden estable — usada como columnas fijas de la matriz consolidada.
+export const PREGUNTAS_BASE_SATISFACCION: string[] = CATEGORIAS_SATISFACCION.flatMap((c) => c.preguntas);
+
 export function preguntaVacia(categoria: string, texto: string, personalizada = false): PreguntaSatisfaccion {
   return { id: crypto.randomUUID(), categoria, texto, calificacion: 0, personalizada };
 }

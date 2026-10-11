@@ -67,8 +67,26 @@ export default function GestionComercialPage() {
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
 
+        <Link
+          href={`${basePath}/satisfaccion_clientes`}
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
+        >
+          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/gestion-comercial/satisfaccion_cliente.jpg" alt="Satisfacción del Cliente" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
+            </span>
+          </span>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-sm text-[#1A1A1A]">Satisfacción del Cliente</h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Matriz consolidada de resultados de todos los clientes, por período.
+            </p>
+          </div>
+          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
+        </Link>
+
         {[
-          { icon: "😊", imagen: "/gestion-comercial/satisfaccion_cliente.jpg", titulo: "Satisfacción del cliente", descripcion: "Encuestas y resultados de satisfacción." },
           { icon: "📣", imagen: "/gestion-comercial/reclamos_sugerencias.jpg", titulo: "Reclamos y sugerencias", descripcion: "Registro y gestión de reclamos de clientes." },
           { icon: "💹", imagen: "/gestion-comercial/seguimiento_ventas.jpg", titulo: "Seguimiento de ventas", descripcion: "Indicadores comerciales y cumplimiento de metas." },
         ].map((s) => (
