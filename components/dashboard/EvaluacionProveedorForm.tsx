@@ -167,6 +167,10 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
       setError("La fecha de evaluación es obligatoria.");
       return;
     }
+    if (!formEval.periodo.trim()) {
+      setError("El período de evaluación es obligatorio (ej: \"1er Semestre 2026\"). Con él se agrupa junto a las evaluaciones de los demás proveedores en la matriz general.");
+      return;
+    }
     setError(null);
     const existe = evaluaciones.some((e) => e.id === formEval.id);
     const actualizadas = existe
@@ -216,6 +220,26 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
           <div>
             <SubHeader icono="🗓️" titulo="Datos de la evaluación" />
             <div className="grid sm:grid-cols-2 gap-2.5 mb-2.5">
+              <div className="sm:col-span-2">
+                <label className={labelClass}>
+                  <span className="text-red-500">*</span> Período de evaluación
+                </label>
+                <input
+                  value={formEval.periodo}
+                  onChange={(e) => setFormEval((f) => ({ ...f, periodo: e.target.value }))}
+                  placeholder="Ej: 1er Semestre 2026"
+                  className={inputClass}
+                  list="periodos-sugeridos"
+                />
+                <datalist id="periodos-sugeridos">
+                  <option value={`1er Semestre ${new Date().getFullYear()}`} />
+                  <option value={`2do Semestre ${new Date().getFullYear()}`} />
+                  <option value={`Evaluación Anual ${new Date().getFullYear()}`} />
+                </datalist>
+                <p className="text-[11px] text-gray-400 mt-1">
+                  Las evaluaciones con el mismo período forman una sola matriz en &quot;Evaluación de Proveedores&quot;, junto a las de los demás proveedores.
+                </p>
+              </div>
               <div className="sm:col-span-2">
                 <label className={labelClass}>Producto o servicio</label>
                 <input value={formEval.productoServicio} onChange={(e) => setFormEval((f) => ({ ...f, productoServicio: e.target.value }))} className={inputClass} />
@@ -362,7 +386,8 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
                         {fechaLegible(e.fecha)} · {e.tipoActividad}
                       </p>
                       <p className="text-xs text-gray-500 mt-0.5 truncate">
-                        {e.productoServicio || "—"}
+                        {e.periodo && <span className="text-[#F5A623] font-semibold">{e.periodo}</span>}
+                        {e.productoServicio && <> · {e.productoServicio}</>}
                         {e.evaluador && <> · {e.evaluador}</>}
                       </p>
                     </div>
@@ -399,7 +424,7 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
               <div className="relative flex items-start justify-between gap-3 flex-wrap">
                 <div>
                   <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-[10px] font-extrabold uppercase tracking-wide px-3 py-1 rounded-full mb-3">
-                    Informe de Evaluación de Proveedor
+                    {viendoEval.periodo || "Informe de Evaluación de Proveedor"}
                   </span>
                   <h2 className="text-white text-xl font-extrabold">{fechaLegible(viendoEval.fecha)}</h2>
                   <p className="text-gray-400 text-sm mt-1">

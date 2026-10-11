@@ -9,6 +9,7 @@ export type CriterioEvaluadoProveedor = {
 
 export type EvaluacionProveedor = {
   id: string;
+  periodo: string; // ej: "1er Semestre 2026" — agrupa evaluaciones de distintos proveedores en una misma matriz
   productoServicio: string;
   fecha: string;
   tipoActividad: string; // "Selección y Evaluación" | "Reevaluación"
@@ -64,9 +65,17 @@ export function criterioProveedorVacio(nombre: string, personalizado = false): C
   return { id: crypto.randomUUID(), nombre, nivel: "", personalizado };
 }
 
+export function periodoSugerido(): string {
+  const hoy = new Date();
+  const anio = hoy.getFullYear();
+  const semestre = hoy.getMonth() < 6 ? "1er Semestre" : "2do Semestre";
+  return `${semestre} ${anio}`;
+}
+
 export function evaluacionProveedorVacia(): EvaluacionProveedor {
   return {
     id: crypto.randomUUID(),
+    periodo: periodoSugerido(),
     productoServicio: "",
     fecha: new Date().toISOString().slice(0, 10),
     tipoActividad: "Selección y Evaluación",
