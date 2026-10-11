@@ -1,13 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseClientes, colorEstadoCliente } from "@/lib/clientes";
 import { Seccion, Dato } from "@/components/dashboard/SeccionDocumento";
+import EncuestaSatisfaccionForm from "@/components/dashboard/EncuestaSatisfaccionForm";
 
 const ITEM_KEY = "clientes_lista";
+
+const TABS = [
+  { key: "generales", label: "Datos Generales" },
+  { key: "satisfaccion", label: "Encuesta de Satisfacción" },
+];
 
 function fechaLegible(iso?: string) {
   if (!iso) return undefined;
@@ -26,6 +33,7 @@ export default function PerfilClientePage() {
   const basePath = `/${locale}/dashboard/gestion-comercial`;
 
   const { docs, loading } = useGestionDocumentos("comercial", user?.id ?? null);
+  const [tab, setTab] = useState("generales");
 
   if (loading) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
@@ -99,52 +107,75 @@ export default function PerfilClientePage() {
         </Link>
       </div>
 
-      {/* Contenido */}
-      <div className="space-y-4">
-        <Seccion icono="🏢" titulo="Datos de la empresa">
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Dato icono="🪪" label="RUC" valor={c.ruc} />
-            <Dato icono="🏷️" label="Sector" valor={c.sector} />
-            <Dato icono="🏳️" label="País" valor={c.pais} />
-            <Dato icono="📍" label="Ciudad" valor={c.ciudad} />
-            <Dato icono="📍" label="Dirección" valor={c.direccion} />
-            <Dato icono="📞" label="Teléfono" valor={c.telefono} />
-            <Dato icono="✉️" label="Email" valor={c.email} />
-            <Dato icono="🌐" label="Sitio web" valor={c.sitioWeb} />
-          </div>
-        </Seccion>
-
-        {(c.contactoNombre || c.contactoTelefono || c.contactoEmail) && (
-          <Seccion icono="🧑‍💼" titulo="Persona de contacto">
-            <div className="grid sm:grid-cols-3 gap-3">
-              <Dato label="Nombre" valor={c.contactoNombre} />
-              <Dato label="Cargo" valor={c.contactoCargo} />
-              <Dato label="Teléfono" valor={c.contactoTelefono} />
-              <Dato label="Email" valor={c.contactoEmail} />
-            </div>
-          </Seccion>
-        )}
-
-        {(c.formaPago || c.moneda || c.limiteCredito || c.descuentoHabitual) && (
-          <Seccion icono="📄" titulo="Condiciones comerciales">
-            <div className="grid sm:grid-cols-3 gap-3">
-              <Dato label="Forma de pago" valor={c.formaPago} />
-              <Dato label="Moneda" valor={c.moneda} />
-              <Dato label="Límite de crédito" valor={c.limiteCredito} />
-              <Dato label="Descuento habitual" valor={c.descuentoHabitual} />
-            </div>
-          </Seccion>
-        )}
-
-        <Seccion icono="📝" titulo="Registro">
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Dato icono="📅" label="Fecha de registro" valor={fechaLegible(c.fechaRegistro)} />
-          </div>
-          {c.observaciones && (
-            <p className="text-sm text-gray-600 whitespace-pre-wrap mt-3 pt-3 border-t border-gray-100">{c.observaciones}</p>
-          )}
-        </Seccion>
+      {/* Pestañas */}
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-x-auto sticky top-0 z-20">
+        <div className="flex">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
+                tab === t.key
+                  ? "border-[#F5A623] text-[#1A1A1A]"
+                  : "border-transparent text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* Contenido */}
+      {tab === "generales" && (
+        <div className="space-y-4">
+          <Seccion icono="🏢" titulo="Datos de la empresa">
+            <div className="grid sm:grid-cols-3 gap-3">
+              <Dato icono="🪪" label="RUC" valor={c.ruc} />
+              <Dato icono="🏷️" label="Sector" valor={c.sector} />
+              <Dato icono="🏳️" label="País" valor={c.pais} />
+              <Dato icono="📍" label="Ciudad" valor={c.ciudad} />
+              <Dato icono="📍" label="Dirección" valor={c.direccion} />
+              <Dato icono="📞" label="Teléfono" valor={c.telefono} />
+              <Dato icono="✉️" label="Email" valor={c.email} />
+              <Dato icono="🌐" label="Sitio web" valor={c.sitioWeb} />
+            </div>
+          </Seccion>
+
+          {(c.contactoNombre || c.contactoTelefono || c.contactoEmail) && (
+            <Seccion icono="🧑‍💼" titulo="Persona de contacto">
+              <div className="grid sm:grid-cols-3 gap-3">
+                <Dato label="Nombre" valor={c.contactoNombre} />
+                <Dato label="Cargo" valor={c.contactoCargo} />
+                <Dato label="Teléfono" valor={c.contactoTelefono} />
+                <Dato label="Email" valor={c.contactoEmail} />
+              </div>
+            </Seccion>
+          )}
+
+          {(c.formaPago || c.moneda || c.limiteCredito || c.descuentoHabitual) && (
+            <Seccion icono="📄" titulo="Condiciones comerciales">
+              <div className="grid sm:grid-cols-3 gap-3">
+                <Dato label="Forma de pago" valor={c.formaPago} />
+                <Dato label="Moneda" valor={c.moneda} />
+                <Dato label="Límite de crédito" valor={c.limiteCredito} />
+                <Dato label="Descuento habitual" valor={c.descuentoHabitual} />
+              </div>
+            </Seccion>
+          )}
+
+          <Seccion icono="📝" titulo="Registro">
+            <div className="grid sm:grid-cols-3 gap-3">
+              <Dato icono="📅" label="Fecha de registro" valor={fechaLegible(c.fechaRegistro)} />
+            </div>
+            {c.observaciones && (
+              <p className="text-sm text-gray-600 whitespace-pre-wrap mt-3 pt-3 border-t border-gray-100">{c.observaciones}</p>
+            )}
+          </Seccion>
+        </div>
+      )}
+
+      {tab === "satisfaccion" && <EncuestaSatisfaccionForm userId={user?.id ?? null} cliente={c} />}
     </div>
   );
 }
