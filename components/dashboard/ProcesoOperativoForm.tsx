@@ -45,12 +45,20 @@ function itemKeyProceso(productoId: string) {
   return `proceso_operativo_${productoId}`;
 }
 
+const COLOR_RECURSO: Record<string, { borde: string; fondo: string; texto: string }> = {
+  "Materias primas": { borde: "border-amber-300", fondo: "bg-amber-50/60", texto: "text-amber-700" },
+  "Maquinaria": { borde: "border-blue-300", fondo: "bg-blue-50/60", texto: "text-blue-700" },
+  "Materiales": { borde: "border-orange-300", fondo: "bg-orange-50/60", texto: "text-orange-700" },
+  "Insumos": { borde: "border-purple-300", fondo: "bg-purple-50/60", texto: "text-purple-700" },
+};
+
 function TablaRecursos({ titulo, icono, recursos }: { titulo: string; icono: string; recursos: RecursoPaso[] }) {
   if (recursos.length === 0) return null;
   const total = costoRecursos(recursos);
+  const color = COLOR_RECURSO[titulo] ?? { borde: "border-gray-200", fondo: "bg-gray-50", texto: "text-gray-500" };
   return (
-    <div>
-      <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-1">
+    <div className={`border-l-4 ${color.borde} ${color.fondo} rounded-r-lg pl-3 pr-2 py-2`}>
+      <p className={`text-[11px] font-bold uppercase tracking-wide mb-1 ${color.texto}`}>
         {icono} {titulo}
       </p>
       <div className="overflow-x-auto">
@@ -66,7 +74,7 @@ function TablaRecursos({ titulo, icono, recursos }: { titulo: string; icono: str
           </thead>
           <tbody>
             {recursos.map((r) => (
-              <tr key={r.id} className="border-t border-gray-100">
+              <tr key={r.id} className="border-t border-gray-200/70">
                 <td className="py-1 pr-3 text-[#1A1A1A]">{r.nombre || "—"}</td>
                 <td className="py-1 px-3 text-right text-gray-600">{r.cantidad}</td>
                 <td className="py-1 px-3 text-gray-500">{r.unidad || "—"}</td>
