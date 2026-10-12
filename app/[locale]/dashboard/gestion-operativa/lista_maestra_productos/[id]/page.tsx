@@ -1,0 +1,155 @@
+"use client";
+
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
+import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { parseProductos, colorEstadoProducto } from "@/lib/productosFabricados";
+import { Seccion, Dato } from "@/components/dashboard/SeccionDocumento";
+import ProcesoOperativoForm from "@/components/dashboard/ProcesoOperativoForm";
+
+const ITEM_KEY = "productos_lista";
+
+const TABS = [
+  { key: "generales", label: "Datos Generales" },
+  { key: "proceso", label: "Proceso Operativo" },
+];
+
+function fechaLegible(iso?: string) {
+  if (!iso) return undefined;
+  try {
+    return new Date(iso + "T00:00:00").toLocaleDateString("es", { day: "2-digit", month: "long", year: "numeric" });
+  } catch {
+    return iso;
+  }
+}
+
+export default function PerfilProductoPage() {
+  const { user } = useDashboardUser();
+  const params = useParams();
+  const locale = params.locale as string;
+  const id = params.id as string;
+  const basePath = `/${locale}/dashboard/gestion-operativa`;
+
+  const { docs, loading } = useGestionDocumentos("operativa", user?.id ?? null);
+  const [tab, setTab] = useState("generales");
+
+  if (loading) {
+    return <p className="text-gray-400 text-sm">Cargando...</p>;
+  }
+
+  const productos = parseProductos(docs[ITEM_KEY] ?? "");
+  const p = productos.find((x) => x.id === id);
+
+  if (!p) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <Link href={`${basePath}/lista_maestra_productos`} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
+          ← Lista Maestra de Productos
+        </Link>
+        <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
+          <p className="text-gray-500 text-sm">No se encontró este producto.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-5xl mx-auto space-y-4">
+      <Link href={`${basePath}/lista_maestra_productos`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
+        ← Lista Maestra de Productos
+      </Link>
+
+      {/* Encabezado */}
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-5">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 bg-[#F5A623]/20 rounded-full blur-3xl" />
+
+        <div className="relative w-24 h-24 rounded-2xl bg-white/10 border-2 border-white/20 flex-shrink-0 overflow-hidden mx-auto sm:mx-0 z-10 flex items-center justify-center">
+          {p.imagen ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={p.imagen} alt={p.nombre} className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-3xl">📦</span>
+          )}
+        </div>
+        <div className="relative flex-1 min-w-0 text-center sm:text-left z-10">
+          <h1 className="text-xl font-bold text-white">{p.nombre}</h1>
+          {p.codigo && <p className="text-[#F5A623] font-semibold text-sm">{p.codigo}</p>}
+          <div className="flex items-center justify-center sm:justify-start gap-x-4 gap-y-1 flex-wrap text-xs text-gray-400 mt-2">
+            {p.categoria && <span>🏷️ {p.categoria}</span>}
+            {p.unidadMedida && <span>📐 {p.unidadMedida}</span>}
+          </div>
+          {p.estado && (
+            <span
+              className="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white"
+              style={{ backgroundColor: colorEstadoProducto(p.estado) }}
+            >
+              {p.estado}
+            </span>
+          )}
+        </div>
+        <Link
+          href={`${basePath}/inscripcion_productos`}
+          className="relative z-10 text-xs font-semibold text-[#F5A623] hover:text-[#e09410] flex-shrink-0 self-center sm:self-start bg-white/5 border border-white/10 px-3 py-1.5 rounded-full"
+        >
+          ✎ Editar datos
+        </Link>
+      </div>
+
+      {/* Pestañas */}
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-x-auto sticky top-0 z-20">
+        <div className="flex">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
+                tab === t.key
+                  ? "border-[#F5A623] text-[#1A1A1A]"
+                  : "border-transparent text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Contenido */}
+      {tab === "generales" && (
+        <div className="space-y-4">
+          <Seccion icono="📦" titulo="Datos del producto">
+            <div className="grid sm:grid-cols-3 gap-3">
+              <Dato icono="🪪" label="Código / SKU" valor={p.codigo} />
+              <Dato icono="🏷️" label="Categoría" valor={p.categoria} />
+              <Dato icono="📐" label="Unidad de medida" valor={p.unidadMedida} />
+            </div>
+            {p.descripcion && (
+              <p className="text-sm text-gray-600 whitespace-pre-wrap mt-3 pt-3 border-t border-gray-100">{p.descripcion}</p>
+            )}
+          </Seccion>
+
+          <Seccion icono="📝" titulo="Registro">
+            <div className="grid sm:grid-cols-3 gap-3">
+              <Dato icono="📅" label="Fecha de alta" valor={fechaLegible(p.fechaAlta)} />
+            </div>
+            {p.observaciones && (
+              <p className="text-sm text-gray-600 whitespace-pre-wrap mt-3 pt-3 border-t border-gray-100">{p.observaciones}</p>
+            )}
+          </Seccion>
+        </div>
+      )}
+
+      {tab === "proceso" && <ProcesoOperativoForm userId={user?.id ?? null} producto={p} />}
+    </div>
+  );
+}
