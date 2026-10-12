@@ -36,28 +36,12 @@ export default function HeroCarousel({ locale }: { locale: string }) {
       content: (
         <div className="relative overflow-hidden min-h-[82vh] flex items-center w-full">
           {/* Decorative */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -left-16 top-0 bottom-0 w-48 opacity-30" style={{ background: "#F5A623", transform: "skewX(-8deg)" }} />
             <div className="absolute left-24 top-0 bottom-0 w-12 opacity-15" style={{ background: "#F5A623", transform: "skewX(-8deg)" }} />
             <div className="absolute right-0 top-0 w-1/2 h-full opacity-5" style={{ background: "radial-gradient(ellipse at 80% 50%, #F5A623 0%, transparent 70%)" }} />
             <HexagonOutline size={300} color="#F5A623" className="absolute -right-16 -bottom-16 opacity-10" />
             <HexagonOutline size={150} color="#F5A623" className="absolute right-48 top-16 opacity-10" />
-
-            {/* Logo Iso Go */}
-            <div className="hidden lg:block absolute right-[6%] top-1/2 -translate-y-1/2">
-              <div
-                className="absolute inset-0 scale-150"
-                style={{ background: "radial-gradient(circle, rgba(245,166,35,0.18) 0%, transparent 70%)" }}
-              />
-              <Image
-                src="/logo.png"
-                alt="Iso Go"
-                width={420}
-                height={408}
-                className="relative w-[280px] xl:w-[360px] h-auto object-contain opacity-90 drop-shadow-[0_0_60px_rgba(245,166,35,0.25)]"
-                priority
-              />
-            </div>
           </div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
             <div className="max-w-3xl">
