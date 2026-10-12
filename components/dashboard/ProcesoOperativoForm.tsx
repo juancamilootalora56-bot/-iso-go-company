@@ -238,7 +238,7 @@ export default function ProcesoOperativoForm({ userId, producto }: { userId: str
             <input value={paso.nombre} onChange={(e) => campo("nombre", e.target.value)} placeholder="Ej: Preparación de la mezcla" className={inputClass} />
           </div>
 
-          <div className="grid sm:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
             <div>
               <label className={labelClass}>Tipo</label>
               <select value={paso.tipo} onChange={(e) => campo("tipo", e.target.value)} className={inputClass}>
@@ -248,7 +248,15 @@ export default function ProcesoOperativoForm({ userId, producto }: { userId: str
             <div>
               <label className={labelClass}>Tiempo</label>
               <div className="flex gap-1.5">
-                <input type="number" min={0} value={paso.tiempo} onChange={(e) => campo("tiempo", Number(e.target.value))} className={inputClass} />
+                <input
+                  type="number"
+                  min={0}
+                  max={100000}
+                  value={paso.tiempo}
+                  onChange={(e) => campo("tiempo", Math.max(0, Math.min(100000, Number(e.target.value) || 0)))}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  className={`${inputClass} flex-1 min-w-[64px]`}
+                />
                 <select value={paso.unidadTiempo} onChange={(e) => campo("unidadTiempo", e.target.value as "min" | "hrs")} className={`${inputClass} w-20 flex-shrink-0`}>
                   <option value="min">min</option>
                   <option value="hrs">hrs</option>
@@ -299,10 +307,12 @@ export default function ProcesoOperativoForm({ userId, producto }: { userId: str
                         <input
                           type="number"
                           min={0}
+                          max={1000000}
                           value={r.cantidad}
-                          onChange={(e) => campoRecurso(clave, r.id, "cantidad", Number(e.target.value))}
+                          onChange={(e) => campoRecurso(clave, r.id, "cantidad", Math.max(0, Math.min(1000000, Number(e.target.value) || 0)))}
+                          onWheel={(e) => e.currentTarget.blur()}
                           placeholder="Cant."
-                          className={`${inputClass} col-span-2 py-1`}
+                          className={`${inputClass} col-span-2 py-1 min-w-0`}
                         />
                         <input
                           value={r.unidad}
@@ -313,10 +323,12 @@ export default function ProcesoOperativoForm({ userId, producto }: { userId: str
                         <input
                           type="number"
                           min={0}
+                          max={1000000}
                           value={r.costoUnitario || ""}
-                          onChange={(e) => campoRecurso(clave, r.id, "costoUnitario", Number(e.target.value))}
+                          onChange={(e) => campoRecurso(clave, r.id, "costoUnitario", Math.max(0, Math.min(1000000, Number(e.target.value) || 0)))}
+                          onWheel={(e) => e.currentTarget.blur()}
                           placeholder="Costo u."
-                          className={`${inputClass} col-span-2 py-1`}
+                          className={`${inputClass} col-span-2 py-1 min-w-0`}
                         />
                         <button type="button" onClick={() => quitarRecurso(clave, r.id)} className="col-span-1 text-gray-300 hover:text-red-500 text-sm text-center">
                           ✕
