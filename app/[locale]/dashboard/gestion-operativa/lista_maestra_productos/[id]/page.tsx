@@ -8,12 +8,14 @@ import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseProductos, colorEstadoProducto } from "@/lib/productosFabricados";
 import { Seccion, Dato } from "@/components/dashboard/SeccionDocumento";
 import ProcesoOperativoForm from "@/components/dashboard/ProcesoOperativoForm";
+import DiagramaFlujoView from "@/components/dashboard/DiagramaFlujoView";
 
 const ITEM_KEY = "productos_lista";
 
 const TABS = [
   { key: "generales", label: "Datos Generales" },
   { key: "proceso", label: "Proceso Operativo" },
+  { key: "diagrama", label: "Diagrama de Flujo" },
 ];
 
 function fechaLegible(iso?: string) {
@@ -150,6 +152,7 @@ export default function PerfilProductoPage() {
       )}
 
       {tab === "proceso" && <ProcesoOperativoForm userId={user?.id ?? null} producto={p} />}
+      {tab === "diagrama" && <DiagramaFlujoView userId={user?.id ?? null} producto={p} />}
     </div>
   );
 }
