@@ -14,6 +14,7 @@ import {
   pctValorAgregado,
   formatoTiempo,
   costoPaso,
+  costoRecursos,
   costoTotalProceso,
   formatoMonto,
   resumenPorTipo,
@@ -44,6 +45,49 @@ function itemKeyProceso(productoId: string) {
   return `proceso_operativo_${productoId}`;
 }
 
+function TablaRecursos({ titulo, icono, recursos }: { titulo: string; icono: string; recursos: RecursoPaso[] }) {
+  if (recursos.length === 0) return null;
+  const total = costoRecursos(recursos);
+  return (
+    <div>
+      <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-1">
+        {icono} {titulo}
+      </p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs border-collapse min-w-[420px]">
+          <thead>
+            <tr className="text-left text-gray-400">
+              <th className="py-1 pr-3 font-medium">Nombre</th>
+              <th className="py-1 px-3 font-medium text-right">Cant.</th>
+              <th className="py-1 px-3 font-medium">Unidad</th>
+              <th className="py-1 px-3 font-medium text-right">Costo u.</th>
+              <th className="py-1 pl-3 font-medium text-right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recursos.map((r) => (
+              <tr key={r.id} className="border-t border-gray-100">
+                <td className="py-1 pr-3 text-[#1A1A1A]">{r.nombre || "—"}</td>
+                <td className="py-1 px-3 text-right text-gray-600">{r.cantidad}</td>
+                <td className="py-1 px-3 text-gray-500">{r.unidad || "—"}</td>
+                <td className="py-1 px-3 text-right text-gray-500">{r.costoUnitario ? formatoMonto(r.costoUnitario) : "—"}</td>
+                <td className="py-1 pl-3 text-right font-semibold text-[#1A1A1A]">
+                  {r.costoUnitario ? formatoMonto(r.cantidad * r.costoUnitario) : "—"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {total > 0 && (
+        <p className="text-right text-[11px] text-gray-500 mt-0.5">
+          Subtotal: <strong className="text-[#1A1A1A]">{formatoMonto(total)}</strong>
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function ProcesoOperativoForm({ userId, producto }: { userId: string | null; producto: ProductoFabricado }) {
   const { docs, loading, save } = useGestionDocumentos("operativa", userId);
   const ITEM_KEY = itemKeyProceso(producto.id);
@@ -53,6 +97,7 @@ export default function ProcesoOperativoForm({ userId, producto }: { userId: str
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (!loading) setPasos(parsePasos(docs[ITEM_KEY] ?? ""));
@@ -70,6 +115,28 @@ export default function ProcesoOperativoForm({ userId, producto }: { userId: str
   const costoTotal = costoTotalProceso(pasos);
   const resumen = resumenPorTipo(pasos);
   const cuelloDeBotella = pasoMasLargo(pasos);
+
+  let acumuladoMin = 0;
+  const pasosConAcumulado = pasosOrdenados.map((p) => {
+    acumuladoMin += tiempoEnMinutos(p);
+    return { paso: p, acumulado: acumuladoMin };
+  });
+
+  function toggleExpandido(id: string) {
+    setExpandidos((e) => ({ ...e, [id]: !(e[id] !== false) }));
+  }
+
+  function expandirTodos() {
+    const todos: Record<string, boolean> = {};
+    pasosOrdenados.forEach((p) => (todos[p.id] = true));
+    setExpandidos(todos);
+  }
+
+  function colapsarTodos() {
+    const ninguno: Record<string, boolean> = {};
+    pasosOrdenados.forEach((p) => (ninguno[p.id] = false));
+    setExpandidos(ninguno);
+  }
 
   function campo<K extends keyof PasoProceso>(key: K, value: PasoProceso[K]) {
     setPaso((p) => ({ ...p, [key]: value }));
@@ -404,6 +471,91 @@ export default function ProcesoOperativoForm({ userId, producto }: { userId: str
           </div>
         )}
       </Seccion>
+
+      {/* Informe detallado */}
+      {pasosOrdenados.length > 0 && (
+        <Seccion icono="📄" titulo="Informe Detallado del Proceso">
+          <div className="flex items-center justify-end gap-3 mb-3 -mt-1">
+            <button type="button" onClick={expandirTodos} className="text-xs font-semibold text-[#F5A623] hover:text-[#e09410]">
+              Expandir todo
+            </button>
+            <button type="button" onClick={colapsarTodos} className="text-xs font-semibold text-gray-400 hover:text-gray-600">
+              Colapsar todo
+            </button>
+          </div>
+          <div className="space-y-3">
+            {pasosConAcumulado.map(({ paso: p, acumulado }) => {
+              const abierto = expandidos[p.id] !== false;
+              const costo = costoPaso(p);
+              return (
+                <div key={p.id} className="border border-gray-100 rounded-xl overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleExpandido(p.id)}
+                    className="w-full flex items-center gap-3 p-3 bg-[#FAFAFA] hover:bg-gray-100 transition-colors text-left"
+                  >
+                    <span className="w-7 h-7 rounded-full bg-[#1A1A1A] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+                      {p.orden}
+                    </span>
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white flex-shrink-0 whitespace-nowrap"
+                      style={{ backgroundColor: colorTipoPaso(p.tipo) }}
+                    >
+                      {simboloTipoPaso(p.tipo)} {p.tipo}
+                    </span>
+                    <span className="flex-1 min-w-0 font-semibold text-sm text-[#1A1A1A] truncate">{p.nombre}</span>
+                    {!p.valorAgregado && (
+                      <span className="text-[10px] font-bold text-red-400 uppercase flex-shrink-0 hidden sm:inline">Sin VA</span>
+                    )}
+                    <span className="text-xs text-gray-500 flex-shrink-0 whitespace-nowrap">{formatoTiempo(tiempoEnMinutos(p))}</span>
+                    <span className="text-gray-400 flex-shrink-0">{abierto ? "▲" : "▼"}</span>
+                  </button>
+                  {abierto && (
+                    <div className="p-4 space-y-4 border-t border-gray-100">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                        <div>
+                          <p className="text-gray-400">Responsable</p>
+                          <p className="font-semibold text-[#1A1A1A]">{p.responsable || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">¿Agrega valor?</p>
+                          <p className={`font-semibold ${p.valorAgregado ? "text-green-600" : "text-red-500"}`}>{p.valorAgregado ? "Sí" : "No"}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Tiempo acumulado</p>
+                          <p className="font-semibold text-[#1A1A1A]">{formatoTiempo(acumulado)}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Costo del paso</p>
+                          <p className="font-semibold text-[#1A1A1A]">{costo > 0 ? formatoMonto(costo) : "—"}</p>
+                        </div>
+                      </div>
+
+                      {contarRecursos(p) > 0 ? (
+                        <div className="space-y-3">
+                          <TablaRecursos titulo="Materias primas" icono="🌾" recursos={p.materiasPrimas} />
+                          <TablaRecursos titulo="Maquinaria" icono="⚙️" recursos={p.maquinarias} />
+                          <TablaRecursos titulo="Materiales" icono="🧱" recursos={p.materiales} />
+                          <TablaRecursos titulo="Insumos" icono="🧪" recursos={p.insumos} />
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-400">Sin recursos cargados para este paso.</p>
+                      )}
+
+                      {p.observaciones && (
+                        <div className="pt-2 border-t border-gray-100">
+                          <p className="text-[11px] font-bold text-gray-400 uppercase mb-1">Observaciones</p>
+                          <p className="text-sm text-gray-600 whitespace-pre-wrap">{p.observaciones}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Seccion>
+      )}
     </div>
   );
 }
