@@ -8,12 +8,14 @@ import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseClientes, colorEstadoCliente } from "@/lib/clientes";
 import { Seccion, Dato } from "@/components/dashboard/SeccionDocumento";
 import EncuestaSatisfaccionForm from "@/components/dashboard/EncuestaSatisfaccionForm";
+import PQRSFForm from "@/components/dashboard/PQRSFForm";
 
 const ITEM_KEY = "clientes_lista";
 
 const TABS = [
   { key: "generales", label: "Datos Generales" },
   { key: "satisfaccion", label: "Encuesta de Satisfacción" },
+  { key: "pqrsf", label: "PQRSF" },
 ];
 
 function fechaLegible(iso?: string) {
@@ -176,6 +178,7 @@ export default function PerfilClientePage() {
       )}
 
       {tab === "satisfaccion" && <EncuestaSatisfaccionForm userId={user?.id ?? null} cliente={c} />}
+      {tab === "pqrsf" && <PQRSFForm userId={user?.id ?? null} cliente={c} />}
     </div>
   );
 }
