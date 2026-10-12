@@ -21,6 +21,7 @@ import {
   contarRecursos,
   colorTipoPaso,
   simboloTipoPaso,
+  etiquetaTipoPaso,
   TIPOS_PASO,
   type PasoProceso,
   type RecursoPaso,
@@ -218,7 +219,7 @@ export default function ProcesoOperativoForm({ userId, producto }: { userId: str
                   {r.simbolo}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-[#1A1A1A]">{r.cantidad} {r.tipo.toLowerCase()}{r.cantidad !== 1 ? "es" : ""}</p>
+                  <p className="text-sm font-bold text-[#1A1A1A]">{r.cantidad} {etiquetaTipoPaso(r.tipo, r.cantidad)}</p>
                   <p className="text-xs text-gray-500">{formatoTiempo(r.tiempoMin)}</p>
                 </div>
               </div>

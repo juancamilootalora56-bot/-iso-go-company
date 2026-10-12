@@ -46,6 +46,20 @@ export function infoTipoPaso(tipo: string): InfoTipoPaso {
   return TIPOS_PASO.find((t) => t.tipo === tipo) ?? TIPOS_PASO[0];
 }
 
+const PLURALES_TIPO_PASO: Record<string, string> = {
+  "Operación": "Operaciones",
+  "Transporte": "Transportes",
+  "Inspección": "Inspecciones",
+  "Demora": "Demoras",
+  "Almacenaje": "Almacenajes",
+  "Combinado": "Combinados",
+};
+
+export function etiquetaTipoPaso(tipo: string, cantidad: number): string {
+  if (cantidad === 1) return tipo.toLowerCase();
+  return (PLURALES_TIPO_PASO[tipo] ?? `${tipo}s`).toLowerCase();
+}
+
 export function colorTipoPaso(tipo: string): string {
   return infoTipoPaso(tipo).color;
 }
