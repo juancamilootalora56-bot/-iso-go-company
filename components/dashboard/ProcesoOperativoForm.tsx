@@ -242,36 +242,93 @@ export default function ProcesoOperativoForm({ userId, producto }: { userId: str
         </div>
       </div>
 
-      {/* Diagrama visual del proceso */}
+      {/* Diagrama de flujo vertical */}
       {pasosOrdenados.length > 0 && (
-        <Seccion icono="🗺️" titulo="Diagrama del Proceso">
-          <div className="overflow-x-auto pb-2">
-            <div className="flex items-center gap-1 min-w-max">
-              {pasosOrdenados.map((p, i) => (
-                <div key={p.id} className="flex items-center gap-1">
-                  <button
-                    onClick={() => editarPaso(p)}
-                    className="flex flex-col items-center gap-1.5 w-20 flex-shrink-0 group"
-                    title={p.nombre}
-                  >
+        <Seccion icono="🗺️" titulo="Diagrama de Flujo">
+          <div className="flex flex-col items-center mb-2">
+            <span className="text-[10px] font-bold uppercase tracking-wide text-white bg-[#1A1A1A] px-3 py-1 rounded-full">Inicio</span>
+            <div className="w-0.5 h-4 bg-gray-200" />
+          </div>
+          <div>
+            {pasosOrdenados.map((p, i) => {
+              const esUltimo = i === pasosOrdenados.length - 1;
+              const forma =
+                p.tipo === "Operación" ? "rounded-full" : p.tipo === "Combinado" ? "rotate-45 rounded-md" : "rounded-lg";
+              const recursos = [
+                ...p.materiasPrimas.map((r) => ({ icono: "🌾", nombre: r.nombre })),
+                ...p.maquinarias.map((r) => ({ icono: "⚙️", nombre: r.nombre })),
+                ...p.materiales.map((r) => ({ icono: "🧱", nombre: r.nombre })),
+                ...p.insumos.map((r) => ({ icono: "🧪", nombre: r.nombre })),
+              ].filter((r) => r.nombre);
+              return (
+                <div key={p.id} className="flex gap-4">
+                  <div className="flex flex-col items-center flex-shrink-0 w-16">
                     <span
-                      className={`w-9 h-9 flex items-center justify-center text-white text-sm font-bold group-hover:scale-110 transition-transform ${
-                        p.tipo === "Operación" ? "rounded-full" : p.tipo === "Almacenaje" ? "" : p.tipo === "Combinado" ? "rotate-45" : "rounded-md"
-                      }`}
+                      className={`w-16 h-16 flex items-center justify-center text-white text-xl font-bold shadow-md ring-4 ring-white flex-shrink-0 ${forma}`}
                       style={{
                         backgroundColor: colorTipoPaso(p.tipo),
-                        clipPath: p.tipo === "Almacenaje" ? "polygon(50% 0%, 0% 100%, 100% 100%)" : undefined,
+                        clipPath: p.tipo === "Almacenaje" ? "polygon(50% 8%, 8% 92%, 92% 92%)" : undefined,
                       }}
                     >
-                      <span className={p.tipo === "Combinado" ? "-rotate-45" : ""}>{p.tipo !== "Almacenaje" ? simboloTipoPaso(p.tipo) : ""}</span>
+                      <span className={p.tipo === "Combinado" ? "-rotate-45" : ""}>
+                        {p.tipo !== "Almacenaje" ? simboloTipoPaso(p.tipo) : ""}
+                      </span>
                     </span>
-                    <span className="text-[10px] text-gray-500 text-center leading-tight truncate w-full">{p.nombre}</span>
-                    {!p.valorAgregado && <span className="text-[8px] text-red-400 font-bold uppercase">Sin VA</span>}
+                    {!esUltimo && <div className="w-0.5 flex-1 min-h-[24px] bg-gray-200 my-1" />}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => editarPaso(p)}
+                    className="flex-1 min-w-0 text-left bg-white border border-gray-100 rounded-2xl p-4 mb-5 hover:border-[#F5A623]/50 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Paso {p.orden}</span>
+                        <span
+                          className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white whitespace-nowrap"
+                          style={{ backgroundColor: colorTipoPaso(p.tipo) }}
+                        >
+                          {simboloTipoPaso(p.tipo)} {p.tipo}
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full whitespace-nowrap ${
+                            p.valorAgregado ? "bg-green-100 text-green-700" : "bg-red-100 text-red-500"
+                          }`}
+                        >
+                          {p.valorAgregado ? "Agrega valor" : "Sin valor agregado"}
+                        </span>
+                      </div>
+                      <span className="text-xs font-bold text-[#1A1A1A] whitespace-nowrap">⏱️ {formatoTiempo(tiempoEnMinutos(p))}</span>
+                    </div>
+
+                    <p className="font-bold text-[#1A1A1A] text-base leading-snug">{p.nombre}</p>
+
+                    {p.responsable && (
+                      <p className="text-xs text-gray-500 mt-1">👤 {p.responsable}</p>
+                    )}
+
+                    {recursos.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-2.5">
+                        {recursos.map((r, idx) => (
+                          <span key={idx} className="text-[10px] text-gray-600 bg-[#FAFAFA] border border-gray-100 rounded-full px-2 py-0.5 whitespace-nowrap">
+                            {r.icono} {r.nombre}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {p.observaciones && (
+                      <p className="text-xs text-gray-400 italic mt-2 line-clamp-2">{p.observaciones}</p>
+                    )}
                   </button>
-                  {i < pasosOrdenados.length - 1 && <span className="text-gray-300 flex-shrink-0">→</span>}
                 </div>
-              ))}
-            </div>
+              );
+            })}
+          </div>
+          <div className="flex flex-col items-center -mt-3">
+            <div className="w-0.5 h-4 bg-gray-200" />
+            <span className="text-[10px] font-bold uppercase tracking-wide text-white bg-[#22C55E] px-3 py-1 rounded-full">Fin</span>
           </div>
         </Seccion>
       )}
