@@ -30,7 +30,7 @@ export default function ListaMaestraInventarioPage() {
   const items = parseInventario(docs[ITEM_KEY] ?? "");
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <Link href={basePath} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
         ← Gestión Operativa
       </Link>
@@ -53,59 +53,96 @@ export default function ListaMaestraInventarioPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((i) => {
-            const alertaMant = estadoMantenimiento(i);
-            const alertaCal = estadoCalibracion(i);
-            return (
-              <Link
-                key={i.id}
-                href={`${basePath}/lista_maestra_inventario/${i.id}`}
-                className="bg-white rounded-xl border border-gray-100 p-5 text-left hover:border-[#F5A623]/40 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
-                    {i.imagen ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={i.imagen} alt={i.nombre} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-lg">⚙️</span>
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-sm text-[#1A1A1A] truncate">{i.nombre}</p>
-                    <p className="text-xs text-gray-500 truncate">{i.tipo} {i.codigo && <>· {i.codigo}</>}</p>
-                    <div className="flex items-center gap-1 flex-wrap mt-1.5">
-                      {i.estado && (
-                        <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: colorEstadoItem(i.estado) }}>
-                          {i.estado}
-                        </span>
-                      )}
-                      {i.criticidad && (
-                        <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: colorCriticidadItem(i.criticidad) }}>
-                          {i.criticidad}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {(alertaMant === "vencido" || alertaMant === "proximo" || alertaCal === "vencido" || alertaCal === "proximo") && (
-                  <div className="flex items-center gap-1.5 flex-wrap mt-3 pt-3 border-t border-gray-50">
-                    {(alertaMant === "vencido" || alertaMant === "proximo") && (
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ color: colorEstadoAlerta(alertaMant), backgroundColor: `${colorEstadoAlerta(alertaMant)}1A` }}>
-                        🛠️ Mantenimiento {alertaMant === "vencido" ? "vencido" : "próximo"}
-                      </span>
-                    )}
-                    {(alertaCal === "vencido" || alertaCal === "proximo") && (
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ color: colorEstadoAlerta(alertaCal), backgroundColor: `${colorEstadoAlerta(alertaCal)}1A` }}>
-                        📏 Calibración {alertaCal === "vencido" ? "vencida" : "próxima"}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </Link>
-            );
-          })}
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse min-w-[920px]">
+              <thead>
+                <tr className="bg-gray-50 text-left text-gray-500">
+                  <th className="p-3 font-semibold border-b border-gray-100 w-12 text-center">#</th>
+                  <th className="p-3 font-semibold border-b border-gray-100">Ítem</th>
+                  <th className="p-3 font-semibold border-b border-gray-100">Tipo</th>
+                  <th className="p-3 font-semibold border-b border-gray-100">Código</th>
+                  <th className="p-3 font-semibold border-b border-gray-100">Ubicación</th>
+                  <th className="p-3 font-semibold border-b border-gray-100">Estado</th>
+                  <th className="p-3 font-semibold border-b border-gray-100">Criticidad</th>
+                  <th className="p-3 font-semibold border-b border-gray-100">Alertas</th>
+                  <th className="p-3 font-semibold border-b border-gray-100"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((i, idx) => {
+                  const alertaMant = estadoMantenimiento(i);
+                  const alertaCal = estadoCalibracion(i);
+                  const hayAlerta =
+                    alertaMant === "vencido" || alertaMant === "proximo" || alertaCal === "vencido" || alertaCal === "proximo";
+                  return (
+                    <tr key={i.id} className="border-b border-gray-50 hover:bg-[#FAFAFA] transition-colors">
+                      <td className="p-3 text-center text-gray-400 font-bold">{idx + 1}</td>
+                      <td className="p-3">
+                        <Link href={`${basePath}/lista_maestra_inventario/${i.id}`} className="flex items-center gap-3 group min-w-0">
+                          <div className="w-11 h-11 rounded-lg bg-gray-50 border border-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                            {i.imagen ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={i.imagen} alt={i.nombre} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-base">⚙️</span>
+                            )}
+                          </div>
+                          <span className="font-semibold text-[#1A1A1A] group-hover:text-[#F5A623] transition-colors truncate">{i.nombre}</span>
+                        </Link>
+                      </td>
+                      <td className="p-3 text-gray-600 whitespace-nowrap">{i.tipo || "—"}</td>
+                      <td className="p-3 text-gray-600 whitespace-nowrap">{i.codigo || "—"}</td>
+                      <td className="p-3 text-gray-600 whitespace-nowrap max-w-[180px] truncate">{i.ubicacion || "—"}</td>
+                      <td className="p-3 whitespace-nowrap">
+                        {i.estado ? (
+                          <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: colorEstadoItem(i.estado) }}>
+                            {i.estado}
+                          </span>
+                        ) : "—"}
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        {i.criticidad ? (
+                          <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: colorCriticidadItem(i.criticidad) }}>
+                            {i.criticidad}
+                          </span>
+                        ) : "—"}
+                      </td>
+                      <td className="p-3">
+                        {hayAlerta ? (
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {(alertaMant === "vencido" || alertaMant === "proximo") && (
+                              <span
+                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
+                                style={{ color: colorEstadoAlerta(alertaMant), backgroundColor: `${colorEstadoAlerta(alertaMant)}1A` }}
+                              >
+                                🛠️ {alertaMant === "vencido" ? "Vencido" : "Próximo"}
+                              </span>
+                            )}
+                            {(alertaCal === "vencido" || alertaCal === "proximo") && (
+                              <span
+                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
+                                style={{ color: colorEstadoAlerta(alertaCal), backgroundColor: `${colorEstadoAlerta(alertaCal)}1A` }}
+                              >
+                                📏 {alertaCal === "vencido" ? "Vencida" : "Próxima"}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-300">—</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-right whitespace-nowrap">
+                        <Link href={`${basePath}/lista_maestra_inventario/${i.id}`} className="text-[#F5A623] font-semibold hover:text-[#e09410] text-xs">
+                          Ver hoja de vida →
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
