@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
@@ -10,6 +10,7 @@ import {
   parseInventario,
   eventoInventarioVacio,
   mantenimientoVacio,
+  registroCalibracionVacio,
   colorEstadoItem,
   colorCriticidadItem,
   estadoMantenimiento,
@@ -24,19 +25,24 @@ import {
   estaVencidoMantenimiento,
   costoTotalMantenimientos,
   tiempoParadaTotalHoras,
+  colorResultadoCalibracion,
   TIPOS_EVENTO_INVENTARIO,
   TIPOS_MANTENIMIENTO,
   ESTADOS_MANTENIMIENTO,
+  RESULTADOS_CALIBRACION,
   type ItemInventario,
   type EventoInventario,
   type Mantenimiento,
+  type RegistroCalibracion,
 } from "@/lib/inventario";
 
 const ITEM_KEY = "inventario_lista";
+const MAX_CERT_BYTES = 1_500_000; // ~1.5MB
 
 const TABS = [
   { key: "generales", label: "Datos Generales" },
   { key: "mantenimientos", label: "Mantenimientos" },
+  { key: "calibracion", label: "Calibración" },
 ];
 
 const inputClass =
@@ -77,6 +83,10 @@ export default function HojaDeVidaPage() {
   const [mantenimiento, setMantenimiento] = useState<Mantenimiento>(mantenimientoVacio());
   const [guardandoMant, setGuardandoMant] = useState(false);
   const [errorMant, setErrorMant] = useState<string | null>(null);
+  const [calibracion, setCalibracion] = useState<RegistroCalibracion>(registroCalibracionVacio());
+  const [guardandoCal, setGuardandoCal] = useState(false);
+  const [errorCal, setErrorCal] = useState<string | null>(null);
+  const certFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!loading) setItems(parseInventario(docs[ITEM_KEY] ?? ""));
@@ -116,6 +126,9 @@ export default function HojaDeVidaPage() {
   const costoTotalMant = costoTotalMantenimientos(item.mantenimientos);
   const tiempoParadaTotal = tiempoParadaTotalHoras(item.mantenimientos);
   const vencidosProgramados = item.mantenimientos.filter((m) => estaVencidoMantenimiento(m)).length;
+  const calibracionesOrdenadas = [...item.calibraciones].sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+  const editandoCal = item.calibraciones.some((c) => c.id === calibracion.id);
+  const ultimaCalReg = calibracionesOrdenadas[0];
 
   async function agregarEvento() {
     if (!item) return;
@@ -193,6 +206,67 @@ export default function HojaDeVidaPage() {
     setItems(actualizados);
     if (mantenimiento.id === mantId) limpiarMant();
     setGuardandoMant(false);
+  }
+
+  function campoCal<K extends keyof RegistroCalibracion>(key: K, value: RegistroCalibracion[K]) {
+    setCalibracion((c) => ({ ...c, [key]: value }));
+  }
+
+  function limpiarCal() {
+    setCalibracion(registroCalibracionVacio());
+    setErrorCal(null);
+    if (certFileInputRef.current) certFileInputRef.current.value = "";
+  }
+
+  function editarCal(c: RegistroCalibracion) {
+    setCalibracion({ ...c });
+    setErrorCal(null);
+  }
+
+  function handleCertificado(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > MAX_CERT_BYTES) {
+      setErrorCal("El archivo es muy pesado. Usá uno de menos de 1.5MB.");
+      return;
+    }
+    setErrorCal(null);
+    const reader = new FileReader();
+    reader.onload = () => setCalibracion((c) => ({ ...c, certificado: reader.result as string, certificadoNombre: file.name }));
+    reader.readAsDataURL(file);
+  }
+
+  async function guardarCalibracion() {
+    if (!item) return;
+    if (!calibracion.entidadCalibradora.trim()) {
+      setErrorCal("Ingresá la entidad u organismo que realizó la calibración.");
+      return;
+    }
+    setErrorCal(null);
+    setGuardandoCal(true);
+    const calibracionesActualizadas = [...item.calibraciones.filter((c) => c.id !== calibracion.id), calibracion];
+    const itemActualizado: ItemInventario = {
+      ...item,
+      calibraciones: calibracionesActualizadas,
+      ultimaCalibracion: calibracion.fecha || item.ultimaCalibracion,
+      proximaCalibracion: calibracion.proximaCalibracion || item.proximaCalibracion,
+    };
+    const actualizados = items.map((x) => (x.id === item.id ? itemActualizado : x));
+    await save(ITEM_KEY, JSON.stringify(actualizados));
+    setItems(actualizados);
+    limpiarCal();
+    setGuardandoCal(false);
+  }
+
+  async function eliminarCalibracion(calId: string) {
+    if (!item) return;
+    setGuardandoCal(true);
+    const itemActualizado: ItemInventario = { ...item, calibraciones: item.calibraciones.filter((c) => c.id !== calId) };
+    const actualizados = items.map((x) => (x.id === item.id ? itemActualizado : x));
+    await save(ITEM_KEY, JSON.stringify(actualizados));
+    setItems(actualizados);
+    if (calibracion.id === calId) limpiarCal();
+    setGuardandoCal(false);
   }
 
   return (
@@ -627,23 +701,190 @@ export default function HojaDeVidaPage() {
 
       {tab === "generales" && (
       <div className="space-y-4">
-      {/* Calibración */}
-      {item.requiereCalibracion && (
-        <Seccion icono="📏" titulo="Calibración">
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Dato label="Frecuencia" valor={item.frecuenciaCalibracion} />
-            <Dato icono="📅" label="Última calibración" valor={fechaLegible(item.ultimaCalibracion)} />
-            <Dato icono="📅" label="Próxima calibración" valor={fechaLegible(item.proximaCalibracion)} />
-          </div>
-        </Seccion>
-      )}
-
       {/* Observaciones */}
       {item.observaciones && (
         <Seccion icono="📝" titulo="Observaciones">
           <p className="text-sm text-gray-600 whitespace-pre-wrap">{item.observaciones}</p>
         </Seccion>
       )}
+      </div>
+      )}
+
+      {tab === "calibracion" && (
+      <div className="space-y-4">
+      <Seccion icono="📏" titulo="Calibración de Equipos">
+        {!item.requiereCalibracion ? (
+          <div className="text-center py-8">
+            <p className="text-3xl mb-2">⏭️</p>
+            <p className="text-gray-500 text-sm mb-1">Este ítem está marcado como que no requiere calibración.</p>
+            <p className="text-gray-400 text-xs">Si corresponde, activalo desde &ldquo;Editar datos&rdquo; → sección Calibración.</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+              <div className="bg-[#FAFAFA] rounded-xl p-3 border border-gray-100">
+                <p className="text-lg font-bold text-[#1A1A1A]">{item.calibraciones.length}</p>
+                <p className="text-[11px] text-gray-500">Registros totales</p>
+              </div>
+              <div className="bg-[#FAFAFA] rounded-xl p-3 border border-gray-100">
+                <p className="text-sm font-bold" style={{ color: ultimaCalReg ? colorResultadoCalibracion(ultimaCalReg.resultado) : "#9CA3AF" }}>
+                  {ultimaCalReg ? ultimaCalReg.resultado : "—"}
+                </p>
+                <p className="text-[11px] text-gray-500">Último resultado</p>
+              </div>
+              <div className="bg-[#FAFAFA] rounded-xl p-3 border border-gray-100">
+                <p className="text-sm font-bold text-[#1A1A1A]">{fechaLegible(item.ultimaCalibracion) || "—"}</p>
+                <p className="text-[11px] text-gray-500">Última calibración</p>
+              </div>
+              <div className="bg-[#FAFAFA] rounded-xl p-3 border border-gray-100">
+                <p className="text-sm font-bold" style={{ color: colorEstadoAlerta(alertaCal) }}>{fechaLegible(item.proximaCalibracion) || "—"}</p>
+                <p className="text-[11px] text-gray-500">Próxima calibración</p>
+              </div>
+            </div>
+
+            <div className="mb-4 pb-4 border-b border-gray-100">
+              <Dato label="Frecuencia planificada" valor={item.frecuenciaCalibracion} />
+            </div>
+
+            {errorCal && <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs mb-3">{errorCal}</div>}
+
+            {/* Formulario */}
+            <div className="bg-[#FAFAFA] rounded-xl p-3.5 border border-gray-100 space-y-2.5 mb-4">
+              <p className="text-xs font-bold text-[#1A1A1A] uppercase tracking-wide">
+                {editandoCal ? "Editando registro" : "Nuevo registro de calibración"}
+              </p>
+
+              <div className="grid sm:grid-cols-4 gap-2.5">
+                <div>
+                  <label className={labelClass}>Fecha de calibración</label>
+                  <input type="date" value={calibracion.fecha} onChange={(e) => campoCal("fecha", e.target.value)} className={inputClass} />
+                </div>
+                <div>
+                  <label className={labelClass}>Resultado</label>
+                  <select value={calibracion.resultado} onChange={(e) => campoCal("resultado", e.target.value)} className={inputClass}>
+                    {RESULTADOS_CALIBRACION.map((r) => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={labelClass}>Próxima calibración</label>
+                  <input type="date" value={calibracion.proximaCalibracion} onChange={(e) => campoCal("proximaCalibracion", e.target.value)} className={inputClass} />
+                </div>
+                <div>
+                  <label className={labelClass}>Responsable</label>
+                  <input value={calibracion.responsable} onChange={(e) => campoCal("responsable", e.target.value)} className={inputClass} />
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-2.5">
+                <div>
+                  <label className={labelClass}><span className="text-red-500">*</span> Entidad calibradora</label>
+                  <input value={calibracion.entidadCalibradora} onChange={(e) => campoCal("entidadCalibradora", e.target.value)} placeholder="Ej: Laboratorio Acreditado XYZ" className={inputClass} />
+                </div>
+                <div>
+                  <label className={labelClass}>Nº de certificado</label>
+                  <input value={calibracion.numeroCertificado} onChange={(e) => campoCal("numeroCertificado", e.target.value)} className={inputClass} />
+                </div>
+                <div>
+                  <label className={labelClass}>Costo</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={calibracion.costo || ""}
+                    onChange={(e) => campoCal("costo", Math.max(0, Number(e.target.value) || 0))}
+                    onWheel={(e) => e.currentTarget.blur()}
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className={labelClass}>Certificado de calibración (opcional)</label>
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => certFileInputRef.current?.click()}
+                    className="text-xs font-semibold text-[#F5A623] hover:text-[#e09410] bg-white border border-gray-200 px-3 py-1.5 rounded-lg"
+                  >
+                    📎 Subir archivo
+                  </button>
+                  <input ref={certFileInputRef} type="file" accept="image/*,.pdf" onChange={handleCertificado} className="hidden" />
+                  {calibracion.certificado && (
+                    <span className="text-xs text-gray-500 truncate max-w-[200px]">{calibracion.certificadoNombre || "Archivo cargado"}</span>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className={labelClass}>Observaciones</label>
+                <textarea value={calibracion.observaciones} onChange={(e) => campoCal("observaciones", e.target.value)} rows={2} className={`${inputClass} resize-y`} />
+              </div>
+
+              <div className="flex items-center gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={guardarCalibracion}
+                  disabled={guardandoCal}
+                  className="bg-[#F5A623] text-[#1A1A1A] font-bold text-xs px-4 py-2 rounded-lg hover:bg-[#e09410] disabled:opacity-60"
+                >
+                  {guardandoCal ? "Guardando..." : editandoCal ? "Guardar cambios" : "+ Registrar calibración"}
+                </button>
+                {editandoCal && (
+                  <button type="button" onClick={limpiarCal} className="text-xs text-gray-400 hover:text-gray-600 bg-white px-3 py-2 rounded-lg border border-gray-100">
+                    Nuevo registro en blanco
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Registro */}
+            {calibracionesOrdenadas.length === 0 ? (
+              <p className="text-gray-400 text-sm text-center py-4">Todavía no hay calibraciones registradas.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs min-w-[760px] border-collapse">
+                  <thead>
+                    <tr className="bg-gray-50 text-left text-gray-500">
+                      <th className="p-2.5 font-semibold border-b border-gray-100">Fecha</th>
+                      <th className="p-2.5 font-semibold border-b border-gray-100">Resultado</th>
+                      <th className="p-2.5 font-semibold border-b border-gray-100">Entidad calibradora</th>
+                      <th className="p-2.5 font-semibold border-b border-gray-100">Certificado</th>
+                      <th className="p-2.5 font-semibold border-b border-gray-100">Próxima</th>
+                      <th className="p-2.5 font-semibold border-b border-gray-100">Costo</th>
+                      <th className="p-2.5 font-semibold border-b border-gray-100"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {calibracionesOrdenadas.map((c) => (
+                      <tr key={c.id} className="border-b border-gray-50 hover:bg-[#FAFAFA]">
+                        <td className="p-2.5 text-gray-600 whitespace-nowrap">{fechaCorta(c.fecha)}</td>
+                        <td className="p-2.5 whitespace-nowrap">
+                          <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: colorResultadoCalibracion(c.resultado) }}>
+                            {c.resultado}
+                          </span>
+                        </td>
+                        <td className="p-2.5 text-gray-600 max-w-[200px] truncate">{c.entidadCalibradora}</td>
+                        <td className="p-2.5 whitespace-nowrap">
+                          {c.certificado ? (
+                            <a href={c.certificado} download={c.certificadoNombre || "certificado"} className="text-[#F5A623] font-semibold hover:text-[#e09410]">
+                              📎 Descargar
+                            </a>
+                          ) : "—"}
+                        </td>
+                        <td className="p-2.5 text-gray-600 whitespace-nowrap">{fechaCorta(c.proximaCalibracion)}</td>
+                        <td className="p-2.5 text-gray-600 whitespace-nowrap">{c.costo > 0 ? formatoMonto(c.costo) : "—"}</td>
+                        <td className="p-2.5 whitespace-nowrap">
+                          <button type="button" onClick={() => editarCal(c)} className="text-[#F5A623] font-semibold hover:text-[#e09410] mr-2">Editar</button>
+                          <button type="button" onClick={() => eliminarCalibracion(c.id)} className="text-gray-300 hover:text-red-500">Eliminar</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+      </Seccion>
       </div>
       )}
     </div>

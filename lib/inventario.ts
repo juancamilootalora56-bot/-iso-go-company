@@ -23,6 +23,20 @@ export type Mantenimiento = {
   observaciones: string;
 };
 
+export type RegistroCalibracion = {
+  id: string;
+  fecha: string;
+  resultado: string; // ver RESULTADOS_CALIBRACION
+  entidadCalibradora: string;
+  numeroCertificado: string;
+  proximaCalibracion: string;
+  responsable: string;
+  costo: number;
+  certificado: string | null; // data URL del certificado adjunto (imagen o PDF)
+  certificadoNombre: string;
+  observaciones: string;
+};
+
 export type ItemInventario = {
   id: string;
   imagen: string | null; // data URL (base64)
@@ -73,6 +87,7 @@ export type ItemInventario = {
   observaciones: string;
   bitacora: EventoInventario[];
   mantenimientos: Mantenimiento[];
+  calibraciones: RegistroCalibracion[];
   fechaAlta: string;
 };
 
@@ -170,6 +185,7 @@ export function itemInventarioVacio(): ItemInventario {
     observaciones: "",
     bitacora: [],
     mantenimientos: [],
+    calibraciones: [],
     fechaAlta: new Date().toISOString().slice(0, 10),
   };
 }
@@ -240,6 +256,37 @@ export function tiempoParadaTotalHoras(mantenimientos: Mantenimiento[]): number 
   return mantenimientos.reduce((acc, m) => acc + (m.tiempoParadaHoras || 0), 0);
 }
 
+export const RESULTADOS_CALIBRACION = ["Conforme", "Conforme con observaciones", "No conforme"];
+
+export function colorResultadoCalibracion(resultado: string): string {
+  switch (resultado) {
+    case "Conforme":
+      return "#22C55E";
+    case "Conforme con observaciones":
+      return "#F5A623";
+    case "No conforme":
+      return "#EF4444";
+    default:
+      return "#9CA3AF";
+  }
+}
+
+export function registroCalibracionVacio(): RegistroCalibracion {
+  return {
+    id: crypto.randomUUID(),
+    fecha: new Date().toISOString().slice(0, 10),
+    resultado: "Conforme",
+    entidadCalibradora: "",
+    numeroCertificado: "",
+    proximaCalibracion: "",
+    responsable: "",
+    costo: 0,
+    certificado: null,
+    certificadoNombre: "",
+    observaciones: "",
+  };
+}
+
 export function parseInventario(contenido: string): ItemInventario[] {
   if (!contenido) return [];
   try {
@@ -249,6 +296,7 @@ export function parseInventario(contenido: string): ItemInventario[] {
       ...item,
       bitacora: item.bitacora ?? [],
       mantenimientos: item.mantenimientos ?? [],
+      calibraciones: item.calibraciones ?? [],
     }));
   } catch {
     return [];
