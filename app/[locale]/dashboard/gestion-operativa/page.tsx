@@ -5,8 +5,7 @@ import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseProductos } from "@/lib/productosFabricados";
-import { parseInventario } from "@/lib/inventario";
-import { parseCapacitaciones } from "@/lib/programaCapacitacion";
+import { parseInventario, todosLosMantenimientos } from "@/lib/inventario";
 
 export default function GestionOperativaPage() {
   const { user } = useDashboardUser();
@@ -16,8 +15,9 @@ export default function GestionOperativaPage() {
 
   const { docs, loading } = useGestionDocumentos("operativa", user?.id ?? null);
   const cantidadProductos = parseProductos(docs["productos_lista"] ?? "").length;
-  const cantidadInventario = parseInventario(docs["inventario_lista"] ?? "").length;
-  const cantidadCapacitaciones = parseCapacitaciones(docs["capacitaciones_lista"] ?? "").length;
+  const inventario = parseInventario(docs["inventario_lista"] ?? "");
+  const cantidadInventario = inventario.length;
+  const cantidadMantenimientos = todosLosMantenimientos(inventario).length;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -116,25 +116,25 @@ export default function GestionOperativaPage() {
         </Link>
 
         <Link
-          href={`${basePath}/programa_capacitacion`}
+          href={`${basePath}/programa_mantenimiento`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
         >
           <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
             <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF6E5] to-[#FDEBC8] text-xl">
-              🎓
+              🛠️
             </span>
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="font-semibold text-sm text-[#1A1A1A]">Programa de Capacitación</h2>
-              {!loading && cantidadCapacitaciones > 0 && (
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">Programa de Mantenimiento</h2>
+              {!loading && cantidadMantenimientos > 0 && (
                 <span className="text-[10px] uppercase tracking-wide font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
-                  {cantidadCapacitaciones}
+                  {cantidadMantenimientos}
                 </span>
               )}
             </div>
             <p className="text-xs text-gray-500 mt-0.5">
-              Formación sobre máquinas, equipos y herramientas, con fechas, responsables e indicadores.
+              Vista consolidada de mantenimientos de todas las máquinas y equipos, con indicadores.
             </p>
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>

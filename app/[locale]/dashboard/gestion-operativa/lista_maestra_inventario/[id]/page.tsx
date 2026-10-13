@@ -511,6 +511,11 @@ export default function HojaDeVidaPage() {
           </div>
 
           <div>
+            <label className={labelClass}>Proveedor / taller externo</label>
+            <input value={mantenimiento.proveedor} onChange={(e) => campoMant("proveedor", e.target.value)} placeholder="Opcional" className={inputClass} />
+          </div>
+
+          <div>
             <label className={labelClass}>Descripción del trabajo</label>
             <input
               value={mantenimiento.descripcion}
@@ -576,7 +581,7 @@ export default function HojaDeVidaPage() {
           <p className="text-gray-400 text-sm text-center py-4">Todavía no hay mantenimientos registrados.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-xs min-w-[720px] border-collapse">
+            <table className="w-full text-xs min-w-[860px] border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-left text-gray-500">
                   <th className="p-2.5 font-semibold border-b border-gray-100">Tipo</th>
@@ -584,6 +589,7 @@ export default function HojaDeVidaPage() {
                   <th className="p-2.5 font-semibold border-b border-gray-100">Fecha</th>
                   <th className="p-2.5 font-semibold border-b border-gray-100">Descripción</th>
                   <th className="p-2.5 font-semibold border-b border-gray-100">Responsable</th>
+                  <th className="p-2.5 font-semibold border-b border-gray-100">Proveedor</th>
                   <th className="p-2.5 font-semibold border-b border-gray-100">Costo</th>
                   <th className="p-2.5 font-semibold border-b border-gray-100"></th>
                 </tr>
@@ -609,6 +615,7 @@ export default function HojaDeVidaPage() {
                       <td className="p-2.5 text-gray-600 whitespace-nowrap">{fechaCorta(m.fechaRealizada || m.fechaProgramada)}</td>
                       <td className="p-2.5 text-gray-600 max-w-[240px] truncate">{m.descripcion}</td>
                       <td className="p-2.5 text-gray-600 whitespace-nowrap">{m.responsable || "—"}</td>
+                      <td className="p-2.5 text-gray-600 whitespace-nowrap">{m.proveedor || "—"}</td>
                       <td className="p-2.5 text-gray-600 whitespace-nowrap">{m.costo > 0 ? formatoMonto(m.costo) : "—"}</td>
                       <td className="p-2.5 whitespace-nowrap">
                         <button type="button" onClick={() => editarMant(m)} className="text-[#F5A623] font-semibold hover:text-[#e09410] mr-2">Editar</button>

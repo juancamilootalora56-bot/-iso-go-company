@@ -17,6 +17,7 @@ export type Mantenimiento = {
   fechaRealizada: string;
   descripcion: string;
   responsable: string;
+  proveedor: string; // taller externo / contratista, opcional
   repuestos: string;
   tiempoParadaHoras: number;
   costo: number;
@@ -233,6 +234,7 @@ export function mantenimientoVacio(): Mantenimiento {
     fechaRealizada: "",
     descripcion: "",
     responsable: "",
+    proveedor: "",
     repuestos: "",
     tiempoParadaHoras: 0,
     costo: 0,
@@ -254,6 +256,26 @@ export function costoTotalMantenimientos(mantenimientos: Mantenimiento[]): numbe
 
 export function tiempoParadaTotalHoras(mantenimientos: Mantenimiento[]): number {
   return mantenimientos.reduce((acc, m) => acc + (m.tiempoParadaHoras || 0), 0);
+}
+
+// % de mantenimientos completados sobre el total de los que ya deberían estar resueltos (completados + vencidos).
+export function cumplimientoMantenimientos(mantenimientos: Mantenimiento[]): number | null {
+  const evaluables = mantenimientos.filter((m) => m.estado === "Completado" || estaVencidoMantenimiento(m));
+  if (evaluables.length === 0) return null;
+  const completados = evaluables.filter((m) => m.estado === "Completado").length;
+  return Math.round((completados / evaluables.length) * 100);
+}
+
+export type MantenimientoConEquipo = Mantenimiento & { equipoId: string; equipoNombre: string; equipoTipo: string };
+
+export function todosLosMantenimientos(items: ItemInventario[]): MantenimientoConEquipo[] {
+  const todos: MantenimientoConEquipo[] = [];
+  items.forEach((item) => {
+    item.mantenimientos.forEach((m) => {
+      todos.push({ ...m, equipoId: item.id, equipoNombre: item.nombre, equipoTipo: item.tipo });
+    });
+  });
+  return todos;
 }
 
 export const RESULTADOS_CALIBRACION = ["Conforme", "Conforme con observaciones", "No conforme"];
