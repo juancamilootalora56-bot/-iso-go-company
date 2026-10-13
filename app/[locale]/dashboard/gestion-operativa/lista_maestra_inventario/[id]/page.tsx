@@ -9,6 +9,7 @@ import { Seccion, Dato } from "@/components/dashboard/SeccionDocumento";
 import {
   parseInventario,
   eventoInventarioVacio,
+  mantenimientoVacio,
   colorEstadoItem,
   colorCriticidadItem,
   estadoMantenimiento,
@@ -18,9 +19,17 @@ import {
   diasHastaProximoMantenimiento,
   diasHastaProximaCalibracion,
   formatoMonto,
+  colorTipoMantenimiento,
+  colorEstadoMantenimiento,
+  estaVencidoMantenimiento,
+  costoTotalMantenimientos,
+  tiempoParadaTotalHoras,
   TIPOS_EVENTO_INVENTARIO,
+  TIPOS_MANTENIMIENTO,
+  ESTADOS_MANTENIMIENTO,
   type ItemInventario,
   type EventoInventario,
+  type Mantenimiento,
 } from "@/lib/inventario";
 
 const ITEM_KEY = "inventario_lista";
@@ -59,6 +68,9 @@ export default function HojaDeVidaPage() {
   const [eventoNuevo, setEventoNuevo] = useState<EventoInventario>(eventoInventarioVacio());
   const [guardandoEvento, setGuardandoEvento] = useState(false);
   const [errorEvento, setErrorEvento] = useState<string | null>(null);
+  const [mantenimiento, setMantenimiento] = useState<Mantenimiento>(mantenimientoVacio());
+  const [guardandoMant, setGuardandoMant] = useState(false);
+  const [errorMant, setErrorMant] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading) setItems(parseInventario(docs[ITEM_KEY] ?? ""));
@@ -89,6 +101,15 @@ export default function HojaDeVidaPage() {
   const diasMant = diasHastaProximoMantenimiento(item);
   const diasCal = diasHastaProximaCalibracion(item);
   const bitacoraOrdenada = [...item.bitacora].sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+  const mantenimientosOrdenados = [...item.mantenimientos].sort((a, b) =>
+    (b.fechaRealizada || b.fechaProgramada || "").localeCompare(a.fechaRealizada || a.fechaProgramada || "")
+  );
+  const editandoMant = item.mantenimientos.some((m) => m.id === mantenimiento.id);
+  const preventivos = item.mantenimientos.filter((m) => m.tipo === "Preventivo").length;
+  const correctivos = item.mantenimientos.filter((m) => m.tipo === "Correctivo").length;
+  const costoTotalMant = costoTotalMantenimientos(item.mantenimientos);
+  const tiempoParadaTotal = tiempoParadaTotalHoras(item.mantenimientos);
+  const vencidosProgramados = item.mantenimientos.filter((m) => estaVencidoMantenimiento(m)).length;
 
   async function agregarEvento() {
     if (!item) return;
@@ -114,6 +135,58 @@ export default function HojaDeVidaPage() {
     await save(ITEM_KEY, JSON.stringify(actualizados));
     setItems(actualizados);
     setGuardandoEvento(false);
+  }
+
+  function campoMant<K extends keyof Mantenimiento>(key: K, value: Mantenimiento[K]) {
+    setMantenimiento((m) => ({ ...m, [key]: value }));
+  }
+
+  function limpiarMant() {
+    setMantenimiento(mantenimientoVacio());
+    setErrorMant(null);
+  }
+
+  function editarMant(m: Mantenimiento) {
+    setMantenimiento({ ...m });
+    setErrorMant(null);
+  }
+
+  async function guardarMantenimiento() {
+    if (!item) return;
+    if (!mantenimiento.descripcion.trim()) {
+      setErrorMant("Ingresá una descripción del mantenimiento.");
+      return;
+    }
+    setErrorMant(null);
+    setGuardandoMant(true);
+    const mantenimientosActualizados = [
+      ...item.mantenimientos.filter((m) => m.id !== mantenimiento.id),
+      mantenimiento,
+    ];
+    const itemActualizado: ItemInventario = {
+      ...item,
+      mantenimientos: mantenimientosActualizados,
+      ultimoMantenimiento:
+        mantenimiento.estado === "Completado"
+          ? mantenimiento.fechaRealizada || mantenimiento.fechaProgramada || item.ultimoMantenimiento
+          : item.ultimoMantenimiento,
+    };
+    const actualizados = items.map((x) => (x.id === item.id ? itemActualizado : x));
+    await save(ITEM_KEY, JSON.stringify(actualizados));
+    setItems(actualizados);
+    setMantenimiento(mantenimientoVacio());
+    setGuardandoMant(false);
+  }
+
+  async function eliminarMantenimiento(mantId: string) {
+    if (!item) return;
+    setGuardandoMant(true);
+    const itemActualizado: ItemInventario = { ...item, mantenimientos: item.mantenimientos.filter((m) => m.id !== mantId) };
+    const actualizados = items.map((x) => (x.id === item.id ? itemActualizado : x));
+    await save(ITEM_KEY, JSON.stringify(actualizados));
+    setItems(actualizados);
+    if (mantenimiento.id === mantId) limpiarMant();
+    setGuardandoMant(false);
   }
 
   return (
@@ -253,13 +326,194 @@ export default function HojaDeVidaPage() {
         </Seccion>
       )}
 
-      {/* Mantenimiento */}
-      <Seccion icono="🛠️" titulo="Mantenimiento">
-        <div className="grid sm:grid-cols-3 gap-3">
-          <Dato label="Frecuencia" valor={item.frecuenciaMantenimiento} />
+      {/* Sistema de mantenimientos */}
+      <Seccion icono="🛠️" titulo="Sistema de Mantenimientos">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
+          <div className="bg-[#FAFAFA] rounded-xl p-3 border border-gray-100">
+            <p className="text-lg font-bold text-[#1A1A1A]">{item.mantenimientos.length}</p>
+            <p className="text-[11px] text-gray-500">Registros totales</p>
+          </div>
+          <div className="bg-[#FAFAFA] rounded-xl p-3 border border-gray-100">
+            <p className="text-lg font-bold text-blue-600">{preventivos}</p>
+            <p className="text-[11px] text-gray-500">Preventivos</p>
+          </div>
+          <div className="bg-[#FAFAFA] rounded-xl p-3 border border-gray-100">
+            <p className="text-lg font-bold text-red-500">{correctivos}</p>
+            <p className="text-[11px] text-gray-500">Correctivos</p>
+          </div>
+          <div className="bg-[#FAFAFA] rounded-xl p-3 border border-gray-100">
+            <p className="text-lg font-bold text-[#1A1A1A] truncate">{costoTotalMant > 0 ? formatoMonto(costoTotalMant) : "—"}</p>
+            <p className="text-[11px] text-gray-500">Costo acumulado</p>
+          </div>
+          <div className="bg-[#FAFAFA] rounded-xl p-3 border border-gray-100">
+            <p className={`text-lg font-bold ${vencidosProgramados > 0 ? "text-red-500" : "text-[#1A1A1A]"}`}>{vencidosProgramados}</p>
+            <p className="text-[11px] text-gray-500">Programados vencidos</p>
+          </div>
+        </div>
+
+        <div className="grid sm:grid-cols-3 gap-3 mb-4 pb-4 border-b border-gray-100">
+          <Dato label="Frecuencia planificada" valor={item.frecuenciaMantenimiento} />
           <Dato icono="📅" label="Último mantenimiento" valor={fechaLegible(item.ultimoMantenimiento)} />
           <Dato icono="📅" label="Próximo mantenimiento" valor={fechaLegible(item.proximoMantenimiento)} />
         </div>
+
+        {errorMant && <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs mb-3">{errorMant}</div>}
+
+        {/* Formulario */}
+        <div className="bg-[#FAFAFA] rounded-xl p-3.5 border border-gray-100 space-y-2.5 mb-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold text-[#1A1A1A] uppercase tracking-wide">
+              {editandoMant ? "Editando registro" : "Nuevo registro de mantenimiento"}
+            </p>
+            <div className="flex gap-1.5">
+              {TIPOS_MANTENIMIENTO.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => campoMant("tipo", t)}
+                  className={`text-xs font-semibold px-3 py-1 rounded-full border ${
+                    mantenimiento.tipo === t ? "text-white border-transparent" : "bg-white text-gray-500 border-gray-200"
+                  }`}
+                  style={mantenimiento.tipo === t ? { backgroundColor: colorTipoMantenimiento(t) } : {}}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-4 gap-2.5">
+            <div>
+              <label className={labelClass}>Estado</label>
+              <select value={mantenimiento.estado} onChange={(e) => campoMant("estado", e.target.value)} className={inputClass}>
+                {ESTADOS_MANTENIMIENTO.map((e) => <option key={e} value={e}>{e}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Fecha programada</label>
+              <input type="date" value={mantenimiento.fechaProgramada} onChange={(e) => campoMant("fechaProgramada", e.target.value)} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Fecha realizada</label>
+              <input type="date" value={mantenimiento.fechaRealizada} onChange={(e) => campoMant("fechaRealizada", e.target.value)} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Responsable / técnico</label>
+              <input value={mantenimiento.responsable} onChange={(e) => campoMant("responsable", e.target.value)} className={inputClass} />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Descripción del trabajo</label>
+            <input
+              value={mantenimiento.descripcion}
+              onChange={(e) => campoMant("descripcion", e.target.value)}
+              placeholder={mantenimiento.tipo === "Correctivo" ? "Ej: Falla en rodamiento del eje principal" : "Ej: Lubricación y ajuste general"}
+              className={inputClass}
+            />
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-2.5">
+            <div>
+              <label className={labelClass}>Repuestos utilizados</label>
+              <input value={mantenimiento.repuestos} onChange={(e) => campoMant("repuestos", e.target.value)} placeholder="Opcional" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Tiempo de parada (horas)</label>
+              <input
+                type="number"
+                min={0}
+                value={mantenimiento.tiempoParadaHoras || ""}
+                onChange={(e) => campoMant("tiempoParadaHoras", Math.max(0, Number(e.target.value) || 0))}
+                onWheel={(e) => e.currentTarget.blur()}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Costo</label>
+              <input
+                type="number"
+                min={0}
+                value={mantenimiento.costo || ""}
+                onChange={(e) => campoMant("costo", Math.max(0, Number(e.target.value) || 0))}
+                onWheel={(e) => e.currentTarget.blur()}
+                className={inputClass}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Observaciones</label>
+            <textarea value={mantenimiento.observaciones} onChange={(e) => campoMant("observaciones", e.target.value)} rows={2} className={`${inputClass} resize-y`} />
+          </div>
+
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              type="button"
+              onClick={guardarMantenimiento}
+              disabled={guardandoMant}
+              className="bg-[#F5A623] text-[#1A1A1A] font-bold text-xs px-4 py-2 rounded-lg hover:bg-[#e09410] disabled:opacity-60"
+            >
+              {guardandoMant ? "Guardando..." : editandoMant ? "Guardar cambios" : "+ Registrar mantenimiento"}
+            </button>
+            {editandoMant && (
+              <button type="button" onClick={limpiarMant} className="text-xs text-gray-400 hover:text-gray-600 bg-white px-3 py-2 rounded-lg border border-gray-100">
+                Nuevo registro en blanco
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Registro */}
+        {mantenimientosOrdenados.length === 0 ? (
+          <p className="text-gray-400 text-sm text-center py-4">Todavía no hay mantenimientos registrados.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs min-w-[720px] border-collapse">
+              <thead>
+                <tr className="bg-gray-50 text-left text-gray-500">
+                  <th className="p-2.5 font-semibold border-b border-gray-100">Tipo</th>
+                  <th className="p-2.5 font-semibold border-b border-gray-100">Estado</th>
+                  <th className="p-2.5 font-semibold border-b border-gray-100">Fecha</th>
+                  <th className="p-2.5 font-semibold border-b border-gray-100">Descripción</th>
+                  <th className="p-2.5 font-semibold border-b border-gray-100">Responsable</th>
+                  <th className="p-2.5 font-semibold border-b border-gray-100">Costo</th>
+                  <th className="p-2.5 font-semibold border-b border-gray-100"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {mantenimientosOrdenados.map((m) => {
+                  const vencido = estaVencidoMantenimiento(m);
+                  return (
+                    <tr key={m.id} className="border-b border-gray-50 hover:bg-[#FAFAFA]">
+                      <td className="p-2.5 whitespace-nowrap">
+                        <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: colorTipoMantenimiento(m.tipo) }}>
+                          {m.tipo}
+                        </span>
+                      </td>
+                      <td className="p-2.5 whitespace-nowrap">
+                        <span
+                          className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white"
+                          style={{ backgroundColor: vencido ? "#EF4444" : colorEstadoMantenimiento(m.estado) }}
+                        >
+                          {vencido ? "Vencido" : m.estado}
+                        </span>
+                      </td>
+                      <td className="p-2.5 text-gray-600 whitespace-nowrap">{fechaCorta(m.fechaRealizada || m.fechaProgramada)}</td>
+                      <td className="p-2.5 text-gray-600 max-w-[240px] truncate">{m.descripcion}</td>
+                      <td className="p-2.5 text-gray-600 whitespace-nowrap">{m.responsable || "—"}</td>
+                      <td className="p-2.5 text-gray-600 whitespace-nowrap">{m.costo > 0 ? formatoMonto(m.costo) : "—"}</td>
+                      <td className="p-2.5 whitespace-nowrap">
+                        <button type="button" onClick={() => editarMant(m)} className="text-[#F5A623] font-semibold hover:text-[#e09410] mr-2">Editar</button>
+                        <button type="button" onClick={() => eliminarMantenimiento(m.id)} className="text-gray-300 hover:text-red-500">Eliminar</button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Seccion>
 
       {/* Calibración */}

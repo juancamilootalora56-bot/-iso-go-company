@@ -9,6 +9,20 @@ export type EventoInventario = {
   costo: number;
 };
 
+export type Mantenimiento = {
+  id: string;
+  tipo: string; // "Preventivo" | "Correctivo"
+  estado: string; // ver ESTADOS_MANTENIMIENTO
+  fechaProgramada: string;
+  fechaRealizada: string;
+  descripcion: string;
+  responsable: string;
+  repuestos: string;
+  tiempoParadaHoras: number;
+  costo: number;
+  observaciones: string;
+};
+
 export type ItemInventario = {
   id: string;
   imagen: string | null; // data URL (base64)
@@ -58,6 +72,7 @@ export type ItemInventario = {
 
   observaciones: string;
   bitacora: EventoInventario[];
+  mantenimientos: Mantenimiento[];
   fechaAlta: string;
 };
 
@@ -154,6 +169,7 @@ export function itemInventarioVacio(): ItemInventario {
     proximaCalibracion: "",
     observaciones: "",
     bitacora: [],
+    mantenimientos: [],
     fechaAlta: new Date().toISOString().slice(0, 10),
   };
 }
@@ -169,11 +185,71 @@ export function eventoInventarioVacio(): EventoInventario {
   };
 }
 
+export const TIPOS_MANTENIMIENTO = ["Preventivo", "Correctivo"];
+
+export const ESTADOS_MANTENIMIENTO = ["Programado", "En proceso", "Completado", "Cancelado"];
+
+export function colorTipoMantenimiento(tipo: string): string {
+  return tipo === "Correctivo" ? "#EF4444" : "#3B82F6";
+}
+
+export function colorEstadoMantenimiento(estado: string): string {
+  switch (estado) {
+    case "Programado":
+      return "#9CA3AF";
+    case "En proceso":
+      return "#F5A623";
+    case "Completado":
+      return "#22C55E";
+    case "Cancelado":
+      return "#9CA3AF";
+    default:
+      return "#9CA3AF";
+  }
+}
+
+export function mantenimientoVacio(): Mantenimiento {
+  return {
+    id: crypto.randomUUID(),
+    tipo: "Preventivo",
+    estado: "Programado",
+    fechaProgramada: new Date().toISOString().slice(0, 10),
+    fechaRealizada: "",
+    descripcion: "",
+    responsable: "",
+    repuestos: "",
+    tiempoParadaHoras: 0,
+    costo: 0,
+    observaciones: "",
+  };
+}
+
+export function estaVencidoMantenimiento(m: Mantenimiento): boolean {
+  if (m.estado === "Completado" || m.estado === "Cancelado") return false;
+  if (!m.fechaProgramada) return false;
+  const hoy = new Date().setHours(0, 0, 0, 0);
+  const programada = new Date(m.fechaProgramada + "T00:00:00").getTime();
+  return programada < hoy;
+}
+
+export function costoTotalMantenimientos(mantenimientos: Mantenimiento[]): number {
+  return mantenimientos.reduce((acc, m) => acc + (m.costo || 0), 0);
+}
+
+export function tiempoParadaTotalHoras(mantenimientos: Mantenimiento[]): number {
+  return mantenimientos.reduce((acc, m) => acc + (m.tiempoParadaHoras || 0), 0);
+}
+
 export function parseInventario(contenido: string): ItemInventario[] {
   if (!contenido) return [];
   try {
     const parsed = JSON.parse(contenido);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((item: ItemInventario) => ({
+      ...item,
+      bitacora: item.bitacora ?? [],
+      mantenimientos: item.mantenimientos ?? [],
+    }));
   } catch {
     return [];
   }
