@@ -293,6 +293,22 @@ export function colorResultadoCalibracion(resultado: string): string {
   }
 }
 
+export type CalibracionConEquipo = RegistroCalibracion & { equipoId: string; equipoNombre: string; equipoTipo: string };
+
+export function todasLasCalibraciones(items: ItemInventario[]): CalibracionConEquipo[] {
+  const todas: CalibracionConEquipo[] = [];
+  items.forEach((item) => {
+    item.calibraciones.forEach((c) => {
+      todas.push({ ...c, equipoId: item.id, equipoNombre: item.nombre, equipoTipo: item.tipo });
+    });
+  });
+  return todas;
+}
+
+export function costoTotalCalibraciones(calibraciones: RegistroCalibracion[]): number {
+  return calibraciones.reduce((acc, c) => acc + (c.costo || 0), 0);
+}
+
 export function registroCalibracionVacio(): RegistroCalibracion {
   return {
     id: crypto.randomUUID(),

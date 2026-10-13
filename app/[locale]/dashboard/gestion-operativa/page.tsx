@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseProductos } from "@/lib/productosFabricados";
-import { parseInventario, todosLosMantenimientos } from "@/lib/inventario";
+import { parseInventario, todosLosMantenimientos, todasLasCalibraciones } from "@/lib/inventario";
 
 export default function GestionOperativaPage() {
   const { user } = useDashboardUser();
@@ -17,7 +17,7 @@ export default function GestionOperativaPage() {
   const cantidadProductos = parseProductos(docs["productos_lista"] ?? "").length;
   const inventario = parseInventario(docs["inventario_lista"] ?? "");
   const cantidadInventario = inventario.length;
-  const cantidadMantenimientos = todosLosMantenimientos(inventario).length;
+  const cantidadMantenimientos = todosLosMantenimientos(inventario).length + todasLasCalibraciones(inventario).length;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -134,7 +134,7 @@ export default function GestionOperativaPage() {
               )}
             </div>
             <p className="text-xs text-gray-500 mt-0.5">
-              Vista consolidada de mantenimientos de todas las máquinas y equipos, con indicadores.
+              Vista consolidada de mantenimientos y calibraciones de todas las máquinas y equipos, con indicadores.
             </p>
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
