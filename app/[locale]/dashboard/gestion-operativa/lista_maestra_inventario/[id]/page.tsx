@@ -34,6 +34,11 @@ import {
 
 const ITEM_KEY = "inventario_lista";
 
+const TABS = [
+  { key: "generales", label: "Datos Generales" },
+  { key: "mantenimientos", label: "Mantenimientos" },
+];
+
 const inputClass =
   "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:outline-none focus:border-[#F5A623] transition-colors";
 const labelClass = "block text-xs font-medium text-gray-500 mb-1";
@@ -64,6 +69,7 @@ export default function HojaDeVidaPage() {
   const basePath = `/${locale}/dashboard/gestion-operativa`;
 
   const { docs, loading, save } = useGestionDocumentos("operativa", user?.id ?? null);
+  const [tab, setTab] = useState("generales");
   const [items, setItems] = useState<ItemInventario[]>([]);
   const [eventoNuevo, setEventoNuevo] = useState<EventoInventario>(eventoInventarioVacio());
   const [guardandoEvento, setGuardandoEvento] = useState(false);
@@ -276,6 +282,28 @@ export default function HojaDeVidaPage() {
         </div>
       )}
 
+      {/* Pestañas */}
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-x-auto sticky top-0 z-20">
+        <div className="flex">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
+                tab === t.key
+                  ? "border-[#F5A623] text-[#1A1A1A]"
+                  : "border-transparent text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {tab === "generales" && (
+      <div className="space-y-4">
+
       {/* Identificación */}
       <Seccion icono="🏷️" titulo="Identificación">
         <div className="grid sm:grid-cols-3 gap-3">
@@ -326,6 +354,11 @@ export default function HojaDeVidaPage() {
         </Seccion>
       )}
 
+      </div>
+      )}
+
+      {tab === "mantenimientos" && (
+      <div className="space-y-4">
       {/* Sistema de mantenimientos */}
       <Seccion icono="🛠️" titulo="Sistema de Mantenimientos">
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
@@ -515,7 +548,11 @@ export default function HojaDeVidaPage() {
           </div>
         )}
       </Seccion>
+      </div>
+      )}
 
+      {tab === "generales" && (
+      <div className="space-y-4">
       {/* Calibración */}
       {item.requiereCalibracion && (
         <Seccion icono="📏" titulo="Calibración">
@@ -607,6 +644,8 @@ export default function HojaDeVidaPage() {
           </div>
         </div>
       </Seccion>
+      </div>
+      )}
     </div>
   );
 }
