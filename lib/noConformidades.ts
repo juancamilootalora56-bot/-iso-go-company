@@ -255,6 +255,44 @@ export function resumenPorEtapaNC(ncs: NoConformidad[]): { etapa: string; cantid
   })).filter((r) => r.cantidad > 0);
 }
 
+export function resumenPorSeveridadNC(ncs: NoConformidad[]): { severidad: string; cantidad: number; color: string }[] {
+  return SEVERIDADES_NC.map((severidad) => ({
+    severidad,
+    cantidad: ncs.filter((n) => n.severidad === severidad).length,
+    color: colorSeveridadNC(severidad),
+  })).filter((r) => r.cantidad > 0);
+}
+
+export function resumenPorEstadoNC(ncs: NoConformidad[]): { estado: string; cantidad: number; color: string }[] {
+  return ESTADOS_NC.map((estado) => ({
+    estado,
+    cantidad: ncs.filter((n) => n.estado === estado).length,
+    color: colorEstadoNC(estado),
+  })).filter((r) => r.cantidad > 0);
+}
+
+export function resumenPorCausaNC(ncs: NoConformidad[]): { causa: string; cantidad: number }[] {
+  return CAUSAS_APARENTES_NC.map((causa) => ({
+    causa,
+    cantidad: ncs.filter((n) => n.causaAparente === causa).length,
+  })).filter((r) => r.cantidad > 0);
+}
+
+export function costoPorMesNC(ncs: NoConformidad[]): { mes: string; costo: number; cantidad: number }[] {
+  const mapa = new Map<string, { costo: number; cantidad: number }>();
+  ncs.forEach((n) => {
+    if (!n.fechaDeteccion) return;
+    const mes = n.fechaDeteccion.slice(0, 7);
+    const actual = mapa.get(mes) ?? { costo: 0, cantidad: 0 };
+    actual.costo += costoTotalNC(n);
+    actual.cantidad += 1;
+    mapa.set(mes, actual);
+  });
+  return Array.from(mapa.entries())
+    .map(([mes, v]) => ({ mes, ...v }))
+    .sort((a, b) => a.mes.localeCompare(b.mes));
+}
+
 export function rankingPorProducto(ncs: NoConformidad[], limite = 5): { productoId: string; productoNombre: string; cantidad: number; costo: number }[] {
   const mapa = new Map<string, { productoId: string; productoNombre: string; cantidad: number; costo: number }>();
   ncs.forEach((n) => {

@@ -211,11 +211,21 @@ export default function NoConformidadesPage() {
         ← Gestión Operativa
       </Link>
 
-      <div>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">No Conformidades</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Control de producto no conforme (ISO 9001 · 8.7): identificación, disposición, verificación y acción correctiva.
-        </p>
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">No Conformidades</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Control de producto no conforme (ISO 9001 · 8.7): identificación, disposición, verificación y acción correctiva.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link href={`${basePath}/no_conformidades/matriz`} className="text-xs font-semibold text-[#1A1A1A] bg-white border border-gray-200 px-3 py-2 rounded-lg hover:border-[#F5A623]/50 whitespace-nowrap">
+            📊 Ver Matriz
+          </Link>
+          <Link href={`${basePath}/no_conformidades/grafico`} className="text-xs font-semibold text-[#1A1A1A] bg-white border border-gray-200 px-3 py-2 rounded-lg hover:border-[#F5A623]/50 whitespace-nowrap">
+            📈 Ver Gráfico
+          </Link>
+        </div>
       </div>
 
       {/* KPIs */}
