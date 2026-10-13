@@ -1,0 +1,244 @@
+// Inventario de máquinas, equipos, herramientas e instrumentos — hoja de vida completa.
+
+export type EventoInventario = {
+  id: string;
+  fecha: string;
+  tipo: string; // ver TIPOS_EVENTO_INVENTARIO
+  descripcion: string;
+  responsable: string;
+  costo: number;
+};
+
+export type ItemInventario = {
+  id: string;
+  imagen: string | null; // data URL (base64)
+
+  // Identificación
+  nombre: string;
+  codigo: string; // número de inventario / activo
+  tipo: string;
+  marca: string;
+  modelo: string;
+  numeroSerie: string;
+  fabricante: string;
+  anioFabricacion: string;
+
+  // Ubicación y responsable
+  ubicacion: string;
+  responsable: string;
+  proveedor: string;
+
+  // Adquisición
+  fechaAdquisicion: string;
+  valorAdquisicion: number;
+  moneda: string;
+  vidaUtilAnios: string;
+  numeroFactura: string;
+  garantiaHasta: string;
+
+  // Especificaciones técnicas
+  capacidadPotencia: string;
+  voltaje: string;
+  dimensiones: string;
+  pesoKg: string;
+  especificacionesTecnicas: string;
+
+  // Estado y mantenimiento
+  estado: string;
+  criticidad: string;
+  frecuenciaMantenimiento: string;
+  ultimoMantenimiento: string;
+  proximoMantenimiento: string;
+
+  // Calibración (instrumentos de medición)
+  requiereCalibracion: boolean;
+  frecuenciaCalibracion: string;
+  ultimaCalibracion: string;
+  proximaCalibracion: string;
+
+  observaciones: string;
+  bitacora: EventoInventario[];
+  fechaAlta: string;
+};
+
+export const TIPOS_ITEM_INVENTARIO = [
+  "Máquina",
+  "Equipo",
+  "Herramienta",
+  "Instrumento de medición",
+  "Vehículo",
+  "Mobiliario",
+  "Equipo informático",
+  "Otro",
+];
+
+export const ESTADOS_ITEM_INVENTARIO = ["Operativo", "En mantenimiento", "Fuera de servicio", "De baja"];
+
+export const CRITICIDADES_ITEM = ["Alta", "Media", "Baja"];
+
+export const MONEDAS_INVENTARIO = ["Guaraníes (PYG)", "Dólares (USD)", "Otro"];
+
+export const TIPOS_EVENTO_INVENTARIO = [
+  "Mantenimiento preventivo",
+  "Mantenimiento correctivo",
+  "Reparación",
+  "Calibración",
+  "Traslado",
+  "Inspección",
+  "Baja",
+  "Otro",
+];
+
+export function colorEstadoItem(estado: string): string {
+  switch (estado) {
+    case "Operativo":
+      return "#22C55E";
+    case "En mantenimiento":
+      return "#F5A623";
+    case "Fuera de servicio":
+      return "#EF4444";
+    case "De baja":
+      return "#9CA3AF";
+    default:
+      return "#9CA3AF";
+  }
+}
+
+export function colorCriticidadItem(criticidad: string): string {
+  switch (criticidad) {
+    case "Alta":
+      return "#EF4444";
+    case "Media":
+      return "#F5A623";
+    case "Baja":
+      return "#3B82F6";
+    default:
+      return "#9CA3AF";
+  }
+}
+
+export function itemInventarioVacio(): ItemInventario {
+  return {
+    id: crypto.randomUUID(),
+    imagen: null,
+    nombre: "",
+    codigo: "",
+    tipo: "Máquina",
+    marca: "",
+    modelo: "",
+    numeroSerie: "",
+    fabricante: "",
+    anioFabricacion: "",
+    ubicacion: "",
+    responsable: "",
+    proveedor: "",
+    fechaAdquisicion: "",
+    valorAdquisicion: 0,
+    moneda: "Guaraníes (PYG)",
+    vidaUtilAnios: "",
+    numeroFactura: "",
+    garantiaHasta: "",
+    capacidadPotencia: "",
+    voltaje: "",
+    dimensiones: "",
+    pesoKg: "",
+    especificacionesTecnicas: "",
+    estado: "Operativo",
+    criticidad: "Media",
+    frecuenciaMantenimiento: "",
+    ultimoMantenimiento: "",
+    proximoMantenimiento: "",
+    requiereCalibracion: false,
+    frecuenciaCalibracion: "",
+    ultimaCalibracion: "",
+    proximaCalibracion: "",
+    observaciones: "",
+    bitacora: [],
+    fechaAlta: new Date().toISOString().slice(0, 10),
+  };
+}
+
+export function eventoInventarioVacio(): EventoInventario {
+  return {
+    id: crypto.randomUUID(),
+    fecha: new Date().toISOString().slice(0, 10),
+    tipo: "Mantenimiento preventivo",
+    descripcion: "",
+    responsable: "",
+    costo: 0,
+  };
+}
+
+export function parseInventario(contenido: string): ItemInventario[] {
+  if (!contenido) return [];
+  try {
+    const parsed = JSON.parse(contenido);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function formatoMonto(valor: number): string {
+  return valor.toLocaleString("es-PY", { maximumFractionDigits: 2 });
+}
+
+function diasHasta(fecha: string): number | null {
+  if (!fecha) return null;
+  const hoy = new Date().setHours(0, 0, 0, 0);
+  const objetivo = new Date(fecha + "T00:00:00").getTime();
+  if (isNaN(objetivo)) return null;
+  return Math.round((objetivo - hoy) / 86_400_000);
+}
+
+export type EstadoAlerta = "sin_fecha" | "vencido" | "proximo" | "al_dia";
+
+function estadoAlertaDeDias(dias: number | null): EstadoAlerta {
+  if (dias === null) return "sin_fecha";
+  if (dias < 0) return "vencido";
+  if (dias <= 15) return "proximo";
+  return "al_dia";
+}
+
+export function estadoMantenimiento(item: ItemInventario): EstadoAlerta {
+  return estadoAlertaDeDias(diasHasta(item.proximoMantenimiento));
+}
+
+export function estadoCalibracion(item: ItemInventario): EstadoAlerta {
+  if (!item.requiereCalibracion) return "sin_fecha";
+  return estadoAlertaDeDias(diasHasta(item.proximaCalibracion));
+}
+
+export function diasHastaProximoMantenimiento(item: ItemInventario): number | null {
+  return diasHasta(item.proximoMantenimiento);
+}
+
+export function diasHastaProximaCalibracion(item: ItemInventario): number | null {
+  return diasHasta(item.proximaCalibracion);
+}
+
+export function colorEstadoAlerta(estado: EstadoAlerta): string {
+  switch (estado) {
+    case "vencido":
+      return "#EF4444";
+    case "proximo":
+      return "#F5A623";
+    case "al_dia":
+      return "#22C55E";
+    default:
+      return "#9CA3AF";
+  }
+}
+
+export function etiquetaEstadoAlerta(estado: EstadoAlerta): string {
+  switch (estado) {
+    case "vencido":
+      return "Vencido";
+    case "proximo":
+      return "Próximo";
+    case "al_dia":
+      return "Al día";
+    default:
+      return "Sin programar";
+  }
+}
