@@ -168,27 +168,20 @@ export default function GestionOperativaPage() {
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
 
-        {[
-          { icon: "🚀", imagen: "/gestion-operativa/mejora_continua.jpg", titulo: "Mejora continua", descripcion: "Acciones de mejora y su seguimiento." },
-        ].map((s) => (
-          <div key={s.titulo} className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 opacity-70">
-            <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-              <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={s.imagen} alt={s.titulo} className="w-full h-full object-cover rounded-full" />
+        <div className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 opacity-70">
+          <span className="relative flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center bg-gray-100 border-2 border-gray-200">
+            <span className="text-2xl">🔒</span>
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">Manufacturing Execution System</h2>
+              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                🔒 Restringido
               </span>
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="font-semibold text-sm text-[#1A1A1A]">{s.titulo}</h2>
-                <span className="text-[10px] uppercase tracking-wide font-bold text-[#F5A623] bg-[#F5A623]/10 px-1.5 py-0.5 rounded-full flex-shrink-0">
-                  Próximamente
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 mt-0.5">{s.descripcion}</p>
             </div>
+            <p className="text-xs text-gray-500 mt-0.5">Acceso restringido.</p>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
