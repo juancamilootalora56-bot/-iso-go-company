@@ -548,28 +548,6 @@ export default function HojaDeVidaPage() {
           </div>
         )}
       </Seccion>
-      </div>
-      )}
-
-      {tab === "generales" && (
-      <div className="space-y-4">
-      {/* Calibración */}
-      {item.requiereCalibracion && (
-        <Seccion icono="📏" titulo="Calibración">
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Dato label="Frecuencia" valor={item.frecuenciaCalibracion} />
-            <Dato icono="📅" label="Última calibración" valor={fechaLegible(item.ultimaCalibracion)} />
-            <Dato icono="📅" label="Próxima calibración" valor={fechaLegible(item.proximaCalibracion)} />
-          </div>
-        </Seccion>
-      )}
-
-      {/* Observaciones */}
-      {item.observaciones && (
-        <Seccion icono="📝" titulo="Observaciones">
-          <p className="text-sm text-gray-600 whitespace-pre-wrap">{item.observaciones}</p>
-        </Seccion>
-      )}
 
       {/* Bitácora / historial */}
       <Seccion icono="🧭" titulo="Bitácora / Historial">
@@ -644,6 +622,28 @@ export default function HojaDeVidaPage() {
           </div>
         </div>
       </Seccion>
+      </div>
+      )}
+
+      {tab === "generales" && (
+      <div className="space-y-4">
+      {/* Calibración */}
+      {item.requiereCalibracion && (
+        <Seccion icono="📏" titulo="Calibración">
+          <div className="grid sm:grid-cols-3 gap-3">
+            <Dato label="Frecuencia" valor={item.frecuenciaCalibracion} />
+            <Dato icono="📅" label="Última calibración" valor={fechaLegible(item.ultimaCalibracion)} />
+            <Dato icono="📅" label="Próxima calibración" valor={fechaLegible(item.proximaCalibracion)} />
+          </div>
+        </Seccion>
+      )}
+
+      {/* Observaciones */}
+      {item.observaciones && (
+        <Seccion icono="📝" titulo="Observaciones">
+          <p className="text-sm text-gray-600 whitespace-pre-wrap">{item.observaciones}</p>
+        </Seccion>
+      )}
       </div>
       )}
     </div>
