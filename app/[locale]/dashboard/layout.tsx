@@ -17,6 +17,8 @@ import {
   PenTool,
   UserCircle,
   LogOut,
+  ChevronLeft,
+  ChevronRight,
   type LucideIcon,
 } from "lucide-react";
 
@@ -45,6 +47,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const { user: rawUser, profile: rawProfile, loading } = useUser();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const guardado = localStorage.getItem("sidebar_collapsed");
+    if (guardado === "1") setCollapsed(true);
+  }, []);
+
+  function toggleCollapsed() {
+    setCollapsed((c) => {
+      const next = !c;
+      localStorage.setItem("sidebar_collapsed", next ? "1" : "0");
+      return next;
+    });
+  }
 
   const [colaboradorInfo, setColaboradorInfo] = useState<ColaboradorInfo | null>(null);
   const [ownerProfile, setOwnerProfile] = useState<typeof rawProfile>(null);
@@ -173,12 +189,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-60 bg-white border-r border-gray-100 z-30 flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full bg-white border-r border-gray-100 z-30 flex flex-col transition-all duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 lg:static lg:z-auto`}
+        } lg:translate-x-0 lg:static lg:z-auto w-60 ${collapsed ? "lg:w-[76px]" : "lg:w-60"}`}
       >
+        {/* Botón colapsar (solo escritorio) */}
+        <button
+          onClick={toggleCollapsed}
+          title={collapsed ? "Expandir menú" : "Colapsar menú"}
+          className="hidden lg:flex items-center justify-center absolute -right-3 top-8 w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-[#F5A623] hover:border-[#F5A623]/40 shadow-sm z-40"
+        >
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
+
         {/* Logo: el del cliente si ya lo subió en Perfil, si no el de Iso Go por defecto */}
-        <div className="px-5 pt-6 pb-5 border-b border-gray-100">
+        <div className={`pt-6 pb-5 border-b border-gray-100 ${collapsed ? "px-2" : "px-5"}`}>
           <Link href={`/${locale}`} className="flex flex-col items-center text-center gap-2.5">
             {effectiveProfile?.logo_url ? (
               <>
@@ -187,30 +212,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <img
                     src={effectiveProfile.logo_url}
                     alt={effectiveProfile.company_name || "Logo"}
-                    className="max-h-14 max-w-[170px] object-contain"
+                    className={`max-h-14 object-contain ${collapsed ? "max-w-[44px]" : "max-w-[170px]"}`}
                   />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[#1A1A1A] font-bold text-sm leading-snug">
-                    {effectiveProfile.company_name || "Mi empresa"}
-                  </p>
-                  <p className="text-gray-400 text-[11px] uppercase tracking-wide mt-0.5">Sistema de Gestión</p>
-                </div>
+                {!collapsed && (
+                  <div className="min-w-0">
+                    <p className="text-[#1A1A1A] font-bold text-sm leading-snug">
+                      {effectiveProfile.company_name || "Mi empresa"}
+                    </p>
+                    <p className="text-gray-400 text-[11px] uppercase tracking-wide mt-0.5">Sistema de Gestión</p>
+                  </div>
+                )}
               </>
             ) : (
               <>
                 <Image src="/logo.jpg" alt="Iso Go" width={48} height={53} className="rounded-lg border border-gray-200" />
-                <div>
-                  <p className="text-[#1A1A1A] font-bold text-sm leading-snug">Iso Go</p>
-                  <p className="text-gray-400 text-[11px] uppercase tracking-wide mt-0.5">Company</p>
-                </div>
+                {!collapsed && (
+                  <div>
+                    <p className="text-[#1A1A1A] font-bold text-sm leading-snug">Iso Go</p>
+                    <p className="text-gray-400 text-[11px] uppercase tracking-wide mt-0.5">Company</p>
+                  </div>
+                )}
               </>
             )}
           </Link>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className={`flex-1 space-y-1 ${collapsed ? "p-2" : "p-4"}`}>
           {itemsVisibles.map((item) => {
             const href = `/${locale}/dashboard${item.href}`;
             const isActive = pathname === href || (item.href === "" && pathname === `/${locale}/dashboard`);
@@ -220,36 +249,47 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={item.href}
                 href={href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                title={collapsed ? item.label : undefined}
+                className={`flex items-center gap-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  collapsed ? "px-0 justify-center" : "px-3"
+                } ${
                   isActive
                     ? "bg-[#1A1A1A] text-white shadow-sm"
                     : "text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A]"
                 }`}
               >
                 <Icon size={18} strokeWidth={2} className="flex-shrink-0" style={{ color: item.color }} />
-                {item.label}
+                {!collapsed && item.label}
               </Link>
             );
           })}
         </nav>
 
         {/* User info + logout */}
-        <div className="p-4 border-t border-gray-100">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-full bg-[#F5A623] flex items-center justify-center text-[#1A1A1A] font-bold text-sm flex-shrink-0">
+        <div className={`border-t border-gray-100 ${collapsed ? "p-2" : "p-4"}`}>
+          <div className={`flex items-center gap-3 mb-3 ${collapsed ? "justify-center" : ""}`}>
+            <div
+              title={collapsed ? displayName : undefined}
+              className="w-9 h-9 rounded-full bg-[#F5A623] flex items-center justify-center text-[#1A1A1A] font-bold text-sm flex-shrink-0"
+            >
               {displayName[0].toUpperCase()}
             </div>
-            <div className="min-w-0">
-              <p className="text-[#1A1A1A] text-sm font-semibold truncate">{displayName}</p>
-              <p className="text-gray-400 text-xs truncate">{rawUser?.email}</p>
-            </div>
+            {!collapsed && (
+              <div className="min-w-0">
+                <p className="text-[#1A1A1A] text-sm font-semibold truncate">{displayName}</p>
+                <p className="text-gray-400 text-xs truncate">{rawUser?.email}</p>
+              </div>
+            )}
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A] transition-colors"
+            title={collapsed ? "Cerrar sesión" : undefined}
+            className={`w-full flex items-center gap-2 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A] transition-colors ${
+              collapsed ? "justify-center px-0" : "px-3"
+            }`}
           >
             <LogOut size={17} strokeWidth={1.75} />
-            Cerrar sesión
+            {!collapsed && "Cerrar sesión"}
           </button>
         </div>
       </aside>
