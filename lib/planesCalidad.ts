@@ -1,23 +1,42 @@
 // Planes de Calidad — ISO 9001:2015 / guía ISO 10005: plan específico de calidad
-// para un producto, proyecto, contrato o proceso puntual.
+// para un producto, proyecto o contrato puntual, documentado por fases de trabajo.
+
+export type ActividadFase = {
+  id: string;
+  numero: number;
+  actividad: string;
+  responsable: string;
+  fechaInicio: string;
+  fechaEntrega: string;
+  duracion: string;
+  porcentajeCompletado: number;
+};
+
+export type FaseCronograma = {
+  id: string;
+  nombre: string; // "Fase 1", "Fase 2"...
+  actividades: ActividadFase[];
+};
 
 export type PlanCalidad = {
   id: string;
   codigo: string; // ej: PC-0001
-  nombre: string; // alcance / para qué producto, proyecto o contrato aplica
-  proyectoRelacionadoId: string; // opcional, vincula a un Proyecto de Diseño
-  proyectoRelacionadoNombre: string;
-  objetivo: string;
-  requisitosEspecificos: string;
-  responsable: string;
-  recursos: string;
-  actividadesControl: string; // inspecciones, ensayos, verificaciones y en qué punto
-  criteriosAceptacion: string;
-  documentosGenerados: string; // registros/evidencia que se van a producir
-  fechaInicio: string;
-  fechaFin: string;
+  nombreProyecto: string;
+
+  introduccion: string;
+  alcance: string;
+  definiciones: string;
+  objetivoCalidad: string;
+  requisitosCalidad: string;
+
+  responsableProyecto: string;
+  nombreEmpresa: string;
+  fecha: string;
+
+  fases: FaseCronograma[];
+
   estado: string; // ver ESTADOS_PLAN_CALIDAD
-  observaciones: string;
+  fechaAlta: string;
 };
 
 export const ESTADOS_PLAN_CALIDAD = ["Planificado", "En ejecución", "Completado", "Suspendido"];
@@ -47,24 +66,43 @@ export function numeroDeRadicadoPC(radicado: string): number {
   return m ? parseInt(m[1], 10) : 0;
 }
 
+export function actividadFaseVacia(numero: number): ActividadFase {
+  return {
+    id: crypto.randomUUID(),
+    numero,
+    actividad: "",
+    responsable: "",
+    fechaInicio: "",
+    fechaEntrega: "",
+    duracion: "",
+    porcentajeCompletado: 0,
+  };
+}
+
+export function faseVacia(numeroFase: number): FaseCronograma {
+  return {
+    id: crypto.randomUUID(),
+    nombre: `Fase ${numeroFase}`,
+    actividades: [actividadFaseVacia(1), actividadFaseVacia(2), actividadFaseVacia(3)],
+  };
+}
+
 export function planCalidadVacio(codigo: string): PlanCalidad {
   return {
     id: crypto.randomUUID(),
     codigo,
-    nombre: "",
-    proyectoRelacionadoId: "",
-    proyectoRelacionadoNombre: "",
-    objetivo: "",
-    requisitosEspecificos: "",
-    responsable: "",
-    recursos: "",
-    actividadesControl: "",
-    criteriosAceptacion: "",
-    documentosGenerados: "",
-    fechaInicio: new Date().toISOString().slice(0, 10),
-    fechaFin: "",
+    nombreProyecto: "",
+    introduccion: "",
+    alcance: "",
+    definiciones: "",
+    objetivoCalidad: "",
+    requisitosCalidad: "",
+    responsableProyecto: "",
+    nombreEmpresa: "",
+    fecha: new Date().toISOString().slice(0, 10),
+    fases: [faseVacia(1)],
     estado: "Planificado",
-    observaciones: "",
+    fechaAlta: new Date().toISOString().slice(0, 10),
   };
 }
 
@@ -72,10 +110,29 @@ export function parsePlanesCalidad(contenido: string): PlanCalidad[] {
   if (!contenido) return [];
   try {
     const parsed = JSON.parse(contenido);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((p: PlanCalidad) => ({
+      ...p,
+      fases: Array.isArray(p.fases)
+        ? p.fases.map((f) => ({ ...f, actividades: Array.isArray(f.actividades) ? f.actividades : [] }))
+        : [],
+    }));
   } catch {
     return [];
   }
+}
+
+export function cumplimientoFase(fase: FaseCronograma): number | null {
+  if (fase.actividades.length === 0) return null;
+  const total = fase.actividades.reduce((acc, a) => acc + (a.porcentajeCompletado || 0), 0);
+  return Math.round(total / fase.actividades.length);
+}
+
+export function cumplimientoPlan(plan: PlanCalidad): number | null {
+  const todas = plan.fases.flatMap((f) => f.actividades);
+  if (todas.length === 0) return null;
+  const total = todas.reduce((acc, a) => acc + (a.porcentajeCompletado || 0), 0);
+  return Math.round(total / todas.length);
 }
 
 export function resumenPorEstadoPC(planes: PlanCalidad[]): { estado: string; cantidad: number; color: string }[] {

@@ -136,7 +136,7 @@ export default function GestionDisenoDesarrolloPage() {
               )}
             </div>
             <p className="text-xs text-gray-500 mt-0.5">
-              Planilla editable con el plan de calidad de cada producto, proyecto o contrato.
+              Un documento de plan de calidad por cada producto, proyecto o contrato, con su propio cronograma por fases.
             </p>
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#14B8A6] transition-colors">›</span>
