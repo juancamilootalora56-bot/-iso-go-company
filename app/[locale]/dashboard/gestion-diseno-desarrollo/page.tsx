@@ -6,6 +6,7 @@ import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseProyectosDiseno, proyectoDisenoAbierto, proyectoDisenoVencido } from "@/lib/disenoDesarrollo";
 import { parseCambiosDiseno, cambioDisenoAbierto } from "@/lib/cambiosDiseno";
+import { parsePlanesCalidad } from "@/lib/planesCalidad";
 
 export default function GestionDisenoDesarrolloPage() {
   const { user } = useDashboardUser();
@@ -16,6 +17,7 @@ export default function GestionDisenoDesarrolloPage() {
   const { docs, loading } = useGestionDocumentos("diseno_desarrollo", user?.id ?? null);
   const proyectos = parseProyectosDiseno(docs["proyectos_diseno_lista"] ?? "");
   const cambios = parseCambiosDiseno(docs["cambios_diseno_lista"] ?? "");
+  const planesCalidad = parsePlanesCalidad(docs["planes_calidad_lista"] ?? "");
   const activos = proyectos.filter((p) => proyectoDisenoAbierto(p.estado)).length;
   const vencidos = proyectos.filter((p) => proyectoDisenoVencido(p)).length;
   const cambiosAbiertos = cambios.filter((c) => cambioDisenoAbierto(c.estado)).length;
@@ -110,6 +112,31 @@ export default function GestionDisenoDesarrolloPage() {
             </div>
             <p className="text-xs text-gray-500 mt-0.5">
               Vista consolidada de las solicitudes de cambio de todos tus proyectos de diseño.
+            </p>
+          </div>
+          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#14B8A6] transition-colors">›</span>
+        </Link>
+
+        <Link
+          href={`${basePath}/planes_calidad`}
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
+        >
+          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#5EEAD4] via-[#14B8A6] to-[#0d9488] shadow-sm">
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#E6FFFB] to-[#CCFBF1] text-xl">
+              📑
+            </span>
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">Planes de Calidad</h2>
+              {!loading && planesCalidad.length > 0 && (
+                <span className="text-[10px] uppercase tracking-wide font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                  {planesCalidad.length}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Planilla editable con el plan de calidad de cada producto, proyecto o contrato.
             </p>
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#14B8A6] transition-colors">›</span>
