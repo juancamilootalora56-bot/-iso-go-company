@@ -15,6 +15,7 @@ import {
   LineChart,
   Settings2,
   PenTool,
+  BadgeCheck,
   UserCircle,
   LogOut,
   ChevronLeft,
@@ -30,6 +31,7 @@ const navItems: { href: string; label: string; icon: LucideIcon; color: string; 
   { href: "/gestion-comercial", label: "Gestión Comercial", icon: LineChart, color: "#3B82F6", modulo: "comercial", soloOwner: false },
   { href: "/gestion-operativa", label: "Gestión Operativa", icon: Settings2, color: "#8B5CF6", modulo: "operativa", soloOwner: false },
   { href: "/gestion-diseno-desarrollo", label: "Gestión de Diseño y Desarrollo", icon: PenTool, color: "#14B8A6", modulo: "diseno_desarrollo", soloOwner: false },
+  { href: "/gestion-calidad", label: "Gestión de Calidad", icon: BadgeCheck, color: "#F97316", modulo: "calidad", soloOwner: false },
   { href: "/perfil", label: "Perfil", icon: UserCircle, color: "#64748B", modulo: null, soloOwner: true },
 ];
 
