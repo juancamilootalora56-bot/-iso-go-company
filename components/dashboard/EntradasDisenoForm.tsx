@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
 import type { ProyectoDiseno } from "@/lib/disenoDesarrollo";
 import { parseEntradasDiseno, entradaDisenoVacia, TIPOS_ENTRADA_DISENO, type EntradaDiseno } from "@/lib/disenoDesarrollo";
+
+const MAX_ARCHIVO_BYTES = 1_500_000; // ~1.5MB
 
 const inputClass =
   "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:outline-none focus:border-[#F5A623] transition-colors";
@@ -21,6 +23,7 @@ export function itemKeyEntradasDiseno(proyectoId: string) {
 export default function EntradasDisenoForm({ userId, proyecto }: { userId: string | null; proyecto: ProyectoDiseno }) {
   const { docs, loading, save } = useGestionDocumentos("diseno_desarrollo", userId);
   const ITEM_KEY = itemKeyEntradas(proyecto.id);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [entradas, setEntradas] = useState<EntradaDiseno[]>([]);
   const [entrada, setEntrada] = useState<EntradaDiseno>(entradaDisenoVacia());
@@ -48,11 +51,25 @@ export default function EntradasDisenoForm({ userId, proyecto }: { userId: strin
   function limpiar() {
     setEntrada(entradaDisenoVacia());
     setError(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   function editar(e: EntradaDiseno) {
     setEntrada({ ...e });
     setError(null);
+  }
+
+  function handleArchivo(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > MAX_ARCHIVO_BYTES) {
+      setError("El archivo es muy pesado. Usá uno de menos de 1.5MB.");
+      return;
+    }
+    setError(null);
+    const reader = new FileReader();
+    reader.onload = () => setEntrada((en) => ({ ...en, archivo: reader.result as string, archivoNombre: file.name }));
+    reader.readAsDataURL(file);
   }
 
   async function guardar() {
@@ -66,6 +83,7 @@ export default function EntradasDisenoForm({ userId, proyecto }: { userId: strin
     await save(ITEM_KEY, JSON.stringify(actualizadas));
     setEntradas(actualizadas);
     setEntrada(entradaDisenoVacia());
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setSaving(false);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 2000);
@@ -143,6 +161,17 @@ export default function EntradasDisenoForm({ userId, proyecto }: { userId: strin
             </label>
           </div>
 
+          <div>
+            <label className={labelClass}>Evidencia / registro de origen (acta, email, norma, estudio)</label>
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="text-xs font-semibold text-[#1A1A1A] bg-white border border-gray-200 px-3 py-2 rounded-lg hover:border-[#F5A623]/50">
+                📎 {entrada.archivoNombre ? "Cambiar archivo" : "Adjuntar archivo"}
+              </button>
+              {entrada.archivoNombre && <p className="text-xs text-gray-500 truncate">{entrada.archivoNombre}</p>}
+            </div>
+            <input ref={fileInputRef} type="file" accept="image/*,.pdf" onChange={handleArchivo} className="hidden" />
+          </div>
+
           <div className="flex items-center gap-3 pt-2 border-t border-gray-100">
             <button onClick={guardar} disabled={saving} className="bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60 text-sm">
               {saving ? "Guardando..." : editando ? "Guardar cambios" : "Agregar entrada"}
@@ -178,7 +207,14 @@ export default function EntradasDisenoForm({ userId, proyecto }: { userId: strin
                     )}
                   </div>
                   <p className="text-sm text-[#1A1A1A] mt-0.5">{e.descripcion}</p>
-                  {e.fuente && <p className="text-xs text-gray-400 mt-0.5">Fuente: {e.fuente}</p>}
+                  <div className="flex items-center gap-3 flex-wrap mt-0.5">
+                    {e.fuente && <p className="text-xs text-gray-400">Fuente: {e.fuente}</p>}
+                    {e.archivoNombre && (
+                      <a href={e.archivo ?? "#"} download={e.archivoNombre} className="text-xs text-[#F5A623] font-semibold hover:text-[#e09410]">
+                        📎 {e.archivoNombre}
+                      </a>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button onClick={() => editar(e)} className="text-xs text-[#F5A623] font-semibold hover:text-[#e09410]">Editar</button>

@@ -177,6 +177,8 @@ export type EntradaDiseno = {
   fuente: string;
   obligatorio: boolean;
   resuelta: boolean;
+  archivo: string | null; // data URL
+  archivoNombre: string;
 };
 
 export const TIPOS_ENTRADA_DISENO = [
@@ -197,6 +199,8 @@ export function entradaDisenoVacia(): EntradaDiseno {
     fuente: "",
     obligatorio: true,
     resuelta: false,
+    archivo: null,
+    archivoNombre: "",
   };
 }
 
@@ -204,7 +208,12 @@ export function parseEntradasDiseno(contenido: string): EntradaDiseno[] {
   if (!contenido) return [];
   try {
     const parsed = JSON.parse(contenido);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((e: EntradaDiseno) => ({
+      ...e,
+      archivo: e.archivo ?? null,
+      archivoNombre: e.archivoNombre ?? "",
+    }));
   } catch {
     return [];
   }
