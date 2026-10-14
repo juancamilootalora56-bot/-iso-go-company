@@ -167,10 +167,14 @@ export default function EstructuraOrganizacionalResultadoPage() {
   const { docs, loading, save } = useGestionDocumentos("gerencia", user?.id ?? null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const dragStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
 
   const [nodos, setNodos] = useState<NodoOrganigrama[]>([]);
   const [conexiones, setConexiones] = useState<ConexionExtra[]>([]);
   const [form, setForm] = useState<FormularioState>(null);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
   const [nuevaConexionDestino, setNuevaConexionDestino] = useState("");
   const [nuevaConexionTipo, setNuevaConexionTipo] = useState<"interna" | "externa">("externa");
   const [conexionCreada, setConexionCreada] = useState(false);
@@ -224,7 +228,58 @@ export default function EstructuraOrganizacionalResultadoPage() {
     recalcular();
     window.addEventListener("resize", recalcular);
     return () => window.removeEventListener("resize", recalcular);
-  }, [conexiones, nodos]);
+  }, [conexiones, nodos, zoom, pan]);
+
+  function handleCanvasMouseDown(e: React.MouseEvent) {
+    const target = e.target as HTMLElement;
+    if (target.closest("button")) return; // dejar que el click en tarjetas/botones funcione normal
+    setDragging(true);
+    dragStartRef.current = { x: e.clientX, y: e.clientY, panX: pan.x, panY: pan.y };
+  }
+
+  function handleCanvasMouseMove(e: React.MouseEvent) {
+    if (!dragStartRef.current) return;
+    const dx = e.clientX - dragStartRef.current.x;
+    const dy = e.clientY - dragStartRef.current.y;
+    setPan({ x: dragStartRef.current.panX + dx, y: dragStartRef.current.panY + dy });
+  }
+
+  function handleCanvasMouseUp() {
+    setDragging(false);
+    dragStartRef.current = null;
+  }
+
+  function handleCanvasWheel(e: React.WheelEvent) {
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const factor = e.deltaY > 0 ? 0.9 : 1.1;
+    setZoom((prevZoom) => {
+      const newZoom = Math.min(1.75, Math.max(0.3, prevZoom * factor));
+      const scaleRatio = newZoom / prevZoom;
+      setPan((prevPan) => ({
+        x: mouseX - (mouseX - prevPan.x) * scaleRatio,
+        y: mouseY - (mouseY - prevPan.y) * scaleRatio,
+      }));
+      return newZoom;
+    });
+  }
+
+  function zoomIn() {
+    setZoom((z) => Math.min(1.75, Math.round((z + 0.15) * 100) / 100));
+  }
+
+  function zoomOut() {
+    setZoom((z) => Math.max(0.3, Math.round((z - 0.15) * 100) / 100));
+  }
+
+  function resetVista() {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  }
 
   function abrirAgregar(parentId: string | null) {
     setError(null);
@@ -365,7 +420,8 @@ export default function EstructuraOrganizacionalResultadoPage() {
         <h1 className="text-2xl font-bold text-[#1A1A1A]">Organigrama</h1>
         <p className="text-gray-500 text-sm mt-1">
           Hacé clic en el <span className="font-semibold text-gray-700">+</span> para agregar un cargo, o en
-          una tarjeta para editarla, moverla o conectarla con otro cargo.
+          una tarjeta para editarla, moverla o conectarla con otro cargo. Arrastrá el lienzo para moverte por
+          el organigrama y usá la rueda del mouse (o los botones) para alejar/acercar.
         </p>
         <div className="flex items-center gap-4 mt-2 text-[11px] text-gray-500">
           <span className="flex items-center gap-1.5">
@@ -380,8 +436,8 @@ export default function EstructuraOrganizacionalResultadoPage() {
         </div>
       </div>
 
-      <div ref={canvasRef} className="relative bg-white rounded-xl border border-gray-100 p-8 overflow-x-auto">
-        {raices.length === 0 ? (
+      {raices.length === 0 ? (
+        <div className="relative bg-white rounded-xl border border-gray-100 p-8">
           <div className="flex flex-col items-center py-10">
             <p className="text-gray-500 text-sm mb-4">Todavía no cargaste ningún cargo.</p>
             <button
@@ -391,39 +447,83 @@ export default function EstructuraOrganizacionalResultadoPage() {
               + Agregar el primer cargo
             </button>
           </div>
-        ) : (
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex gap-16 justify-center w-fit min-w-full">
-              {raices.map((raiz) => (
-                <RamaArbol key={raiz.id} nodo={raiz} hijosDe={hijosDe} onEditar={abrirEditar} onAgregarHijo={abrirAgregar} />
-              ))}
-            </div>
+        </div>
+      ) : (
+        <div
+          ref={canvasRef}
+          onMouseDown={handleCanvasMouseDown}
+          onMouseMove={handleCanvasMouseMove}
+          onMouseUp={handleCanvasMouseUp}
+          onMouseLeave={handleCanvasMouseUp}
+          onWheel={handleCanvasWheel}
+          className="relative bg-white rounded-xl border border-gray-100 overflow-hidden select-none"
+          style={{ height: "75vh", minHeight: 480, cursor: dragging ? "grabbing" : "grab" }}
+        >
+          {/* Barra de zoom */}
+          <div className="absolute top-3 right-3 z-20 flex items-center gap-0.5 bg-white border border-gray-200 rounded-lg shadow-sm p-1">
             <button
-              onClick={() => abrirAgregar(null)}
-              className="text-xs font-semibold text-[#F5A623] hover:text-[#e09410] mt-2"
+              type="button"
+              onClick={zoomOut}
+              className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-md text-sm font-bold"
+              title="Alejar"
             >
-              + Agregar otro cargo de nivel superior
+              −
+            </button>
+            <button
+              type="button"
+              onClick={resetVista}
+              className="px-2 h-7 flex items-center justify-center text-[11px] font-semibold text-gray-500 hover:bg-gray-100 rounded-md whitespace-nowrap"
+              title="Restablecer vista"
+            >
+              {Math.round(zoom * 100)}%
+            </button>
+            <button
+              type="button"
+              onClick={zoomIn}
+              className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-md text-sm font-bold"
+              title="Acercar"
+            >
+              +
             </button>
           </div>
-        )}
 
-        {lineasExtra.length > 0 && (
-          <svg className="absolute inset-0 pointer-events-none" style={{ width: "100%", height: "100%", overflow: "visible" }}>
-            {lineasExtra.map((l) => (
-              <path
-                key={l.id}
-                d={l.d}
-                fill="none"
-                stroke={l.color}
-                strokeWidth={2}
-                strokeLinejoin="round"
-                strokeLinecap="round"
-                strokeDasharray={l.dash ? "5,4" : undefined}
-              />
-            ))}
-          </svg>
-        )}
-      </div>
+          <div
+            className="absolute top-0 left-0 p-8"
+            style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "0 0" }}
+          >
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex gap-16 justify-center w-max">
+                {raices.map((raiz) => (
+                  <RamaArbol key={raiz.id} nodo={raiz} hijosDe={hijosDe} onEditar={abrirEditar} onAgregarHijo={abrirAgregar} />
+                ))}
+              </div>
+              <button
+                onClick={() => abrirAgregar(null)}
+                className="text-xs font-semibold text-[#F5A623] hover:text-[#e09410] mt-2"
+              >
+                + Agregar otro cargo de nivel superior
+              </button>
+            </div>
+          </div>
+
+          {lineasExtra.length > 0 && (
+            <svg className="absolute inset-0 pointer-events-none" style={{ width: "100%", height: "100%", overflow: "visible" }}>
+              {lineasExtra.map((l) => (
+                <path
+                  key={l.id}
+                  d={l.d}
+                  fill="none"
+                  stroke={l.color}
+                  strokeWidth={2}
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  strokeDasharray={l.dash ? "5,4" : undefined}
+                />
+              ))}
+            </svg>
+          )}
+        </div>
+      )}
 
       {form && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center p-4 pt-10 overflow-y-auto" onClick={cerrarForm}>
