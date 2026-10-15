@@ -11,6 +11,13 @@ import { parseLista, parseClasificacion, CATEGORIAS_PROCESO } from "@/lib/mapaPr
 const ITEM_KEY = "caracterizaciones_lista";
 const NARANJA = "#F97316";
 
+const VISUAL_CATEGORIA: Record<string, { color: string; icono: string; descripcion: string }> = {
+  estrategicos: { color: "#7C4DFF", icono: "🧭", descripcion: "Dirigen y orientan la organización" },
+  misionales: { color: "#F97316", icono: "⚙️", descripcion: "Generan el producto o servicio para el cliente" },
+  apoyo: { color: "#2EA3F2", icono: "🛠️", descripcion: "Proveen los recursos que necesitan los demás procesos" },
+};
+const VISUAL_DEFAULT = { color: "#9CA3AF", icono: "🧩", descripcion: "" };
+
 export default function CaracterizacionesPage() {
   const { user } = useDashboardUser();
   const params = useParams();
@@ -70,30 +77,34 @@ export default function CaracterizacionesPage() {
           organizan según los procesos que definas ahí.
         </div>
       ) : (
-        <div className="space-y-6">
-          {grupos.map((g) => (
-            <div key={g.key}>
-              <div className="flex items-center gap-3 mb-3">
-                <h2 className="text-sm font-bold uppercase tracking-wide text-gray-500">{g.label}</h2>
-                <div className="flex-1 h-px bg-gray-100" />
+        <div className="space-y-8">
+          {grupos.map((g) => {
+            const v = VISUAL_CATEGORIA[g.key] ?? VISUAL_DEFAULT;
+            return (
+              <div key={g.key}>
+                <SeccionCategoria titulo={g.label} descripcion={v.descripcion} color={v.color} icono={v.icono} cantidad={g.procesos.length} />
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {g.procesos.map((proceso) => (
+                    <TarjetaProceso
+                      key={proceso}
+                      proceso={proceso}
+                      color={v.color}
+                      icono={v.icono}
+                      caracterizacion={caracterizaciones.find((c) => c.proceso === proceso)}
+                      onClick={() => abrirOCrear(proceso, g.key)}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {g.procesos.map((proceso) => (
-                  <TarjetaProceso key={proceso} proceso={proceso} caracterizacion={caracterizaciones.find((c) => c.proceso === proceso)} onClick={() => abrirOCrear(proceso, g.key)} />
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           {sinClasificar.length > 0 && (
             <div>
-              <div className="flex items-center gap-3 mb-3">
-                <h2 className="text-sm font-bold uppercase tracking-wide text-gray-500">Sin clasificar</h2>
-                <div className="flex-1 h-px bg-gray-100" />
-              </div>
+              <SeccionCategoria titulo="Sin clasificar" descripcion="Todavía no tienen una categoría asignada en el Mapa de Procesos" color={VISUAL_DEFAULT.color} icono={VISUAL_DEFAULT.icono} cantidad={sinClasificar.length} />
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {sinClasificar.map((proceso) => (
-                  <TarjetaProceso key={proceso} proceso={proceso} caracterizacion={caracterizaciones.find((c) => c.proceso === proceso)} onClick={() => abrirOCrear(proceso, "")} />
+                  <TarjetaProceso key={proceso} proceso={proceso} color={VISUAL_DEFAULT.color} icono={VISUAL_DEFAULT.icono} caracterizacion={caracterizaciones.find((c) => c.proceso === proceso)} onClick={() => abrirOCrear(proceso, "")} />
                 ))}
               </div>
             </div>
@@ -103,13 +114,10 @@ export default function CaracterizacionesPage() {
 
       {huerfanas.length > 0 && (
         <div>
-          <div className="flex items-center gap-3 mb-3">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-gray-500">Otras caracterizaciones</h2>
-            <div className="flex-1 h-px bg-gray-100" />
-          </div>
+          <SeccionCategoria titulo="Otras caracterizaciones" descripcion="Procesos que ya no están en el Mapa de Procesos actual" color={VISUAL_DEFAULT.color} icono={VISUAL_DEFAULT.icono} cantidad={huerfanas.length} />
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {huerfanas.map((c) => (
-              <TarjetaProceso key={c.id} proceso={c.proceso} caracterizacion={c} onClick={() => router.push(`${basePath}/caracterizaciones/${c.id}`)} />
+              <TarjetaProceso key={c.id} proceso={c.proceso} color={VISUAL_DEFAULT.color} icono={VISUAL_DEFAULT.icono} caracterizacion={c} onClick={() => router.push(`${basePath}/caracterizaciones/${c.id}`)} />
             ))}
           </div>
         </div>
@@ -118,12 +126,49 @@ export default function CaracterizacionesPage() {
   );
 }
 
+function SeccionCategoria({
+  titulo,
+  descripcion,
+  color,
+  icono,
+  cantidad,
+}: {
+  titulo: string;
+  descripcion: string;
+  color: string;
+  icono: string;
+  cantidad: number;
+}) {
+  return (
+    <div className="flex items-center gap-3 mb-3 pb-2.5" style={{ borderBottom: `2px solid ${color}` }}>
+      <span className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ backgroundColor: `${color}1A` }}>
+        {icono}
+      </span>
+      <div className="min-w-0">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-bold uppercase tracking-wide" style={{ color }}>
+            {titulo}
+          </h2>
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white flex-shrink-0" style={{ backgroundColor: color }}>
+            {cantidad}
+          </span>
+        </div>
+        {descripcion && <p className="text-xs text-gray-400 truncate">{descripcion}</p>}
+      </div>
+    </div>
+  );
+}
+
 function TarjetaProceso({
   proceso,
+  color,
+  icono,
   caracterizacion,
   onClick,
 }: {
   proceso: string;
+  color: string;
+  icono: string;
   caracterizacion?: ReturnType<typeof parseCaracterizaciones>[number];
   onClick: () => void;
 }) {
@@ -131,37 +176,41 @@ function TarjetaProceso({
   return (
     <button
       onClick={onClick}
-      className="text-left bg-white rounded-2xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_16px_-4px_rgba(249,115,22,0.2)] transition-all"
+      className="text-left bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.15)] transition-all"
+      style={{ borderColor: `${color}30` }}
     >
-      <div className="flex items-start justify-between gap-2">
-        <span className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#FFF3E8] text-[#F97316] flex items-center justify-center text-base font-bold">
-          🧩
-        </span>
+      <div className="h-1" style={{ backgroundColor: color }} />
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2">
+          <span className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-base font-bold" style={{ backgroundColor: `${color}1A`, color }}>
+            {icono}
+          </span>
+          {caracterizacion ? (
+            <span className="font-mono text-[10px] text-gray-400">{caracterizacion.codigo}</span>
+          ) : (
+            <span className="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Sin crear</span>
+          )}
+        </div>
+        <p className="text-sm font-semibold text-[#1A1A1A] mt-2.5">{proceso}</p>
+
         {caracterizacion ? (
-          <span className="font-mono text-[10px] text-gray-400">{caracterizacion.codigo}</span>
+          <div className="mt-2.5">
+            <div className="flex items-center justify-between text-[10px] text-gray-400 mb-1">
+              <span>Completitud</span>
+              <span className="font-bold" style={{ color: pct >= 80 ? "#22C55E" : pct >= 40 ? "#F5A623" : "#9CA3AF" }}>
+                {pct}%
+              </span>
+            </div>
+            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: pct >= 80 ? "#22C55E" : pct >= 40 ? "#F5A623" : "#D1D5DB" }} />
+            </div>
+          </div>
         ) : (
-          <span className="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Sin crear</span>
+          <p className="text-xs mt-2.5 font-semibold" style={{ color: NARANJA }}>
+            + Crear caracterización
+          </p>
         )}
       </div>
-      <p className="text-sm font-semibold text-[#1A1A1A] mt-2.5">{proceso}</p>
-
-      {caracterizacion ? (
-        <div className="mt-2.5">
-          <div className="flex items-center justify-between text-[10px] text-gray-400 mb-1">
-            <span>Completitud</span>
-            <span className="font-bold" style={{ color: pct >= 80 ? "#22C55E" : pct >= 40 ? "#F5A623" : "#9CA3AF" }}>
-              {pct}%
-            </span>
-          </div>
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: pct >= 80 ? "#22C55E" : pct >= 40 ? "#F5A623" : "#D1D5DB" }} />
-          </div>
-        </div>
-      ) : (
-        <p className="text-xs mt-2.5 font-semibold" style={{ color: NARANJA }}>
-          + Crear caracterización
-        </p>
-      )}
     </button>
   );
 }
