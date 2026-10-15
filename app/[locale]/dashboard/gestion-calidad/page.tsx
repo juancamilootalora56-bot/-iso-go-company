@@ -147,7 +147,21 @@ export default function GestionCalidadPage() {
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
         </Link>
 
-        <TarjetaBloqueada icono="📐" titulo="Matrices" descripcion="Matrices de gestión transversales a los procesos." />
+        <Link
+          href={`${basePath}/matrices`}
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
+        >
+          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#FDBA74] via-[#F97316] to-[#C2410C] shadow-sm">
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF3E8] to-[#FFE4CC] text-xl">
+              📐
+            </span>
+          </span>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-sm text-[#1A1A1A]">Matrices</h2>
+            <p className="text-xs text-gray-500 mt-0.5">Matrices de gestión transversales a los procesos, empezando por requisitos legales.</p>
+          </div>
+          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
+        </Link>
         <TarjetaBloqueada icono="🧩" titulo="Caracterizaciones de Procesos" descripcion="Ficha de entradas, salidas, recursos y controles de cada proceso." />
         <TarjetaBloqueada icono="🗄️" titulo="Gestión de Control de Documentos" descripcion="Versionado, aprobación y distribución de documentos del SGC." />
         <TarjetaBloqueada icono="🕵️" titulo="Gestión de Auditoría" descripcion="Programa, planes e informes de auditoría interna." />
