@@ -6,8 +6,9 @@ import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseOportunidadesMejora, estaAbiertaOM } from "@/lib/oportunidadesMejora";
 import { parseLeccionesAprendidas } from "@/lib/leccionesAprendidas";
-import { parseProcedimientos } from "@/lib/procedimientos";
+import { parseProcedimientos, parseInstructivos, parseFormatos } from "@/lib/procedimientos";
 import { parseCaracterizaciones } from "@/lib/caracterizacionProcesos";
+import { parseOtrosDocumentos } from "@/lib/controlDocumentos";
 
 const NARANJA = "#F97316";
 
@@ -41,6 +42,10 @@ export default function GestionCalidadPage() {
   const lecciones = parseLeccionesAprendidas(docs["lecciones_aprendidas_lista"] ?? "");
   const procedimientos = parseProcedimientos(docs["procedimientos_lista"] ?? "");
   const caracterizaciones = parseCaracterizaciones(docs["caracterizaciones_lista"] ?? "");
+  const instructivosCount = parseInstructivos(docs["instructivos_lista"] ?? "").length;
+  const formatosCount = parseFormatos(docs["formatos_lista"] ?? "").length;
+  const otrosDocumentos = parseOtrosDocumentos(docs["control_documentos_otros"] ?? "").length;
+  const totalDocumentosControlados = procedimientos.length + instructivosCount + formatosCount + otrosDocumentos;
   const omAbiertas = oportunidades.filter((o) => estaAbiertaOM(o.estado)).length;
 
   return (
@@ -188,7 +193,30 @@ export default function GestionCalidadPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
         </Link>
-        <TarjetaBloqueada icono="🗄️" titulo="Gestión de Control de Documentos" descripcion="Versionado, aprobación y distribución de documentos del SGC." />
+        <Link
+          href={`${basePath}/control_documentos`}
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
+        >
+          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#FDBA74] via-[#F97316] to-[#C2410C] shadow-sm">
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF3E8] to-[#FFE4CC] text-xl">
+              🗄️
+            </span>
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">Gestión de Control de Documentos</h2>
+              {!loading && totalDocumentosControlados > 0 && (
+                <span className="text-[10px] uppercase tracking-wide font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                  {totalDocumentosControlados}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Listado maestro, control de versiones y aprobaciones de todos los documentos del SGC (ISO 9001 cl. 7.5.3).
+            </p>
+          </div>
+          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
+        </Link>
         <TarjetaBloqueada icono="🕵️" titulo="Gestión de Auditoría" descripcion="Programa, planes e informes de auditoría interna." />
       </div>
 
