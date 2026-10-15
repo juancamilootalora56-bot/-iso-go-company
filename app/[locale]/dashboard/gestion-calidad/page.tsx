@@ -12,17 +12,17 @@ import { parseOtrosDocumentos } from "@/lib/controlDocumentos";
 
 const NARANJA = "#F97316";
 
-function TarjetaBloqueada({ icono, titulo, descripcion }: { icono: string; titulo: string; descripcion: string }) {
+function TarjetaBloqueada({ titulo, descripcion }: { titulo: string; descripcion: string }) {
   return (
     <div className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 opacity-70">
       <span className="relative flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center bg-gray-100 border-2 border-gray-200">
-        <span className="text-2xl">{icono}</span>
+        <span className="text-2xl">🔒</span>
       </span>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <h2 className="font-semibold text-sm text-[#1A1A1A]">{titulo}</h2>
           <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
-            🔒 Próximamente
+            🔒 Restringido
           </span>
         </div>
         <p className="text-xs text-gray-500 mt-0.5">{descripcion}</p>
@@ -217,7 +217,7 @@ export default function GestionCalidadPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
         </Link>
-        <TarjetaBloqueada icono="🕵️" titulo="Gestión de Auditoría" descripcion="Programa, planes e informes de auditoría interna." />
+        <TarjetaBloqueada titulo="Gestión de Auditoría" descripcion="Acceso restringido." />
       </div>
 
       <div className="mt-6 bg-[#1A1A1A] rounded-xl p-6 text-center">
