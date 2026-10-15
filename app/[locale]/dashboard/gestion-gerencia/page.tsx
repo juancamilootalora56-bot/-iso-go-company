@@ -17,6 +17,7 @@ export default function GestionGerenciaPage() {
       items={ITEMS_GERENCIA}
       userId={user?.id ?? null}
       basePath={`/${locale}/dashboard/gestion-gerencia`}
+      locale={locale}
     />
   );
 }
