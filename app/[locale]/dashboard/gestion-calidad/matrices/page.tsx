@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseRequisitosLegales, porcentajeCumplimiento } from "@/lib/requisitosLegales";
+import { parseComunicaciones } from "@/lib/comunicaciones";
 
 const NARANJA = "#F97316";
 
@@ -36,6 +37,7 @@ export default function MatricesPage() {
   const { docs, loading } = useGestionDocumentos("calidad", user?.id ?? null);
   const requisitos = parseRequisitosLegales(docs["matriz_requisitos_legales"] ?? "");
   const cumplimiento = porcentajeCumplimiento(requisitos);
+  const comunicaciones = parseComunicaciones(docs["matriz_comunicaciones"] ?? "");
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -77,9 +79,33 @@ export default function MatricesPage() {
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
         </Link>
 
+        <Link
+          href={`${basePath}/matrices/comunicaciones`}
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
+        >
+          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#FDBA74] via-[#F97316] to-[#C2410C] shadow-sm">
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF3E8] to-[#FFE4CC] text-xl">
+              📡
+            </span>
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">Matriz de Comunicaciones</h2>
+              {!loading && comunicaciones.length > 0 && (
+                <span className="text-[10px] uppercase tracking-wide font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                  {comunicaciones.length}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Qué, a quién, cuándo y cómo se comunica — con vista de flujo visual (ISO 9001 cl. 7.4).
+            </p>
+          </div>
+          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
+        </Link>
+
         <TarjetaBloqueada icono="⚠️" titulo="Matriz de Riesgos y Oportunidades por Proceso" descripcion="Identificación de riesgos del SGC a nivel de cada proceso." />
         <TarjetaBloqueada icono="🎯" titulo="Matriz de Competencias" descripcion="Competencias requeridas vs. competencias del personal por cargo." />
-        <TarjetaBloqueada icono="📡" titulo="Matriz de Comunicaciones" descripcion="Qué, a quién, cuándo y cómo se comunica dentro del SGC." />
       </div>
 
       <div className="mt-6 bg-[#1A1A1A] rounded-xl p-6 text-center">
