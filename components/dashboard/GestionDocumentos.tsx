@@ -54,6 +54,7 @@ export default function GestionDocumentos({
       {loading ? (
         <p className="text-gray-400 text-sm">Cargando...</p>
       ) : (
+        <>
         <div className="space-y-2">
           {items.map((item) => {
             const completo = estaCompleto(item.key, docs);
@@ -98,20 +99,21 @@ export default function GestionDocumentos({
             );
           })}
         </div>
-      )}
 
-      <div className="mt-6 bg-[#1A1A1A] rounded-xl p-6 text-center">
-        <p className="text-[#F5A623] font-semibold mb-2">¿Necesitás ayuda con esta área?</p>
-        <p className="text-gray-400 text-sm mb-4">
-          Un asesor de Iso Go puede acompañarte a implementarla dentro de tu sistema de gestión.
-        </p>
-        <a
-          href={`/${locale}/contacto`}
-          className="inline-block bg-[#F5A623] text-white font-bold px-6 py-2.5 rounded-lg hover:bg-[#C9790A] transition-colors text-sm"
-        >
-          Hablar con un asesor
-        </a>
-      </div>
+        <div className="mt-6 bg-[#1A1A1A] rounded-xl p-6 text-center">
+          <p className="text-[#F5A623] font-semibold mb-2">¿Necesitás ayuda con esta área?</p>
+          <p className="text-gray-400 text-sm mb-4">
+            Un asesor de Iso Go puede acompañarte a implementarla dentro de tu sistema de gestión.
+          </p>
+          <a
+            href={`/${locale}/contacto`}
+            className="inline-block bg-[#F5A623] text-white font-bold px-6 py-2.5 rounded-lg hover:bg-[#C9790A] transition-colors text-sm"
+          >
+            Hablar con un asesor
+          </a>
+        </div>
+        </>
+      )}
     </div>
   );
 }
