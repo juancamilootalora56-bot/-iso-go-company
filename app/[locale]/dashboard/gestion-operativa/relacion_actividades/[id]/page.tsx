@@ -42,6 +42,7 @@ function fechaLegibleLarga(fecha: string): string {
 
 const celdaInput =
   "w-full bg-transparent border-0 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#F5A623] rounded px-1.5 py-1 text-xs text-[#1A1A1A] placeholder-gray-300";
+const celdaTextarea = celdaInput + " resize-y min-h-[30px]";
 const th = "text-[10px] font-bold uppercase tracking-wide text-gray-500 px-2 py-2.5 text-left whitespace-nowrap border-b border-gray-200 bg-[#FAFAFA]";
 const inputClass =
   "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] placeholder-gray-400 focus:outline-none focus:border-[#F5A623] transition-colors";
@@ -303,11 +304,11 @@ export default function RelacionActividadesColaboradorPage() {
                           <th className={th} style={{ minWidth: 100 }}>Prioridad</th>
                           <th className={th} style={{ minWidth: 110 }}>Frecuencia</th>
                           <th className={th} style={{ minWidth: 80 }}>Hora</th>
-                          <th className={th} style={{ minWidth: 260 }}>Descripción de la actividad</th>
+                          <th className={th} style={{ minWidth: 380 }}>Descripción de la actividad</th>
                           <th className={th} style={{ minWidth: 90 }}>Cantidad</th>
                           <th className={th} style={{ minWidth: 140 }}>Estado</th>
                           <th className={th} style={{ minWidth: 110 }}>Duración</th>
-                          <th className={th} style={{ minWidth: 200 }}>Observaciones</th>
+                          <th className={th} style={{ minWidth: 300 }}>Observaciones</th>
                           <th className={th} style={{ minWidth: 40 }} />
                         </tr>
                       </thead>
@@ -350,7 +351,13 @@ export default function RelacionActividadesColaboradorPage() {
                               <input type="time" value={a.hora} onChange={(e) => actualizarFila(a.id, { hora: e.target.value })} className={celdaInput} />
                             </td>
                             <td>
-                              <input value={a.descripcion} onChange={(e) => actualizarFila(a.id, { descripcion: e.target.value })} placeholder="¿Qué se hizo en esta franja?" className={celdaInput} />
+                              <textarea
+                                value={a.descripcion}
+                                onChange={(e) => actualizarFila(a.id, { descripcion: e.target.value })}
+                                placeholder="¿Qué se hizo en esta franja?"
+                                rows={1}
+                                className={celdaTextarea}
+                              />
                             </td>
                             <td>
                               <input
@@ -391,7 +398,12 @@ export default function RelacionActividadesColaboradorPage() {
                               </div>
                             </td>
                             <td>
-                              <input value={a.observaciones} onChange={(e) => actualizarFila(a.id, { observaciones: e.target.value })} className={celdaInput} />
+                              <textarea
+                                value={a.observaciones}
+                                onChange={(e) => actualizarFila(a.id, { observaciones: e.target.value })}
+                                rows={1}
+                                className={celdaTextarea}
+                              />
                             </td>
                             <td className="text-center">
                               <button onClick={() => eliminarFila(a.id)} className="text-red-300 hover:text-red-600 text-sm px-1">
