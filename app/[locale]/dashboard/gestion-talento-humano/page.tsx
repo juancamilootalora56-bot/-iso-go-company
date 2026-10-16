@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parsePersonal } from "@/lib/personal";
+import { parseVacantes } from "@/lib/seleccionPersonal";
 
 export default function GestionTalentoHumanoPage() {
   const { user } = useDashboardUser();
@@ -14,6 +15,7 @@ export default function GestionTalentoHumanoPage() {
 
   const { docs, loading } = useGestionDocumentos("talento_humano", user?.id ?? null);
   const cantidadPersonal = parsePersonal(docs["personal_lista"] ?? "").length;
+  const cantidadVacantes = parseVacantes(docs["seleccion_vacantes_lista"] ?? "").length;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -23,6 +25,31 @@ export default function GestionTalentoHumanoPage() {
       </div>
 
       <div className="space-y-2">
+        <Link
+          href={`${basePath}/seleccion_personal`}
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
+        >
+          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF6E5] to-[#FDEBC8] text-xl">
+              💼
+            </span>
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">Selección y Contratación de Personal</h2>
+              {!loading && cantidadVacantes > 0 && (
+                <span className="text-[10px] uppercase tracking-wide font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                  {cantidadVacantes}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Pipeline de reclutamiento: requerimiento, búsqueda, entrevistas, test de habilidades y contratación.
+            </p>
+          </div>
+          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
+        </Link>
+
         <Link
           href={`${basePath}/alta_personal`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
