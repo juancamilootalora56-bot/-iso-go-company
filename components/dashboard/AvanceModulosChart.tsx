@@ -1,5 +1,6 @@
 "use client";
 
+import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { ITEMS_GERENCIA } from "@/lib/gestionGerenciaItems";
 import { estaCompletoActividad } from "@/lib/gestionGerenciaCompletitud";
 
@@ -10,6 +11,7 @@ const MODULOS = [
   { label: "Comercial", corto: "VTA" },
   { label: "Operativa", corto: "OPER" },
   { label: "Diseño y Desarrollo", corto: "D&D" },
+  { label: "Calidad", corto: "CAL" },
 ];
 
 const WIDTH = 460;
@@ -41,19 +43,101 @@ function pathSuave(puntos: { x: number; y: number }[]) {
   return d;
 }
 
+// Una "actividad" de un módulo se considera completa si su item_key tiene al
+// menos un registro guardado — mismo criterio de fondo que usan las tarjetas
+// "Completo/Pendiente" en cada módulo, aplicado acá para resumir el avance.
+function tieneRegistros(docs: Record<string, string>, key: string): boolean {
+  try {
+    const parsed = JSON.parse(docs[key] ?? "");
+    return Array.isArray(parsed) && parsed.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+function tieneRegistrosConPrefijo(docs: Record<string, string>, prefijo: string): boolean {
+  return Object.keys(docs).some((k) => {
+    if (!k.startsWith(prefijo)) return false;
+    try {
+      const parsed = JSON.parse(docs[k] ?? "");
+      return Array.isArray(parsed) && parsed.length > 0;
+    } catch {
+      return false;
+    }
+  });
+}
+
+function porcentaje(actividades: boolean[]): number {
+  if (actividades.length === 0) return 0;
+  return Math.round((actividades.filter(Boolean).length / actividades.length) * 100);
+}
+
 export default function AvanceModulosChart({
+  userId,
   docsGerencia,
-  loading,
+  loadingGerencia,
 }: {
+  userId: string | null;
   docsGerencia: Record<string, string>;
-  loading: boolean;
+  loadingGerencia: boolean;
 }) {
+  const { docs: docsRRHH, loading: loadingRRHH } = useGestionDocumentos("talento_humano", userId);
+  const { docs: docsCompras, loading: loadingCompras } = useGestionDocumentos("compras", userId);
+  const { docs: docsComercial, loading: loadingComercial } = useGestionDocumentos("comercial", userId);
+  const { docs: docsOperativa, loading: loadingOperativa } = useGestionDocumentos("operativa", userId);
+  const { docs: docsDyD, loading: loadingDyD } = useGestionDocumentos("diseno_desarrollo", userId);
+  const { docs: docsCalidad, loading: loadingCalidad } = useGestionDocumentos("calidad", userId);
+
+  const loading =
+    loadingGerencia || loadingRRHH || loadingCompras || loadingComercial || loadingOperativa || loadingDyD || loadingCalidad;
+
   const pctGerencia = Math.round(
     (ITEMS_GERENCIA.filter((i) => estaCompletoActividad(i.key, docsGerencia)).length / ITEMS_GERENCIA.length) * 100
   );
 
-  // Los demás módulos todavía no tienen actividades cargadas en el sistema.
-  const porcentajes = [pctGerencia, 0, 0, 0, 0, 0];
+  const pctRRHH = porcentaje([
+    tieneRegistros(docsRRHH, "personal_lista"),
+    tieneRegistrosConPrefijo(docsRRHH, "capacitacion_"),
+    tieneRegistrosConPrefijo(docsRRHH, "evaluacion_"),
+  ]);
+
+  const pctCompras = porcentaje([
+    tieneRegistros(docsCompras, "proveedores_lista"),
+    tieneRegistrosConPrefijo(docsCompras, "evaluacion_proveedor_"),
+    tieneRegistros(docsCompras, "ordenes_compra_lista"),
+  ]);
+
+  const pctComercial = porcentaje([
+    tieneRegistros(docsComercial, "clientes_lista"),
+    tieneRegistrosConPrefijo(docsComercial, "pqrsf_cliente_"),
+    tieneRegistrosConPrefijo(docsComercial, "satisfaccion_cliente_"),
+    tieneRegistros(docsComercial, "ventas_registro") || tieneRegistros(docsComercial, "ventas_metas"),
+  ]);
+
+  const pctOperativa = porcentaje([
+    tieneRegistros(docsOperativa, "productos_lista"),
+    tieneRegistros(docsOperativa, "inventario_lista"),
+    tieneRegistros(docsOperativa, "no_conformidades_lista"),
+  ]);
+
+  const pctDyD = porcentaje([
+    tieneRegistros(docsDyD, "proyectos_diseno_lista"),
+    tieneRegistros(docsDyD, "planes_calidad_lista"),
+    tieneRegistros(docsDyD, "cambios_diseno_lista"),
+  ]);
+
+  const pctCalidad = porcentaje([
+    tieneRegistros(docsCalidad, "procedimientos_lista"),
+    tieneRegistros(docsCalidad, "oportunidades_mejora_lista"),
+    tieneRegistros(docsCalidad, "lecciones_aprendidas_lista"),
+    tieneRegistros(docsCalidad, "matriz_requisitos_legales"),
+    tieneRegistros(docsCalidad, "matriz_comunicaciones"),
+    tieneRegistros(docsCalidad, "matriz_competencias"),
+    tieneRegistros(docsCalidad, "caracterizaciones_lista"),
+    tieneRegistros(docsCalidad, "control_documentos_otros") || tieneRegistros(docsCalidad, "control_documentos_cambios"),
+  ]);
+
+  const porcentajes = [pctGerencia, pctRRHH, pctCompras, pctComercial, pctOperativa, pctDyD, pctCalidad];
 
   const puntos = porcentajes.map((pct, i) => ({ x: x(i, porcentajes.length), y: y(pct), pct }));
   const linea = pathSuave(puntos);
