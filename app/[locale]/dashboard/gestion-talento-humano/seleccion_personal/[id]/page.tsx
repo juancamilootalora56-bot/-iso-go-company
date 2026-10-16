@@ -5,12 +5,13 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
-import { empleadoVacio, parsePersonal } from "@/lib/personal";
+import { parsePersonal } from "@/lib/personal";
 import {
   parseVacantes,
   parseCandidatos,
   candidatoVacio,
   moverEtapa,
+  asegurarEmpleado,
   diasEnEtapa,
   resumenPorEtapa,
   tasaConversion,
@@ -88,7 +89,7 @@ export default function PipelineVacantePage() {
     setTimeout(() => setMensaje(""), 2500);
   }
 
-  async function persistir(nuevaVacante: Vacante, nuevosCandidatos: Candidato[]) {
+  async function persistir(nuevaVacante: Vacante, nuevosCandidatos: Candidato[], nuevoPersonal?: typeof personalExistente) {
     setGuardando(true);
     const vacantesActualizadas = vacantesGuardadas.some((v) => v.id === nuevaVacante.id)
       ? vacantesGuardadas.map((v) => (v.id === nuevaVacante.id ? nuevaVacante : v))
@@ -96,6 +97,9 @@ export default function PipelineVacantePage() {
     const otrosCandidatos = todosCandidatos.filter((c) => c.vacanteId !== vacanteId);
     await save(ITEM_KEY_VACANTES, JSON.stringify(vacantesActualizadas));
     await save(ITEM_KEY_CANDIDATOS, JSON.stringify([...otrosCandidatos, ...nuevosCandidatos]));
+    if (nuevoPersonal) {
+      await save(ITEM_KEY_PERSONAL, JSON.stringify(nuevoPersonal));
+    }
     setVacanteDraft(null);
     setCandidatosDraft(null);
     setGuardando(false);
@@ -122,9 +126,20 @@ export default function PipelineVacantePage() {
   }
 
   async function mover(id: string, nuevaEtapa: EtapaCandidato) {
-    const actualizados = candidatos.map((c) => (c.id === id ? moverEtapa(c, nuevaEtapa) : c));
+    let actualizados = candidatos.map((c) => (c.id === id ? moverEtapa(c, nuevaEtapa) : c));
+    let personalActualizado: typeof personalExistente | undefined;
+
+    if (nuevaEtapa === "Entrevista") {
+      const candidato = actualizados.find((c) => c.id === id);
+      if (candidato && !candidato.empleadoId) {
+        const { empleadoId, personalActualizado: nuevoPersonal } = asegurarEmpleado(candidato, vacante!, personalExistente);
+        personalActualizado = nuevoPersonal;
+        actualizados = actualizados.map((c) => (c.id === id ? { ...c, empleadoId } : c));
+      }
+    }
+
     setCandidatosDraft(actualizados);
-    await persistir(vacante!, actualizados);
+    await persistir(vacante!, actualizados, personalActualizado);
   }
 
   function descartar(id: string) {
@@ -134,24 +149,23 @@ export default function PipelineVacantePage() {
   }
 
   async function contratarYDarDeAlta(candidato: Candidato) {
-    if (!confirm(`¿Dar de alta a "${candidato.nombre}" en Gestión del Personal? Se creará su ficha con los datos del cargo de esta vacante.`)) return;
+    if (!confirm(`¿Dar de alta a "${candidato.nombre}" en Gestión del Personal?`)) return;
     const vActual = vacante!;
-    const partes = candidato.nombre.trim().split(" ");
-    const nuevoEmpleado = {
-      ...empleadoVacio(),
-      nombre: partes[0] ?? candidato.nombre,
-      apellido: partes.slice(1).join(" "),
-      email: candidato.email,
-      telefono: candidato.telefono,
-      foto: candidato.foto,
-      cargo: vActual.cargo,
-      area: vActual.area,
-      tipoContrato: vActual.tipoContrato,
-      jornada: vActual.jornada,
-      fechaIngreso: new Date().toISOString().slice(0, 10),
-    };
 
-    const candidatoContratado = moverEtapa({ ...candidato, etapa: candidato.etapa === "Contratado" ? "Selección" : candidato.etapa }, "Contratado", `Contratado y dado de alta como ${nuevoEmpleado.nombre} ${nuevoEmpleado.apellido}`);
+    const { empleadoId, personalActualizado: personalConFicha } = asegurarEmpleado(candidato, vActual, personalExistente);
+    const esNuevo = !personalExistente.some((e) => e.id === empleadoId);
+    const personalFinal = personalConFicha.map((e) =>
+      e.id === empleadoId
+        ? { ...e, fechaIngreso: e.fechaIngreso || new Date().toISOString().slice(0, 10), cargo: e.cargo || vActual.cargo, area: e.area || vActual.area }
+        : e
+    );
+    const empleado = personalFinal.find((e) => e.id === empleadoId)!;
+
+    const candidatoContratado = moverEtapa(
+      { ...candidato, empleadoId, etapa: candidato.etapa === "Contratado" ? "Selección" : candidato.etapa },
+      "Contratado",
+      esNuevo ? `Contratado y dado de alta como ${empleado.nombre} ${empleado.apellido}` : `Contratado — ficha ya existía en Gestión de Personal (${empleado.nombre} ${empleado.apellido})`
+    );
     const candidatosActualizados = candidatos.map((c) => (c.id === candidato.id ? candidatoContratado : c));
 
     setGuardando(true);
@@ -159,9 +173,9 @@ export default function PipelineVacantePage() {
     const otrosCandidatos = todosCandidatos.filter((c) => c.vacanteId !== vacanteId);
     await save(ITEM_KEY_VACANTES, JSON.stringify(vacantesActualizadas));
     await save(ITEM_KEY_CANDIDATOS, JSON.stringify([...otrosCandidatos, ...candidatosActualizados]));
-    await save(ITEM_KEY_PERSONAL, JSON.stringify([...personalExistente, nuevoEmpleado]));
+    await save(ITEM_KEY_PERSONAL, JSON.stringify(personalFinal));
     setGuardando(false);
-    router.push(`${basePath}/gestion_personal/${nuevoEmpleado.id}`);
+    router.push(`${basePath}/gestion_personal/${empleadoId}`);
   }
 
   async function guardarTodo() {
@@ -379,6 +393,7 @@ export default function PipelineVacantePage() {
                       onDescartar={() => descartar(c.id)}
                       onEliminar={() => eliminarCandidato(c.id)}
                       onContratar={etapa === "Contratado" ? () => contratarYDarDeAlta(c) : undefined}
+                      basePath={basePath}
                     />
                   ))}
                   {columnaCandidatos.length === 0 && <p className="text-[11px] text-gray-300 text-center py-4">Sin candidatos</p>}
@@ -449,6 +464,7 @@ function TarjetaCandidato({
   onDescartar,
   onEliminar,
   onContratar,
+  basePath,
 }: {
   candidato: Candidato;
   color: string;
@@ -461,6 +477,7 @@ function TarjetaCandidato({
   onDescartar: () => void;
   onEliminar: () => void;
   onContratar?: () => void;
+  basePath: string;
 }) {
   const fotoInputRef = useRef<HTMLInputElement>(null);
   const cvInputRef = useRef<HTMLInputElement>(null);
@@ -551,6 +568,18 @@ function TarjetaCandidato({
             )}
           </div>
 
+          {candidato.empleadoId && ETAPAS_PIPELINE.indexOf(candidato.etapa) >= 1 && (
+            <a
+              href={`${basePath}/gestion_personal/${candidato.empleadoId}?tab=entrevista`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center justify-center gap-1.5 w-full text-[11px] font-semibold py-1.5 rounded-lg border border-[#7C4DFF]/30 text-[#7C4DFF] hover:bg-[#7C4DFF]/5 transition-colors"
+            >
+              🗣️ Abrir formulario de entrevista →
+            </a>
+          )}
+
           <textarea
             value={candidato.notasEntrevista}
             onChange={(e) => onActualizar({ notasEntrevista: e.target.value })}
@@ -580,6 +609,18 @@ function TarjetaCandidato({
               />
             </div>
           </div>
+
+          {candidato.empleadoId && ETAPAS_PIPELINE.indexOf(candidato.etapa) >= 3 && (
+            <a
+              href={`${basePath}/gestion_personal/${candidato.empleadoId}?tab=referencias`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center justify-center gap-1.5 w-full text-[11px] font-semibold py-1.5 rounded-lg border border-[#14B8A6]/30 text-[#14B8A6] hover:bg-[#14B8A6]/5 transition-colors"
+            >
+              📇 Abrir formulario de referencias →
+            </a>
+          )}
 
           {candidato.bitacora.length > 0 && (
             <div className="bg-[#FAFAFA] rounded-lg p-2 max-h-24 overflow-y-auto space-y-1">

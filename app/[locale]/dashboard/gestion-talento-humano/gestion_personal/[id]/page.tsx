@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
@@ -38,12 +38,14 @@ function fechaLegible(iso?: string) {
 export default function PerfilPersonalPage() {
   const { user } = useDashboardUser();
   const params = useParams();
+  const searchParams = useSearchParams();
   const locale = params.locale as string;
   const id = params.id as string;
   const basePath = `/${locale}/dashboard/gestion-talento-humano`;
 
   const { docs, loading } = useGestionDocumentos("talento_humano", user?.id ?? null);
-  const [tab, setTab] = useState("generales");
+  const tabInicial = TABS.some((t) => t.key === searchParams.get("tab")) ? (searchParams.get("tab") as string) : "generales";
+  const [tab, setTab] = useState(tabInicial);
 
   if (loading) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;

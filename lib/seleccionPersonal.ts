@@ -3,7 +3,7 @@
 // Contratado (o Descartado en cualquier punto). Al contratar, se puede dar de alta
 // directo en Gestión del Personal sin volver a tipear los datos básicos.
 
-import { TIPOS_CONTRATO, JORNADAS } from "./personal";
+import { TIPOS_CONTRATO, JORNADAS, empleadoVacio, type Empleado } from "./personal";
 
 export { TIPOS_CONTRATO, JORNADAS };
 
@@ -147,6 +147,7 @@ export type EventoCandidato = {
 export type Candidato = {
   id: string;
   vacanteId: string;
+  empleadoId: string | null; // ficha en Gestión de Personal, creada al llegar a Entrevista
   nombre: string;
   email: string;
   telefono: string;
@@ -171,6 +172,7 @@ export function candidatoVacio(vacanteId: string): Candidato {
   return {
     id: crypto.randomUUID(),
     vacanteId,
+    empleadoId: null,
     nombre: "",
     email: "",
     telefono: "",
@@ -213,6 +215,35 @@ export function moverEtapa(candidato: Candidato, nuevaEtapa: EtapaCandidato, not
     etapaHasta: nuevaEtapa,
   };
   return { ...candidato, etapa: nuevaEtapa, fechaUltimoCambio: hoy, bitacora: [...candidato.bitacora, evento] };
+}
+
+// Crea (o reutiliza si ya existe) la ficha del candidato en Gestión de Personal,
+// con los datos básicos ya cargados desde el candidato y el cargo de la vacante.
+// Se usa al llegar a "Entrevista" para poder abrir el formulario real de entrevista,
+// y se reutiliza (no se duplica) al contratar.
+export function asegurarEmpleado(
+  candidato: Candidato,
+  vacante: Vacante,
+  personalExistente: Empleado[]
+): { empleadoId: string; personalActualizado: Empleado[] } {
+  if (candidato.empleadoId) {
+    const existe = personalExistente.some((e) => e.id === candidato.empleadoId);
+    if (existe) return { empleadoId: candidato.empleadoId, personalActualizado: personalExistente };
+  }
+  const partes = candidato.nombre.trim().split(" ");
+  const nuevoEmpleado: Empleado = {
+    ...empleadoVacio(),
+    nombre: partes[0] ?? candidato.nombre,
+    apellido: partes.slice(1).join(" "),
+    email: candidato.email,
+    telefono: candidato.telefono,
+    foto: candidato.foto,
+    cargo: vacante.cargo,
+    area: vacante.area,
+    tipoContrato: vacante.tipoContrato,
+    jornada: vacante.jornada,
+  };
+  return { empleadoId: nuevoEmpleado.id, personalActualizado: [...personalExistente, nuevoEmpleado] };
 }
 
 export function diasEnEtapa(candidato: Candidato): number {
