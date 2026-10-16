@@ -27,6 +27,19 @@ import {
 
 const NARANJA = "#F5A623";
 
+const PALETA_DIAS = ["#F5A623", "#3B82F6", "#22C55E", "#7C4DFF", "#E8366B", "#06B6D4", "#F97316"];
+
+function colorDelDia(fecha: string, diasAscendente: string[]): string {
+  const idx = diasAscendente.indexOf(fecha);
+  return PALETA_DIAS[idx % PALETA_DIAS.length];
+}
+
+function fechaLegibleLarga(fecha: string): string {
+  const d = new Date(fecha + "T00:00:00");
+  const texto = d.toLocaleDateString("es", { weekday: "long", day: "2-digit", month: "long" });
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
 const celdaInput =
   "w-full bg-transparent border-0 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#F5A623] rounded px-1.5 py-1 text-xs text-[#1A1A1A] placeholder-gray-300";
 const th = "text-[10px] font-bold uppercase tracking-wide text-gray-500 px-2 py-2.5 text-left whitespace-nowrap border-b border-gray-200 bg-[#FAFAFA]";
@@ -59,6 +72,7 @@ export default function RelacionActividadesColaboradorPage() {
   const [intervalo, setIntervalo] = useState(15);
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
+  const [diasAbiertos, setDiasAbiertos] = useState<Record<string, boolean>>({});
 
   const actuales = actividades ?? guardadas;
 
@@ -83,6 +97,25 @@ export default function RelacionActividadesColaboradorPage() {
   const ordenadas = [...actuales].sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
   const resumen = resumenPorEstado(actuales);
 
+  const diasAscendente = Array.from(new Set(ordenadas.map((a) => a.fecha))).sort();
+  const diaMasReciente = diasAscendente[diasAscendente.length - 1];
+
+  const gruposPorDia = diasAscendente
+    .map((fecha) => ({
+      fecha,
+      franjas: ordenadas.filter((a) => a.fecha === fecha),
+    }))
+    .sort((a, b) => b.fecha.localeCompare(a.fecha)); // más reciente primero
+
+  function estaAbierto(fecha: string): boolean {
+    if (fecha in diasAbiertos) return diasAbiertos[fecha];
+    return fecha === diaMasReciente;
+  }
+
+  function toggleDia(fecha: string) {
+    setDiasAbiertos((prev) => ({ ...prev, [fecha]: !estaAbierto(fecha) }));
+  }
+
   function actualizarFila(id: string, cambios: Partial<ActividadRelacion>) {
     setActividades(actuales.map((a) => (a.id === id ? { ...a, ...cambios } : a)));
     setMensaje("");
@@ -100,6 +133,7 @@ export default function RelacionActividadesColaboradorPage() {
     }
     const franjas = generarJornada(nuevaFecha, horaInicio, horaFin, intervalo);
     setActividades([...actuales, ...franjas]);
+    setDiasAbiertos({ [nuevaFecha]: true });
     setMostrarGenerar(false);
   }
 
@@ -109,6 +143,17 @@ export default function RelacionActividadesColaboradorPage() {
     setActividades(null);
     setGuardando(false);
     setMensaje("Guardado ✓");
+    setTimeout(() => setMensaje(""), 2500);
+  }
+
+  async function vaciarMes() {
+    if (!confirm(`¿Vaciar todas las franjas de ${nombreMes(mes)}? Esta acción no se puede deshacer.`)) return;
+    setGuardando(true);
+    await save(ITEM_KEY, JSON.stringify([]));
+    setActividades(null);
+    setDiasAbiertos({});
+    setGuardando(false);
+    setMensaje("Mes vaciado ✓");
     setTimeout(() => setMensaje(""), 2500);
   }
 
@@ -217,130 +262,161 @@ export default function RelacionActividadesColaboradorPage() {
         </div>
       )}
 
-      {/* Tabla tipo Excel */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-x-auto">
-        <table className="border-collapse w-full">
-          <thead>
-            <tr>
-              <th className={th + " sticky left-0 z-10 bg-[#FAFAFA]"} style={{ minWidth: 100 }}>Fecha</th>
-              <th className={th} style={{ minWidth: 150 }}>Proceso</th>
-              <th className={th} style={{ minWidth: 100 }}>Prioridad</th>
-              <th className={th} style={{ minWidth: 110 }}>Frecuencia</th>
-              <th className={th} style={{ minWidth: 80 }}>Hora</th>
-              <th className={th} style={{ minWidth: 260 }}>Descripción de la actividad</th>
-              <th className={th} style={{ minWidth: 90 }}>Cantidad</th>
-              <th className={th} style={{ minWidth: 140 }}>Estado</th>
-              <th className={th} style={{ minWidth: 110 }}>Duración</th>
-              <th className={th} style={{ minWidth: 200 }}>Observaciones</th>
-              <th className={th} style={{ minWidth: 40 }} />
-            </tr>
-          </thead>
-          <tbody>
-            {ordenadas.length === 0 ? (
-              <tr>
-                <td colSpan={11} className="text-center text-sm text-gray-400 py-10">
-                  Todavía no hay franjas cargadas para {nombreMes(mes)}. Generá la jornada de un día para empezar.
-                </td>
-              </tr>
-            ) : (
-              ordenadas.map((a) => (
-                <tr key={a.id} className="border-b border-gray-50 hover:bg-[#FAFAFA]/60 align-top">
-                  <td className="sticky left-0 bg-white text-xs text-gray-500 py-1.5 px-2 border-r border-gray-50 whitespace-nowrap">
-                    {new Date(a.fecha + "T00:00:00").toLocaleDateString("es", { day: "2-digit", month: "short" })}
-                  </td>
-                  <td>
-                    {procesosMapa.length > 0 ? (
-                      <select value={procesosMapa.includes(a.proceso) ? a.proceso : ""} onChange={(e) => actualizarFila(a.id, { proceso: e.target.value })} className={celdaInput}>
-                        <option value="">—</option>
-                        {procesosMapa.map((p) => (
-                          <option key={p} value={p}>
-                            {p}
-                          </option>
+      {/* Días, cada uno en su propia sección plegable */}
+      {gruposPorDia.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center">
+          <p className="text-gray-400 text-sm">
+            Todavía no hay franjas cargadas para {nombreMes(mes)}. Generá la jornada de un día para empezar.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {gruposPorDia.map((grupo) => {
+            const color = colorDelDia(grupo.fecha, diasAscendente);
+            const abierto = estaAbierto(grupo.fecha);
+            const resumenDia = resumenPorEstado(grupo.franjas);
+            return (
+              <div key={grupo.fecha} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <button
+                  onClick={() => toggleDia(grupo.fecha)}
+                  className="w-full flex items-center gap-3 px-5 py-3.5 text-left"
+                  style={{ backgroundColor: `${color}14`, borderLeft: `4px solid ${color}` }}
+                >
+                  <span className="text-sm font-bold text-[#1A1A1A] flex-1 min-w-0 truncate">{fechaLegibleLarga(grupo.fecha)}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white flex-shrink-0" style={{ backgroundColor: color }}>
+                    {grupo.franjas.length} franjas
+                  </span>
+                  <div className="hidden sm:flex items-center gap-1 flex-shrink-0">
+                    {resumenDia.map((r) => (
+                      <span key={r.estado} title={r.estado} className="w-2 h-2 rounded-full" style={{ backgroundColor: r.color }} />
+                    ))}
+                  </div>
+                  <span className="text-gray-400 flex-shrink-0 text-xs">{abierto ? "▲" : "▼"}</span>
+                </button>
+
+                {abierto && (
+                  <div className="overflow-x-auto border-t border-gray-100">
+                    <table className="border-collapse w-full">
+                      <thead>
+                        <tr>
+                          <th className={th} style={{ minWidth: 150 }}>Proceso</th>
+                          <th className={th} style={{ minWidth: 100 }}>Prioridad</th>
+                          <th className={th} style={{ minWidth: 110 }}>Frecuencia</th>
+                          <th className={th} style={{ minWidth: 80 }}>Hora</th>
+                          <th className={th} style={{ minWidth: 260 }}>Descripción de la actividad</th>
+                          <th className={th} style={{ minWidth: 90 }}>Cantidad</th>
+                          <th className={th} style={{ minWidth: 140 }}>Estado</th>
+                          <th className={th} style={{ minWidth: 110 }}>Duración</th>
+                          <th className={th} style={{ minWidth: 200 }}>Observaciones</th>
+                          <th className={th} style={{ minWidth: 40 }} />
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {grupo.franjas.map((a) => (
+                          <tr key={a.id} className="border-b border-gray-50 hover:bg-[#FAFAFA]/60 align-top">
+                            <td>
+                              {procesosMapa.length > 0 ? (
+                                <select value={procesosMapa.includes(a.proceso) ? a.proceso : ""} onChange={(e) => actualizarFila(a.id, { proceso: e.target.value })} className={celdaInput}>
+                                  <option value="">—</option>
+                                  {procesosMapa.map((p) => (
+                                    <option key={p} value={p}>
+                                      {p}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <input value={a.proceso} onChange={(e) => actualizarFila(a.id, { proceso: e.target.value })} placeholder="Proceso" className={celdaInput} />
+                              )}
+                            </td>
+                            <td>
+                              <select value={a.prioridad} onChange={(e) => actualizarFila(a.id, { prioridad: e.target.value })} className={celdaInput}>
+                                {PRIORIDADES_ACTIVIDAD.map((p) => (
+                                  <option key={p} value={p}>
+                                    {p}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <select value={a.frecuencia} onChange={(e) => actualizarFila(a.id, { frecuencia: e.target.value })} className={celdaInput}>
+                                {FRECUENCIAS_ACTIVIDAD.map((f) => (
+                                  <option key={f} value={f}>
+                                    {f}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <input type="time" value={a.hora} onChange={(e) => actualizarFila(a.id, { hora: e.target.value })} className={celdaInput} />
+                            </td>
+                            <td>
+                              <input value={a.descripcion} onChange={(e) => actualizarFila(a.id, { descripcion: e.target.value })} placeholder="¿Qué se hizo en esta franja?" className={celdaInput} />
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                min={0}
+                                value={a.cantidad}
+                                onChange={(e) => actualizarFila(a.id, { cantidad: Math.max(0, Number(e.target.value) || 0) })}
+                                onWheel={(e) => e.currentTarget.blur()}
+                                className={celdaInput}
+                              />
+                            </td>
+                            <td>
+                              <select
+                                value={a.estado}
+                                onChange={(e) => actualizarFila(a.id, { estado: e.target.value })}
+                                className={celdaInput + " font-bold text-white rounded-md"}
+                                style={{ backgroundColor: colorEstadoActividad(a.estado) }}
+                              >
+                                {ESTADOS_ACTIVIDAD.map((e) => (
+                                  <option key={e} value={e} style={{ color: "#1A1A1A", backgroundColor: "#fff" }}>
+                                    {e}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="number"
+                                  min={0}
+                                  value={a.duracionMinutos}
+                                  onChange={(e) => actualizarFila(a.id, { duracionMinutos: Math.max(0, Number(e.target.value) || 0) })}
+                                  onWheel={(e) => e.currentTarget.blur()}
+                                  className={celdaInput + " flex-1"}
+                                  title="Minutos"
+                                />
+                                <span className="text-[10px] text-gray-400 whitespace-nowrap">{formatoDuracion(a.duracionMinutos)}</span>
+                              </div>
+                            </td>
+                            <td>
+                              <input value={a.observaciones} onChange={(e) => actualizarFila(a.id, { observaciones: e.target.value })} className={celdaInput} />
+                            </td>
+                            <td className="text-center">
+                              <button onClick={() => eliminarFila(a.id)} className="text-red-300 hover:text-red-600 text-sm px-1">
+                                ✕
+                              </button>
+                            </td>
+                          </tr>
                         ))}
-                      </select>
-                    ) : (
-                      <input value={a.proceso} onChange={(e) => actualizarFila(a.id, { proceso: e.target.value })} placeholder="Proceso" className={celdaInput} />
-                    )}
-                  </td>
-                  <td>
-                    <select value={a.prioridad} onChange={(e) => actualizarFila(a.id, { prioridad: e.target.value })} className={celdaInput}>
-                      {PRIORIDADES_ACTIVIDAD.map((p) => (
-                        <option key={p} value={p}>
-                          {p}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select value={a.frecuencia} onChange={(e) => actualizarFila(a.id, { frecuencia: e.target.value })} className={celdaInput}>
-                      {FRECUENCIAS_ACTIVIDAD.map((f) => (
-                        <option key={f} value={f}>
-                          {f}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <input type="time" value={a.hora} onChange={(e) => actualizarFila(a.id, { hora: e.target.value })} className={celdaInput} />
-                  </td>
-                  <td>
-                    <input value={a.descripcion} onChange={(e) => actualizarFila(a.id, { descripcion: e.target.value })} placeholder="¿Qué se hizo en esta franja?" className={celdaInput} />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      min={0}
-                      value={a.cantidad}
-                      onChange={(e) => actualizarFila(a.id, { cantidad: Math.max(0, Number(e.target.value) || 0) })}
-                      onWheel={(e) => e.currentTarget.blur()}
-                      className={celdaInput}
-                    />
-                  </td>
-                  <td>
-                    <select
-                      value={a.estado}
-                      onChange={(e) => actualizarFila(a.id, { estado: e.target.value })}
-                      className={celdaInput + " font-bold text-white rounded-md"}
-                      style={{ backgroundColor: colorEstadoActividad(a.estado) }}
-                    >
-                      {ESTADOS_ACTIVIDAD.map((e) => (
-                        <option key={e} value={e} style={{ color: "#1A1A1A", backgroundColor: "#fff" }}>
-                          {e}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="number"
-                        min={0}
-                        value={a.duracionMinutos}
-                        onChange={(e) => actualizarFila(a.id, { duracionMinutos: Math.max(0, Number(e.target.value) || 0) })}
-                        onWheel={(e) => e.currentTarget.blur()}
-                        className={celdaInput + " flex-1"}
-                        title="Minutos"
-                      />
-                      <span className="text-[10px] text-gray-400 whitespace-nowrap">{formatoDuracion(a.duracionMinutos)}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <input value={a.observaciones} onChange={(e) => actualizarFila(a.id, { observaciones: e.target.value })} className={celdaInput} />
-                  </td>
-                  <td className="text-center">
-                    <button onClick={() => eliminarFila(a.id)} className="text-red-300 hover:text-red-600 text-sm px-1">
-                      ✕
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div className="flex items-center justify-end gap-3">
         {mensaje && <span className="text-xs text-green-600 font-semibold">{mensaje}</span>}
+        {actuales.length > 0 && (
+          <button onClick={vaciarMes} disabled={guardando} className="text-xs text-red-400 hover:text-red-600 disabled:opacity-50">
+            Vaciar este mes
+          </button>
+        )}
         <button onClick={guardar} disabled={guardando} className="bg-[#1A1A1A] text-white font-bold px-5 py-2.5 rounded-lg hover:bg-[#333] transition-colors text-sm disabled:opacity-50">
           {guardando ? "Guardando..." : "Guardar"}
         </button>
