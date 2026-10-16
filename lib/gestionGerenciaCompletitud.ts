@@ -7,6 +7,14 @@ import { parseObjetivos } from "@/lib/objetivosCalidad";
 import { parseNodos } from "@/lib/estructuraOrganizacional";
 
 export function estaCompletoActividad(itemKey: string, docs: Record<string, string>) {
+  if (itemKey === "cronograma_general") {
+    try {
+      const parsed = JSON.parse(docs["cronograma_general"] ?? "{}");
+      return Array.isArray(parsed.tareas) && parsed.tareas.some((t: { fechaInicio?: string; diasPintados?: string[] }) => t.fechaInicio || (t.diasPintados ?? []).length > 0);
+    } catch {
+      return false;
+    }
+  }
   if (itemKey === "foda") {
     return FODA_CATEGORIAS.some((c) => (docs[itemKeyFoda(c.key)] ?? "").trim().length > 0);
   }

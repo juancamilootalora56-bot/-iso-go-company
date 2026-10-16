@@ -9,6 +9,13 @@ export type ItemGestion = {
 
 export const ITEMS_GERENCIA: ItemGestion[] = [
   {
+    key: "cronograma_general",
+    titulo: "Cronograma General del Sistema",
+    icono: "📅",
+    descripcion: "Diagrama de Gantt a 6 meses con todas las actividades del sistema, por módulo.",
+    placeholder: "",
+  },
+  {
     key: "compromiso_direccion",
     titulo: "Compromiso por la Dirección",
     icono: "✍️",
