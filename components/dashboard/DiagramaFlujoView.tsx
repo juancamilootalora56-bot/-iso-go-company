@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
-import type { ProductoFabricado } from "@/lib/productosFabricados";
 import {
   parsePasos,
   tiempoEnMinutos,
@@ -17,12 +16,12 @@ function itemKeyProceso(productoId: string) {
   return `proceso_operativo_${productoId}`;
 }
 
-export default function DiagramaFlujoView({ userId, producto }: { userId: string | null; producto: ProductoFabricado }) {
+export default function DiagramaFlujoView({ userId, entidadId }: { userId: string | null; entidadId: string }) {
   const { docs, loading } = useGestionDocumentos("operativa", userId);
   const [pasos, setPasos] = useState<PasoProceso[]>([]);
 
   useEffect(() => {
-    if (!loading) setPasos(parsePasos(docs[itemKeyProceso(producto.id)] ?? ""));
+    if (!loading) setPasos(parsePasos(docs[itemKeyProceso(entidadId)] ?? ""));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 

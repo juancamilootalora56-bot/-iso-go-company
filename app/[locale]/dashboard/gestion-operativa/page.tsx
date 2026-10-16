@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseProductos } from "@/lib/productosFabricados";
+import { parseServicios } from "@/lib/servicios";
 import { parseInventario, todosLosMantenimientos, todasLasCalibraciones } from "@/lib/inventario";
 import { parseNoConformidades } from "@/lib/noConformidades";
 
@@ -16,6 +17,7 @@ export default function GestionOperativaPage() {
 
   const { docs, loading } = useGestionDocumentos("operativa", user?.id ?? null);
   const cantidadProductos = parseProductos(docs["productos_lista"] ?? "").length;
+  const cantidadServicios = parseServicios(docs["servicios_lista"] ?? "").length;
   const inventario = parseInventario(docs["inventario_lista"] ?? "");
   const cantidadInventario = inventario.length;
   const cantidadMantenimientos = todosLosMantenimientos(inventario).length + todasLasCalibraciones(inventario).length;
@@ -68,6 +70,49 @@ export default function GestionOperativaPage() {
             </div>
             <p className="text-xs text-gray-500 mt-0.5">
               Perfil de cada producto y su diagrama de proceso operativo paso a paso.
+            </p>
+          </div>
+          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
+        </Link>
+
+        <Link
+          href={`${basePath}/inscripcion_servicios`}
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
+        >
+          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF6E5] to-[#FDEBC8] text-xl">
+              🧰
+            </span>
+          </span>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-sm text-[#1A1A1A]">Alta de Servicio</h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Formulario de alta de los servicios que prestás (para empresas sin productos físicos).
+            </p>
+          </div>
+          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
+        </Link>
+
+        <Link
+          href={`${basePath}/lista_maestra_servicios`}
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
+        >
+          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
+            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF6E5] to-[#FDEBC8] text-xl">
+              🗂️
+            </span>
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">Servicios</h2>
+              {!loading && cantidadServicios > 0 && (
+                <span className="text-[10px] uppercase tracking-wide font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                  {cantidadServicios}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Perfil de cada servicio y su diagrama de proceso operativo paso a paso.
             </p>
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>

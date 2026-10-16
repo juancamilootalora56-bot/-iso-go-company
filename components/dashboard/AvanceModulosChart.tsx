@@ -115,7 +115,7 @@ export default function AvanceModulosChart({
   ]);
 
   const pctOperativa = porcentaje([
-    tieneRegistros(docsOperativa, "productos_lista"),
+    tieneRegistros(docsOperativa, "productos_lista") || tieneRegistros(docsOperativa, "servicios_lista"),
     tieneRegistros(docsOperativa, "inventario_lista"),
     tieneRegistros(docsOperativa, "no_conformidades_lista"),
   ]);

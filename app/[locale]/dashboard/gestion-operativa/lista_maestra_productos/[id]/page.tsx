@@ -151,8 +151,8 @@ export default function PerfilProductoPage() {
         </div>
       )}
 
-      {tab === "proceso" && <ProcesoOperativoForm userId={user?.id ?? null} producto={p} />}
-      {tab === "diagrama" && <DiagramaFlujoView userId={user?.id ?? null} producto={p} />}
+      {tab === "proceso" && <ProcesoOperativoForm userId={user?.id ?? null} entidadId={p.id} />}
+      {tab === "diagrama" && <DiagramaFlujoView userId={user?.id ?? null} entidadId={p.id} />}
     </div>
   );
 }

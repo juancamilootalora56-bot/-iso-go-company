@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
-import type { ProductoFabricado } from "@/lib/productosFabricados";
 import {
   parsePasos,
   pasoVacio,
@@ -96,9 +95,9 @@ function TablaRecursos({ titulo, icono, recursos }: { titulo: string; icono: str
   );
 }
 
-export default function ProcesoOperativoForm({ userId, producto }: { userId: string | null; producto: ProductoFabricado }) {
+export default function ProcesoOperativoForm({ userId, entidadId }: { userId: string | null; entidadId: string }) {
   const { docs, loading, save } = useGestionDocumentos("operativa", userId);
-  const ITEM_KEY = itemKeyProceso(producto.id);
+  const ITEM_KEY = itemKeyProceso(entidadId);
 
   const [pasos, setPasos] = useState<PasoProceso[]>([]);
   const [paso, setPaso] = useState<PasoProceso>(pasoVacio(1));
