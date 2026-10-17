@@ -721,7 +721,6 @@ function FormCompra({
   ordenesCompra: ReturnType<typeof parseOrdenesCompra>;
   basePath: string;
 }) {
-  const ganadora = req.cotizaciones.find((c) => c.id === req.cotizacionGanadoraId);
   const ordenExiste = req.ordenCompraId && ordenesCompra.some((o) => o.id === req.ordenCompraId);
   const archivoRef = useRef<HTMLInputElement>(null);
 
@@ -743,10 +742,41 @@ function FormCompra({
 
   return (
     <div className="space-y-2 pt-2">
-      {ganadora && (
-        <div className="bg-[#FAFAFA] rounded-lg p-2 text-[11px] text-gray-600 space-y-0.5">
-          <p><strong className="text-[#1A1A1A]">{ganadora.proveedorNombre}</strong></p>
-          <p>{ganadora.precio.toLocaleString("es")} {ganadora.moneda} · {ganadora.plazoEntrega || "sin plazo"}</p>
+      {req.cotizaciones.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+            Cotización{req.cotizaciones.length !== 1 ? "es" : ""} recibida{req.cotizaciones.length !== 1 ? "s" : ""} ({req.cotizaciones.length})
+          </p>
+          {req.cotizaciones.map((c) => {
+            const esGanadora = c.id === req.cotizacionGanadoraId;
+            return (
+              <div
+                key={c.id}
+                className={`rounded-lg p-2 text-[11px] space-y-0.5 border ${esGanadora ? "border-[#22C55E] bg-[#22C55E]/5" : "border-gray-200 bg-[#FAFAFA]"}`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <strong className="text-[#1A1A1A]">{c.proveedorNombre || "Sin nombre"}</strong>
+                  {esGanadora && (
+                    <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full text-white bg-[#22C55E] flex-shrink-0">
+                      ✓ Ganadora
+                    </span>
+                  )}
+                </div>
+                <p className="text-gray-600">
+                  {c.precio.toLocaleString("es")} {c.moneda} · {c.plazoEntrega || "sin plazo"} · {c.condicionesPago || "sin condiciones"}
+                </p>
+                {c.calidadObservada && <p className="text-gray-400 italic">{c.calidadObservada}</p>}
+                {c.archivoNombre && (
+                  <a href={c.archivo ?? "#"} download={c.archivoNombre} className="inline-block text-[10px] hover:opacity-80" style={{ color: NARANJA }}>
+                    📎 {c.archivoNombre}
+                  </a>
+                )}
+              </div>
+            );
+          })}
+          {req.criterioSeleccion && (
+            <p className="text-[10px] text-gray-400 italic">Criterio de selección: {req.criterioSeleccion}</p>
+          )}
         </div>
       )}
       {ordenExiste ? (
