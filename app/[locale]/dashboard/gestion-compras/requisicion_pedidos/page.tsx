@@ -27,6 +27,12 @@ import {
   TIPOS_REQUISICION,
   PRIORIDADES_REQUISICION,
   MONEDAS_COTIZACION,
+  mesDeFecha,
+  mesActual,
+  nombreMes,
+  mesAnterior,
+  mesSiguiente,
+  mesesConRequisiciones,
   type Requisicion,
   type Cotizacion,
   type EtapaRequisicion,
@@ -61,10 +67,12 @@ export default function RequisicionPedidosPage() {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [mostrarRechazadas, setMostrarRechazadas] = useState(false);
   const [filtroTipo, setFiltroTipo] = useState("");
+  const [mes, setMes] = useState(mesActual());
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
   const requisiciones = draft ?? guardadas;
+  const meses = mesesConRequisiciones(requisiciones);
 
   if (loading || loadingTH) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
@@ -96,6 +104,7 @@ export default function RequisicionPedidosPage() {
     const nuevaReq = requisicionVacia(codigo);
     setDraft([...requisiciones, nuevaReq]);
     setExpandidoId(nuevaReq.id);
+    setMes(mesActual());
   }
 
   function eliminar(id: string) {
@@ -139,11 +148,15 @@ export default function RequisicionPedidosPage() {
     await persistir(requisicionesActualizadas, [...ordenesCompra, nuevaOrden]);
   }
 
-  const filtradas = requisiciones.filter((r) => !filtroTipo || r.tipo === filtroTipo);
+  const requisicionesDelMes = requisiciones.filter((r) => mesDeFecha(r.fechaAlta) === mes);
+  const filtradas = requisicionesDelMes.filter((r) => !filtroTipo || r.tipo === filtroTipo);
   const activas = filtradas.filter((r) => r.etapa !== "Rechazada");
   const rechazadas = filtradas.filter((r) => r.etapa === "Rechazada");
-  const resumen = resumenPorEtapaRequisicion(requisiciones);
-  const tiempoProm = tiempoPromedioCiclo(requisiciones);
+  const resumen = resumenPorEtapaRequisicion(requisicionesDelMes);
+  const tiempoProm = tiempoPromedioCiclo(requisicionesDelMes);
+  const indiceMes = meses.indexOf(mes);
+  const hayMesAnterior = indiceMes > 0;
+  const hayMesSiguiente = indiceMes >= 0 && indiceMes < meses.length - 1;
 
   function onDragStart(id: string) {
     setDraggedId(id);
@@ -173,12 +186,38 @@ export default function RequisicionPedidosPage() {
         </button>
       </div>
 
+      {/* Navegador de mes */}
+      <div className="flex items-center gap-2 bg-white rounded-xl border border-gray-100 px-3 py-2 w-fit">
+        <button
+          onClick={() => setMes(mesAnterior(mes))}
+          disabled={!hayMesAnterior}
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent"
+          aria-label="Mes anterior"
+        >
+          ‹
+        </button>
+        <span className="text-sm font-semibold text-[#1A1A1A] capitalize min-w-[140px] text-center">{nombreMes(mes)}</span>
+        <button
+          onClick={() => setMes(mesSiguiente(mes))}
+          disabled={!hayMesSiguiente}
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent"
+          aria-label="Mes siguiente"
+        >
+          ›
+        </button>
+        {mes !== mesActual() && (
+          <button onClick={() => setMes(mesActual())} className="text-[11px] font-semibold ml-1 hover:opacity-80" style={{ color: NARANJA }}>
+            Hoy
+          </button>
+        )}
+      </div>
+
       {/* KPIs */}
-      {requisiciones.length > 0 && (
+      {requisicionesDelMes.length > 0 && (
         <div className="flex items-center gap-3 flex-wrap">
           <div className="bg-white rounded-xl border border-gray-100 px-4 py-2.5">
-            <span className="text-lg font-bold text-[#1A1A1A]">{requisiciones.length}</span>
-            <span className="text-xs text-gray-500 ml-1.5">requisiciones</span>
+            <span className="text-lg font-bold text-[#1A1A1A]">{requisicionesDelMes.length}</span>
+            <span className="text-xs text-gray-500 ml-1.5">requisiciones este mes</span>
           </div>
           {resumen.filter((r) => r.cantidad > 0).map((r) => (
             <div key={r.etapa} className="bg-white rounded-xl border border-gray-100 px-4 py-2.5 flex items-center gap-2">
@@ -249,9 +288,11 @@ export default function RequisicionPedidosPage() {
         </div>
       </div>
 
-      {requisiciones.length === 0 && (
+      {requisicionesDelMes.length === 0 && (
         <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
-          <p className="text-gray-500 text-sm mb-2">Todavía no hay requisiciones cargadas.</p>
+          <p className="text-gray-500 text-sm mb-2">
+            {requisiciones.length === 0 ? "Todavía no hay requisiciones cargadas." : `No hay requisiciones en ${nombreMes(mes)}.`}
+          </p>
           <button onClick={nueva} className="text-sm font-semibold hover:opacity-80" style={{ color: NARANJA }}>
             Crear la primera →
           </button>

@@ -226,6 +226,43 @@ export function resumenPorEtapaRequisicion(requisiciones: Requisicion[]): { etap
   }));
 }
 
+// --- Historial por mes ---
+
+export function mesDeFecha(fecha: string): string {
+  return fecha ? fecha.slice(0, 7) : "";
+}
+
+export function mesActual(): string {
+  return new Date().toISOString().slice(0, 7); // YYYY-MM
+}
+
+export function nombreMes(mes: string): string {
+  try {
+    const [anio, m] = mes.split("-").map(Number);
+    return new Date(anio, m - 1, 1).toLocaleDateString("es", { month: "long", year: "numeric" });
+  } catch {
+    return mes;
+  }
+}
+
+export function mesAnterior(mes: string): string {
+  const [anio, m] = mes.split("-").map(Number);
+  const d = new Date(anio, m - 2, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export function mesSiguiente(mes: string): string {
+  const [anio, m] = mes.split("-").map(Number);
+  const d = new Date(anio, m, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export function mesesConRequisiciones(requisiciones: Requisicion[]): string[] {
+  const meses = new Set(requisiciones.map((r) => mesDeFecha(r.fechaAlta)));
+  meses.add(mesActual());
+  return Array.from(meses).sort();
+}
+
 export function tiempoPromedioCiclo(requisiciones: Requisicion[]): number | null {
   const compradas = requisiciones.filter((r) => r.etapa === "Compra");
   if (compradas.length === 0) return null;
