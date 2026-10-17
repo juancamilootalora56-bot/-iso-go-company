@@ -94,7 +94,9 @@ export default function ComprasProveedorForm({ userId, proveedor }: { userId: st
     persistir(actualizadas);
   }
 
-  const comprasDelMes = compras.filter((c) => mesDeCompra(c.fecha) === mes);
+  // La tarjeta que se está editando nunca se oculta, aunque su fecha cambie
+  // de mes mientras se la completa (evita que el formulario "desaparezca" a mitad de edición).
+  const comprasDelMes = compras.filter((c) => mesDeCompra(c.fecha) === mes || c.id === expandidoId);
   const indiceMes = meses.indexOf(mes);
   const hayMesAnterior = indiceMes > 0;
   const hayMesSiguiente = indiceMes >= 0 && indiceMes < meses.length - 1;
