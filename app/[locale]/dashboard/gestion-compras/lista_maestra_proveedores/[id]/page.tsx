@@ -8,6 +8,7 @@ import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseProveedores, colorEstadoProveedor } from "@/lib/proveedores";
 import { Seccion, Dato } from "@/components/dashboard/SeccionDocumento";
 import DocumentacionProveedorForm from "@/components/dashboard/DocumentacionProveedorForm";
+import ComprasProveedorForm from "@/components/dashboard/ComprasProveedorForm";
 import EvaluacionProveedorForm from "@/components/dashboard/EvaluacionProveedorForm";
 
 const ITEM_KEY = "proveedores_lista";
@@ -15,6 +16,7 @@ const ITEM_KEY = "proveedores_lista";
 const TABS = [
   { key: "generales", label: "Datos Generales" },
   { key: "documentacion", label: "Documentación" },
+  { key: "compras", label: "Compras" },
   { key: "evaluacion", label: "Evaluación" },
 ];
 
@@ -189,6 +191,7 @@ export default function PerfilProveedorPage() {
       )}
 
       {tab === "documentacion" && <DocumentacionProveedorForm userId={user?.id ?? null} proveedor={p} />}
+      {tab === "compras" && <ComprasProveedorForm userId={user?.id ?? null} proveedor={p} />}
       {tab === "evaluacion" && <EvaluacionProveedorForm userId={user?.id ?? null} proveedor={p} />}
     </div>
   );
