@@ -51,6 +51,7 @@ export default function AdminSolicitudesPage() {
   const [notasBorrador, setNotasBorrador] = useState<Record<string, string>>({});
   const [procesando, setProcesando] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<string | null>(null);
+  const [enlaceManual, setEnlaceManual] = useState<string | null>(null);
 
   async function cargar() {
     setLoading(true);
@@ -85,6 +86,7 @@ export default function AdminSolicitudesPage() {
     if (!confirm(`¿Crear el acceso para ${s.nombre} (${s.email}) de ${s.empresa}? Se le va a enviar un correo para que configure su contraseña.`)) return;
     setProcesando(s.id);
     setMensaje(null);
+    setEnlaceManual(null);
     try {
       const res = await fetch("/api/admin/solicitudes/aprobar", {
         method: "POST",
@@ -94,8 +96,12 @@ export default function AdminSolicitudesPage() {
       const data = await res.json();
       if (!res.ok) {
         setMensaje(`✕ ${data.error || "No se pudo aprobar la solicitud."}`);
-      } else {
+      } else if (data.emailSent) {
         setMensaje(`✓ Acceso creado para ${s.email}. Se le envió un correo de invitación.`);
+        await cargar();
+      } else {
+        setMensaje(`✓ Acceso creado para ${s.email}, pero el correo no se pudo enviar (${data.emailError || "error desconocido"}). Copiá el enlace y mandáselo vos por WhatsApp o email.`);
+        setEnlaceManual(data.actionLink);
         await cargar();
       }
     } catch {
@@ -122,6 +128,19 @@ export default function AdminSolicitudesPage() {
       {mensaje && (
         <div className={`p-3 rounded-lg text-sm font-medium ${mensaje.startsWith("✓") ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-600 border border-red-200"}`}>
           {mensaje}
+        </div>
+      )}
+
+      {enlaceManual && (
+        <div className="p-3 rounded-lg bg-[#FFF6E5] border border-[#F5A623]/30 flex items-center gap-2">
+          <input readOnly value={enlaceManual} className="flex-1 text-xs bg-white border border-gray-200 rounded-lg px-3 py-2 font-mono" onFocus={(e) => e.currentTarget.select()} />
+          <button
+            onClick={() => { navigator.clipboard.writeText(enlaceManual); }}
+            className="text-xs font-bold px-3 py-2 rounded-lg text-white hover:opacity-90 flex-shrink-0"
+            style={{ backgroundColor: "#F5A623" }}
+          >
+            Copiar
+          </button>
         </div>
       )}
 
