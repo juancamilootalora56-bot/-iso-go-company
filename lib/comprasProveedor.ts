@@ -1,4 +1,4 @@
-// Historial de Compras de un proveedor — registro mes a mes de lo comprado,
+// Historial de Compras de un proveedor — registro de todo lo comprado,
 // con Orden de Compra y Factura adjuntas, y verificación del producto o servicio recibido.
 
 export type TipoCompraProveedor = "Producto" | "Servicio";
@@ -160,43 +160,6 @@ export function parseComprasProveedor(contenido: string): CompraProveedor[] {
 
 export function formatoMontoCompra(valor: number): string {
   return valor.toLocaleString("es-PY", { maximumFractionDigits: 2 });
-}
-
-// --- Historial por mes ---
-
-export function mesDeCompra(fecha: string): string {
-  return fecha ? fecha.slice(0, 7) : "";
-}
-
-export function mesActualCompra(): string {
-  return new Date().toISOString().slice(0, 7);
-}
-
-export function nombreMesCompra(mes: string): string {
-  try {
-    const [anio, m] = mes.split("-").map(Number);
-    return new Date(anio, m - 1, 1).toLocaleDateString("es", { month: "long", year: "numeric" });
-  } catch {
-    return mes;
-  }
-}
-
-export function mesAnteriorCompra(mes: string): string {
-  const [anio, m] = mes.split("-").map(Number);
-  const d = new Date(anio, m - 2, 1);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-}
-
-export function mesSiguienteCompra(mes: string): string {
-  const [anio, m] = mes.split("-").map(Number);
-  const d = new Date(anio, m, 1);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-}
-
-export function mesesConCompras(compras: CompraProveedor[]): string[] {
-  const meses = new Set(compras.map((c) => mesDeCompra(c.fecha)));
-  meses.add(mesActualCompra());
-  return Array.from(meses).sort();
 }
 
 // --- Resumen ---

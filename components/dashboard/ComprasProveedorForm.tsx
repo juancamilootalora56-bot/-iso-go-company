@@ -1,23 +1,14 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
 import type { Proveedor } from "@/lib/proveedores";
 import {
   parseComprasProveedor,
   compraVacia,
-  verificacionVacia,
   verificacionCompleta,
   formatoMontoCompra,
-  totalCompras,
-  resumenVerificacion,
-  mesDeCompra,
-  mesActualCompra,
-  nombreMesCompra,
-  mesAnteriorCompra,
-  mesSiguienteCompra,
-  mesesConCompras,
   colorEstadoCompra,
   colorResultadoVerificacion,
   TIPOS_COMPRA_PROVEEDOR,
@@ -26,20 +17,28 @@ import {
   RESULTADOS_VERIFICACION,
   ESTADOS_EMBALAJE,
   type CompraProveedor,
-  type VerificacionCompra,
 } from "@/lib/comprasProveedor";
 
 const MAX_ARCHIVO_BYTES = 2_500_000;
 const NARANJA = "#F5A623";
 
-const celdaInput =
-  "w-full text-[12px] bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#F5A623]";
-const labelMini = "block text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1";
+const inputClass =
+  "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:outline-none focus:border-[#F5A623] transition-colors";
+const labelClass = "block text-xs font-medium text-gray-500 mb-1";
+
+function SubHeader({ icono, titulo }: { icono: string; titulo: string }) {
+  return (
+    <div className="flex items-center gap-2 bg-[#1A1A1A] text-white text-[11px] font-bold uppercase tracking-wide px-3 py-2 rounded-lg mb-3">
+      <span>{icono}</span>
+      {titulo}
+    </div>
+  );
+}
 
 function fechaLegible(iso?: string) {
-  if (!iso) return "—";
+  if (!iso) return undefined;
   try {
-    return new Date(iso + "T00:00:00").toLocaleDateString("es", { day: "2-digit", month: "short", year: "numeric" });
+    return new Date(iso + "T00:00:00").toLocaleDateString("es", { day: "2-digit", month: "long", year: "numeric" });
   } catch {
     return iso;
   }
@@ -49,184 +48,42 @@ export default function ComprasProveedorForm({ userId, proveedor }: { userId: st
   const itemKey = `compras_proveedor_${proveedor.id}`;
   const { docs, loading, save } = useGestionDocumentos("compras", userId);
 
-  const guardadas = useMemo(() => parseComprasProveedor(docs[itemKey] ?? ""), [docs, itemKey]);
-  const [draft, setDraft] = useState<CompraProveedor[] | null>(null);
-  const [expandidoId, setExpandidoId] = useState<string | null>(null);
-  const [mes, setMes] = useState(mesActualCompra());
-  const [guardando, setGuardando] = useState(false);
-  const [mensaje, setMensaje] = useState("");
+  const [compras, setCompras] = useState<CompraProveedor[]>([]);
+  const [formCompra, setFormCompra] = useState<CompraProveedor>(compraVacia());
+  const [viendoCompra, setViendoCompra] = useState<CompraProveedor | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const ordenRef = useRef<HTMLInputElement>(null);
+  const facturaRef = useRef<HTMLInputElement>(null);
+  const evidenciaRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!loading) setCompras(parseComprasProveedor(docs[itemKey] ?? ""));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   if (loading) {
     return <p className="text-gray-400 text-sm py-6 text-center">Cargando...</p>;
   }
 
-  const compras = draft ?? guardadas;
-  const meses = mesesConCompras(compras);
+  const editando = compras.some((c) => c.id === formCompra.id);
+  const comprasOrdenadas = [...compras].sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+  const v = formCompra.verificacion;
 
-  async function persistir(nuevas: CompraProveedor[]) {
-    setGuardando(true);
-    await save(itemKey, JSON.stringify(nuevas));
-    setDraft(null);
-    setGuardando(false);
-    setMensaje("Guardado ✓");
-    setTimeout(() => setMensaje(""), 2500);
+  function campo<K extends keyof CompraProveedor>(key: K, value: CompraProveedor[K]) {
+    setFormCompra((f) => ({ ...f, [key]: value }));
   }
 
-  function actualizar(id: string, cambios: Partial<CompraProveedor>) {
-    setDraft(compras.map((c) => (c.id === id ? { ...c, ...cambios } : c)));
+  function campoVerificacion<K extends keyof CompraProveedor["verificacion"]>(key: K, value: CompraProveedor["verificacion"][K]) {
+    setFormCompra((f) => ({ ...f, verificacion: { ...f.verificacion, [key]: value } }));
   }
-
-  function actualizarVerificacion(id: string, cambios: Partial<VerificacionCompra>) {
-    setDraft(compras.map((c) => (c.id === id ? { ...c, verificacion: { ...c.verificacion, ...cambios } } : c)));
-  }
-
-  function nueva() {
-    const nuevaCompra = compraVacia();
-    setDraft([...compras, nuevaCompra]);
-    setExpandidoId(nuevaCompra.id);
-    setMes(mesActualCompra());
-  }
-
-  function eliminar(id: string) {
-    if (!confirm("¿Eliminar este registro de compra?")) return;
-    const actualizadas = compras.filter((c) => c.id !== id);
-    setDraft(actualizadas);
-    persistir(actualizadas);
-  }
-
-  // La tarjeta que se está editando nunca se oculta, aunque su fecha cambie
-  // de mes mientras se la completa (evita que el formulario "desaparezca" a mitad de edición).
-  const comprasDelMes = compras.filter((c) => mesDeCompra(c.fecha) === mes || c.id === expandidoId);
-  const indiceMes = meses.indexOf(mes);
-  const hayMesAnterior = indiceMes > 0;
-  const hayMesSiguiente = indiceMes >= 0 && indiceMes < meses.length - 1;
-  const resumenVerif = resumenVerificacion(comprasDelMes);
-  const montoDelMes = totalCompras(comprasDelMes);
-
-  const comprasOrdenadas = [...comprasDelMes].sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
-
-  return (
-    <div className="space-y-4">
-      <Seccion icono="🛒" titulo="Historial de Compras">
-        <p className="text-xs text-gray-500 mb-4">
-          Todo lo comprado a {proveedor.razonSocial}, mes a mes: Orden de Compra, factura y la verificación de lo
-          recibido.
-        </p>
-
-        <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-          <div className="flex items-center gap-2 bg-[#FAFAFA] rounded-xl border border-gray-100 px-3 py-2 w-fit">
-            <button
-              onClick={() => setMes(mesAnteriorCompra(mes))}
-              disabled={!hayMesAnterior}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent"
-              aria-label="Mes anterior"
-            >
-              ‹
-            </button>
-            <span className="text-sm font-semibold text-[#1A1A1A] capitalize min-w-[140px] text-center">{nombreMesCompra(mes)}</span>
-            <button
-              onClick={() => setMes(mesSiguienteCompra(mes))}
-              disabled={!hayMesSiguiente}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent"
-              aria-label="Mes siguiente"
-            >
-              ›
-            </button>
-            {mes !== mesActualCompra() && (
-              <button onClick={() => setMes(mesActualCompra())} className="text-[11px] font-semibold ml-1 hover:opacity-80" style={{ color: NARANJA }}>
-                Hoy
-              </button>
-            )}
-          </div>
-          <button onClick={nueva} className="bg-[#F5A623] text-[#1A1A1A] font-bold px-4 py-2 rounded-lg hover:bg-[#e09410] transition-colors text-xs flex-shrink-0">
-            + Nueva compra
-          </button>
-        </div>
-
-        {comprasDelMes.length > 0 && (
-          <div className="flex items-center gap-2.5 flex-wrap mb-4">
-            <div className="bg-[#1A1A1A] rounded-xl px-3.5 py-2">
-              <span className="text-sm font-extrabold text-white">{comprasDelMes.length}</span>
-              <span className="text-[11px] text-gray-400 ml-1.5">compra{comprasDelMes.length !== 1 ? "s" : ""} este mes</span>
-            </div>
-            <div className="bg-[#1A1A1A] rounded-xl px-3.5 py-2">
-              <span className="text-sm font-extrabold text-white">{formatoMontoCompra(montoDelMes)}</span>
-              <span className="text-[11px] text-gray-400 ml-1.5">monto total</span>
-            </div>
-            {resumenVerif.map((r) => (
-              <div key={r.resultado} className="bg-white border border-gray-100 rounded-xl px-3 py-2 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: r.color }} />
-                <span className="text-xs font-bold text-[#1A1A1A]">{r.cantidad}</span>
-                <span className="text-[11px] text-gray-500">{r.resultado}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {comprasOrdenadas.length === 0 ? (
-          <div className="bg-[#FAFAFA] rounded-xl border border-dashed border-gray-200 p-8 text-center">
-            <p className="text-gray-400 text-sm mb-2">
-              {compras.length === 0 ? "Todavía no hay compras registradas a este proveedor." : `No hay compras en ${nombreMesCompra(mes)}.`}
-            </p>
-            <button onClick={nueva} className="text-sm font-semibold hover:opacity-80" style={{ color: NARANJA }}>
-              Registrar la primera →
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {comprasOrdenadas.map((c) => (
-              <TarjetaCompra
-                key={c.id}
-                compra={c}
-                expandido={expandidoId === c.id}
-                onToggle={() => setExpandidoId(expandidoId === c.id ? null : c.id)}
-                onActualizar={(cambios) => actualizar(c.id, cambios)}
-                onActualizarVerificacion={(cambios) => actualizarVerificacion(c.id, cambios)}
-                onEliminar={() => eliminar(c.id)}
-              />
-            ))}
-          </div>
-        )}
-
-        <div className="flex items-center justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
-          {mensaje && <span className="text-xs text-green-600 font-semibold">{mensaje}</span>}
-          <button
-            onClick={() => persistir(compras)}
-            disabled={guardando || draft === null}
-            className="bg-[#1A1A1A] text-white font-bold px-5 py-2.5 rounded-lg hover:bg-[#333] transition-colors text-sm disabled:opacity-40"
-          >
-            {guardando ? "Guardando..." : "Guardar cambios"}
-          </button>
-        </div>
-      </Seccion>
-    </div>
-  );
-}
-
-function TarjetaCompra({
-  compra,
-  expandido,
-  onToggle,
-  onActualizar,
-  onActualizarVerificacion,
-  onEliminar,
-}: {
-  compra: CompraProveedor;
-  expandido: boolean;
-  onToggle: () => void;
-  onActualizar: (c: Partial<CompraProveedor>) => void;
-  onActualizarVerificacion: (c: Partial<VerificacionCompra>) => void;
-  onEliminar: () => void;
-}) {
-  const ordenRef = useRef<HTMLInputElement>(null);
-  const facturaRef = useRef<HTMLInputElement>(null);
-  const evidenciaRef = useRef<HTMLInputElement>(null);
-  const v = compra.verificacion;
 
   function handleArchivo(file: File | undefined, onOk: (dataUrl: string, nombre: string) => void) {
     if (!file) return;
     if (file.size > MAX_ARCHIVO_BYTES) {
-      alert("El archivo es muy pesado (máx. 2.5MB).");
+      setError("El archivo es muy pesado (máx. 2.5MB).");
       return;
     }
     const reader = new FileReader();
@@ -234,150 +91,204 @@ function TarjetaCompra({
     reader.readAsDataURL(file);
   }
 
-  return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden" style={{ borderTop: `3px solid ${colorEstadoCompra(compra.estado)}` }}>
-      <div className="p-3 cursor-pointer" onClick={onToggle}>
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full text-white bg-[#1A1A1A]/80 flex-shrink-0">
-                {compra.tipo === "Producto" ? "📦" : "🛠️"} {compra.tipo}
-              </span>
-              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full text-white flex-shrink-0" style={{ backgroundColor: colorEstadoCompra(compra.estado) }}>
-                {compra.estado}
-              </span>
-              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full text-white flex-shrink-0" style={{ backgroundColor: colorResultadoVerificacion(v.resultado) }}>
-                {v.resultado === "Pendiente" ? "Verificación pendiente" : v.resultado}
-              </span>
-            </div>
-            <p className="text-sm font-semibold text-[#1A1A1A] mt-1.5 truncate">{compra.descripcion || "Sin descripción"}</p>
-            <p className="text-[11px] text-gray-400 mt-0.5">
-              {fechaLegible(compra.fecha)} · {compra.cantidad} {compra.unidad} · {formatoMontoCompra(compra.montoTotal)} {compra.moneda.split(" ")[0]}
-            </p>
-          </div>
-          <span className="text-gray-300 flex-shrink-0">{expandido ? "▲" : "▼"}</span>
-        </div>
-      </div>
+  function handleArchivoOrden(file: File | undefined) {
+    handleArchivo(file, (dataUrl, nombre) => setFormCompra((f) => ({ ...f, archivoOrdenCompra: dataUrl, archivoOrdenCompraNombre: nombre })));
+  }
 
-      {expandido && (
-        <div className="p-3 pt-0 border-t border-gray-50 space-y-4" onClick={(e) => e.stopPropagation()}>
-          {/* Datos de la compra */}
-          <div className="space-y-2 pt-3">
-            <div className="grid sm:grid-cols-2 gap-2">
+  function handleArchivoFactura(file: File | undefined) {
+    handleArchivo(file, (dataUrl, nombre) => setFormCompra((f) => ({ ...f, archivoFactura: dataUrl, archivoFacturaNombre: nombre })));
+  }
+
+  function handleArchivoEvidencia(file: File | undefined) {
+    handleArchivo(file, (dataUrl, nombre) =>
+      setFormCompra((f) => ({ ...f, verificacion: { ...f.verificacion, archivoEvidencia: dataUrl, archivoEvidenciaNombre: nombre } }))
+    );
+  }
+
+  async function persistir(actualizadas: CompraProveedor[]) {
+    setSaving(true);
+    await save(itemKey, JSON.stringify(actualizadas));
+    setCompras(actualizadas);
+    setSaving(false);
+  }
+
+  function limpiarFormulario() {
+    setError(null);
+    setFormCompra(compraVacia());
+  }
+
+  function abrirEditar(c: CompraProveedor) {
+    setError(null);
+    setViendoCompra(null);
+    setFormCompra({ ...c, verificacion: { ...c.verificacion } });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function abrirInforme(c: CompraProveedor) {
+    setViendoCompra(c);
+  }
+
+  async function guardarCompra() {
+    if (!formCompra.descripcion.trim()) {
+      setError("Describí qué se compró.");
+      return;
+    }
+    if (!formCompra.fecha) {
+      setError("La fecha de la compra es obligatoria.");
+      return;
+    }
+    setError(null);
+    const actualizadas = editando ? compras.map((c) => (c.id === formCompra.id ? formCompra : c)) : [...compras, formCompra];
+    await persistir(actualizadas);
+    setFormCompra(compraVacia());
+    setSuccess(true);
+    setTimeout(() => setSuccess(false), 2000);
+  }
+
+  async function eliminarCompra(id: string) {
+    if (!confirm("¿Eliminar este registro de compra?")) return;
+    await persistir(compras.filter((c) => c.id !== id));
+    if (formCompra.id === id) limpiarFormulario();
+    if (viendoCompra?.id === id) setViendoCompra(null);
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Formulario permanente */}
+      <Seccion icono="🛒" titulo="Historial de Compras">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <p className="text-xs text-gray-500">
+              {editando ? `Editando compra de ${fechaLegible(formCompra.fecha)}.` : `Nueva compra a ${proveedor.razonSocial}.`}
+            </p>
+            {editando && (
+              <button onClick={limpiarFormulario} className="text-xs font-semibold text-[#F5A623] hover:text-[#e09410] whitespace-nowrap">
+                + Nueva compra en blanco
+              </button>
+            )}
+          </div>
+
+          {error && <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">{error}</div>}
+          {success && <div className="p-2.5 bg-green-50 border border-green-200 rounded-lg text-green-700 text-xs">✓ Compra guardada</div>}
+
+          <div>
+            <SubHeader icono="📦" titulo="Datos de la compra" />
+            <div className="grid sm:grid-cols-2 gap-2.5">
               <div>
-                <label className={labelMini}>Tipo</label>
-                <select value={compra.tipo} onChange={(e) => onActualizar({ tipo: e.target.value as CompraProveedor["tipo"] })} className={celdaInput}>
+                <label className={labelClass}>Tipo</label>
+                <select value={formCompra.tipo} onChange={(e) => campo("tipo", e.target.value as CompraProveedor["tipo"])} className={inputClass}>
                   {TIPOS_COMPRA_PROVEEDOR.map((t) => (
                     <option key={t} value={t}>{t}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className={labelMini}>Estado</label>
-                <select value={compra.estado} onChange={(e) => onActualizar({ estado: e.target.value })} className={celdaInput}>
+                <label className={labelClass}>Estado</label>
+                <select value={formCompra.estado} onChange={(e) => campo("estado", e.target.value)} className={inputClass}>
                   {ESTADOS_COMPRA_PROVEEDOR.map((e2) => (
                     <option key={e2} value={e2}>{e2}</option>
                   ))}
                 </select>
               </div>
-            </div>
-            <div>
-              <label className={labelMini}>Descripción de lo comprado</label>
-              <textarea value={compra.descripcion} onChange={(e) => onActualizar({ descripcion: e.target.value })} rows={2} className={celdaInput + " resize-y"} placeholder="¿Qué producto o servicio se compró?" />
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div>
-                <label className={labelMini}>Cantidad</label>
-                <input type="number" min={0} value={compra.cantidad} onChange={(e) => onActualizar({ cantidad: Math.max(0, Number(e.target.value) || 0) })} onWheel={(e) => e.currentTarget.blur()} className={celdaInput} />
+              <div className="sm:col-span-2">
+                <label className={labelClass}>
+                  <span className="text-red-500">*</span> Descripción de lo comprado
+                </label>
+                <textarea value={formCompra.descripcion} onChange={(e) => campo("descripcion", e.target.value)} rows={2} className={`${inputClass} resize-y`} placeholder="¿Qué producto o servicio se compró?" />
               </div>
               <div>
-                <label className={labelMini}>Unidad</label>
-                <input value={compra.unidad} onChange={(e) => onActualizar({ unidad: e.target.value })} className={celdaInput} />
+                <label className={labelClass}>Cantidad</label>
+                <input type="number" min={0} value={formCompra.cantidad} onChange={(e) => campo("cantidad", Math.max(0, Number(e.target.value) || 0))} onWheel={(e) => e.currentTarget.blur()} className={inputClass} />
               </div>
               <div>
-                <label className={labelMini}>Monto total</label>
-                <input type="number" min={0} value={compra.montoTotal} onChange={(e) => onActualizar({ montoTotal: Math.max(0, Number(e.target.value) || 0) })} onWheel={(e) => e.currentTarget.blur()} className={celdaInput} />
+                <label className={labelClass}>Unidad</label>
+                <input value={formCompra.unidad} onChange={(e) => campo("unidad", e.target.value)} className={inputClass} />
               </div>
               <div>
-                <label className={labelMini}>Moneda</label>
-                <select value={compra.moneda} onChange={(e) => onActualizar({ moneda: e.target.value })} className={celdaInput}>
+                <label className={labelClass}>Monto total</label>
+                <input type="number" min={0} value={formCompra.montoTotal} onChange={(e) => campo("montoTotal", Math.max(0, Number(e.target.value) || 0))} onWheel={(e) => e.currentTarget.blur()} className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Moneda</label>
+                <select value={formCompra.moneda} onChange={(e) => campo("moneda", e.target.value)} className={inputClass}>
                   {MONEDAS_COMPRA_PROVEEDOR.map((m) => (
                     <option key={m} value={m}>{m}</option>
                   ))}
                 </select>
               </div>
-            </div>
-            <div>
-              <label className={labelMini}>Fecha de la compra</label>
-              <input type="date" value={compra.fecha} onChange={(e) => onActualizar({ fecha: e.target.value })} className={celdaInput} />
-            </div>
-          </div>
-
-          {/* Orden de compra y factura */}
-          <div className="grid sm:grid-cols-2 gap-2.5">
-            <div className="bg-[#FAFAFA] rounded-lg p-2.5 space-y-1.5">
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">Orden de Compra</p>
-              <input value={compra.numeroOrdenCompra} onChange={(e) => onActualizar({ numeroOrdenCompra: e.target.value })} placeholder="N° de orden" className={celdaInput} />
-              <input ref={ordenRef} type="file" className="hidden" onChange={(e) => handleArchivo(e.target.files?.[0], (dataUrl, nombre) => onActualizar({ archivoOrdenCompra: dataUrl, archivoOrdenCompraNombre: nombre }))} />
-              <div className="flex items-center gap-2">
-                <button onClick={() => ordenRef.current?.click()} className="text-[10px] font-semibold px-2 py-1 rounded border border-gray-200 hover:border-[#F5A623] bg-white">
-                  📎 {compra.archivoOrdenCompraNombre ? "Cambiar" : "Adjuntar"}
-                </button>
-                {compra.archivoOrdenCompraNombre && (
-                  <a href={compra.archivoOrdenCompra ?? "#"} download={compra.archivoOrdenCompraNombre} className="text-[10px] hover:opacity-80 truncate" style={{ color: NARANJA }}>
-                    {compra.archivoOrdenCompraNombre}
-                  </a>
-                )}
-              </div>
-            </div>
-            <div className="bg-[#FAFAFA] rounded-lg p-2.5 space-y-1.5">
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">Factura</p>
-              <div className="grid grid-cols-2 gap-1.5">
-                <input value={compra.numeroFactura} onChange={(e) => onActualizar({ numeroFactura: e.target.value })} placeholder="N° de factura" className={celdaInput} />
-                <input type="date" value={compra.fechaFactura} onChange={(e) => onActualizar({ fechaFactura: e.target.value })} className={celdaInput} />
-              </div>
-              <input ref={facturaRef} type="file" className="hidden" onChange={(e) => handleArchivo(e.target.files?.[0], (dataUrl, nombre) => onActualizar({ archivoFactura: dataUrl, archivoFacturaNombre: nombre }))} />
-              <div className="flex items-center gap-2">
-                <button onClick={() => facturaRef.current?.click()} className="text-[10px] font-semibold px-2 py-1 rounded border border-gray-200 hover:border-[#F5A623] bg-white">
-                  📎 {compra.archivoFacturaNombre ? "Cambiar" : "Adjuntar"}
-                </button>
-                {compra.archivoFacturaNombre && (
-                  <a href={compra.archivoFactura ?? "#"} download={compra.archivoFacturaNombre} className="text-[10px] hover:opacity-80 truncate" style={{ color: NARANJA }}>
-                    {compra.archivoFacturaNombre}
-                  </a>
-                )}
+              <div>
+                <label className={labelClass}>
+                  <span className="text-red-500">*</span> Fecha de la compra
+                </label>
+                <input type="date" value={formCompra.fecha} onChange={(e) => campo("fecha", e.target.value)} className={inputClass} />
               </div>
             </div>
           </div>
 
           <div>
-            <label className={labelMini}>Observaciones de la compra</label>
-            <textarea value={compra.observaciones} onChange={(e) => onActualizar({ observaciones: e.target.value })} rows={2} className={celdaInput + " resize-y"} />
+            <SubHeader icono="🧾" titulo="Orden de Compra y Factura" />
+            <div className="grid sm:grid-cols-2 gap-2.5">
+              <div className="bg-[#FAFAFA] rounded-lg p-3 space-y-2 border border-gray-100">
+                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Orden de Compra</p>
+                <input value={formCompra.numeroOrdenCompra} onChange={(e) => campo("numeroOrdenCompra", e.target.value)} placeholder="N° de orden" className={inputClass} />
+                <input ref={ordenRef} type="file" className="hidden" onChange={(e) => handleArchivoOrden(e.target.files?.[0])} />
+                <div className="flex items-center gap-2">
+                  <button onClick={() => ordenRef.current?.click()} className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-200 hover:border-[#F5A623] bg-white">
+                    📎 {formCompra.archivoOrdenCompraNombre ? "Cambiar" : "Adjuntar"}
+                  </button>
+                  {formCompra.archivoOrdenCompraNombre && (
+                    <a href={formCompra.archivoOrdenCompra ?? "#"} download={formCompra.archivoOrdenCompraNombre} className="text-xs hover:opacity-80 truncate" style={{ color: NARANJA }}>
+                      {formCompra.archivoOrdenCompraNombre}
+                    </a>
+                  )}
+                </div>
+              </div>
+              <div className="bg-[#FAFAFA] rounded-lg p-3 space-y-2 border border-gray-100">
+                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Factura</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <input value={formCompra.numeroFactura} onChange={(e) => campo("numeroFactura", e.target.value)} placeholder="N° de factura" className={inputClass} />
+                  <input type="date" value={formCompra.fechaFactura} onChange={(e) => campo("fechaFactura", e.target.value)} className={inputClass} />
+                </div>
+                <input ref={facturaRef} type="file" className="hidden" onChange={(e) => handleArchivoFactura(e.target.files?.[0])} />
+                <div className="flex items-center gap-2">
+                  <button onClick={() => facturaRef.current?.click()} className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-200 hover:border-[#F5A623] bg-white">
+                    📎 {formCompra.archivoFacturaNombre ? "Cambiar" : "Adjuntar"}
+                  </button>
+                  {formCompra.archivoFacturaNombre && (
+                    <a href={formCompra.archivoFactura ?? "#"} download={formCompra.archivoFacturaNombre} className="text-xs hover:opacity-80 truncate" style={{ color: NARANJA }}>
+                      {formCompra.archivoFacturaNombre}
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <SubHeader icono="📝" titulo="Observaciones de la compra" />
+            <textarea value={formCompra.observaciones} onChange={(e) => campo("observaciones", e.target.value)} rows={2} className={`${inputClass} resize-y`} />
           </div>
 
           {/* Verificación */}
-          <div className="rounded-xl border p-3 space-y-2.5" style={{ borderColor: `${colorResultadoVerificacion(v.resultado)}40`, backgroundColor: `${colorResultadoVerificacion(v.resultado)}08` }}>
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] font-bold text-[#1A1A1A] uppercase tracking-wide">
-                ✓ {compra.tipo === "Producto" ? "Verificación de lo recibido" : "Verificación del servicio"}
-              </p>
-              <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full text-white" style={{ backgroundColor: colorResultadoVerificacion(v.resultado) }}>
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <SubHeader icono="✓" titulo={formCompra.tipo === "Producto" ? "Verificación de lo recibido" : "Verificación del servicio"} />
+              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full text-white ml-3 flex-shrink-0" style={{ backgroundColor: colorResultadoVerificacion(v.resultado) }}>
                 {v.resultado}
               </span>
             </div>
-
-            <div className="grid sm:grid-cols-3 gap-2">
+            <div className="grid sm:grid-cols-3 gap-2.5 mb-2.5">
               <div>
-                <label className={labelMini}>Fecha de verificación</label>
-                <input type="date" value={v.fecha} onChange={(e) => onActualizarVerificacion({ fecha: e.target.value })} className={celdaInput} />
+                <label className={labelClass}>Fecha de verificación</label>
+                <input type="date" value={v.fecha} onChange={(e) => campoVerificacion("fecha", e.target.value)} className={inputClass} />
               </div>
               <div>
-                <label className={labelMini}>Responsable</label>
-                <input value={v.responsable} onChange={(e) => onActualizarVerificacion({ responsable: e.target.value })} placeholder="Quién verificó" className={celdaInput} />
+                <label className={labelClass}>Responsable</label>
+                <input value={v.responsable} onChange={(e) => campoVerificacion("responsable", e.target.value)} placeholder="Quién verificó" className={inputClass} />
               </div>
               <div>
-                <label className={labelMini}>Resultado</label>
-                <select value={v.resultado} onChange={(e) => onActualizarVerificacion({ resultado: e.target.value })} className={celdaInput}>
+                <label className={labelClass}>Resultado</label>
+                <select value={v.resultado} onChange={(e) => campoVerificacion("resultado", e.target.value)} className={inputClass}>
                   {RESULTADOS_VERIFICACION.map((r) => (
                     <option key={r} value={r}>{r}</option>
                   ))}
@@ -385,87 +296,258 @@ function TarjetaCompra({
               </div>
             </div>
 
-            {compra.tipo === "Producto" ? (
-              <div className="grid sm:grid-cols-2 gap-2 bg-white/60 rounded-lg p-2.5">
+            {formCompra.tipo === "Producto" ? (
+              <div className="grid sm:grid-cols-2 gap-2.5 bg-[#FAFAFA] rounded-lg p-3 border border-gray-100 mb-2.5">
                 <div>
-                  <label className={labelMini}>Cantidad recibida</label>
-                  <input type="number" min={0} value={v.cantidadRecibida} onChange={(e) => onActualizarVerificacion({ cantidadRecibida: Math.max(0, Number(e.target.value) || 0) })} onWheel={(e) => e.currentTarget.blur()} className={celdaInput} />
+                  <label className={labelClass}>Cantidad recibida</label>
+                  <input type="number" min={0} value={v.cantidadRecibida} onChange={(e) => campoVerificacion("cantidadRecibida", Math.max(0, Number(e.target.value) || 0))} onWheel={(e) => e.currentTarget.blur()} className={inputClass} />
                 </div>
                 <div>
-                  <label className={labelMini}>Estado del embalaje</label>
-                  <select value={v.estadoEmbalaje} onChange={(e) => onActualizarVerificacion({ estadoEmbalaje: e.target.value })} className={celdaInput}>
+                  <label className={labelClass}>Estado del embalaje</label>
+                  <select value={v.estadoEmbalaje} onChange={(e) => campoVerificacion("estadoEmbalaje", e.target.value)} className={inputClass}>
                     {ESTADOS_EMBALAJE.map((es) => (
                       <option key={es} value={es}>{es}</option>
                     ))}
                   </select>
                 </div>
-                <label className="flex items-center gap-2 text-[11px] text-gray-600">
-                  <input type="checkbox" checked={v.coincideConOrden} onChange={(e) => onActualizarVerificacion({ coincideConOrden: e.target.checked })} />
+                <label className="flex items-center gap-2 text-xs text-gray-600">
+                  <input type="checkbox" checked={v.coincideConOrden} onChange={(e) => campoVerificacion("coincideConOrden", e.target.checked)} className="accent-[#F5A623]" />
                   Coincide con lo pedido en la orden
                 </label>
-                <label className="flex items-center gap-2 text-[11px] text-gray-600">
-                  <input type="checkbox" checked={v.fichaTecnicaRecibida} onChange={(e) => onActualizarVerificacion({ fichaTecnicaRecibida: e.target.checked })} />
+                <label className="flex items-center gap-2 text-xs text-gray-600">
+                  <input type="checkbox" checked={v.fichaTecnicaRecibida} onChange={(e) => campoVerificacion("fichaTecnicaRecibida", e.target.checked)} className="accent-[#F5A623]" />
                   Ficha técnica / manual recibido
                 </label>
-                <label className="flex items-center gap-2 text-[11px] text-gray-600 sm:col-span-2">
-                  <input type="checkbox" checked={v.certificadoCalidadRecibido} onChange={(e) => onActualizarVerificacion({ certificadoCalidadRecibido: e.target.checked })} />
+                <label className="flex items-center gap-2 text-xs text-gray-600 sm:col-span-2">
+                  <input type="checkbox" checked={v.certificadoCalidadRecibido} onChange={(e) => campoVerificacion("certificadoCalidadRecibido", e.target.checked)} className="accent-[#F5A623]" />
                   Certificado de calidad / garantía recibido
                 </label>
               </div>
             ) : (
-              <div className="grid sm:grid-cols-2 gap-2 bg-white/60 rounded-lg p-2.5">
+              <div className="grid sm:grid-cols-2 gap-2.5 bg-[#FAFAFA] rounded-lg p-3 border border-gray-100 mb-2.5">
                 <div>
-                  <label className={labelMini}>Fecha de inicio del servicio</label>
-                  <input type="date" value={v.fechaInicioServicio} onChange={(e) => onActualizarVerificacion({ fechaInicioServicio: e.target.value })} className={celdaInput} />
+                  <label className={labelClass}>Fecha de inicio del servicio</label>
+                  <input type="date" value={v.fechaInicioServicio} onChange={(e) => campoVerificacion("fechaInicioServicio", e.target.value)} className={inputClass} />
                 </div>
                 <div>
-                  <label className={labelMini}>Fecha de fin del servicio</label>
-                  <input type="date" value={v.fechaFinServicio} onChange={(e) => onActualizarVerificacion({ fechaFinServicio: e.target.value })} className={celdaInput} />
+                  <label className={labelClass}>Fecha de fin del servicio</label>
+                  <input type="date" value={v.fechaFinServicio} onChange={(e) => campoVerificacion("fechaFinServicio", e.target.value)} className={inputClass} />
                 </div>
-                <label className="flex items-center gap-2 text-[11px] text-gray-600">
-                  <input type="checkbox" checked={v.cumpleAlcanceAcordado} onChange={(e) => onActualizarVerificacion({ cumpleAlcanceAcordado: e.target.checked })} />
+                <label className="flex items-center gap-2 text-xs text-gray-600">
+                  <input type="checkbox" checked={v.cumpleAlcanceAcordado} onChange={(e) => campoVerificacion("cumpleAlcanceAcordado", e.target.checked)} className="accent-[#F5A623]" />
                   Cumple el alcance acordado
                 </label>
-                <label className="flex items-center gap-2 text-[11px] text-gray-600">
-                  <input type="checkbox" checked={v.cumpleTiemposAcordados} onChange={(e) => onActualizarVerificacion({ cumpleTiemposAcordados: e.target.checked })} />
+                <label className="flex items-center gap-2 text-xs text-gray-600">
+                  <input type="checkbox" checked={v.cumpleTiemposAcordados} onChange={(e) => campoVerificacion("cumpleTiemposAcordados", e.target.checked)} className="accent-[#F5A623]" />
                   Cumple los tiempos acordados
                 </label>
-                <label className="flex items-center gap-2 text-[11px] text-gray-600">
-                  <input type="checkbox" checked={v.informeOEvidenciaRecibida} onChange={(e) => onActualizarVerificacion({ informeOEvidenciaRecibida: e.target.checked })} />
+                <label className="flex items-center gap-2 text-xs text-gray-600">
+                  <input type="checkbox" checked={v.informeOEvidenciaRecibida} onChange={(e) => campoVerificacion("informeOEvidenciaRecibida", e.target.checked)} className="accent-[#F5A623]" />
                   Informe / evidencia del servicio recibida
                 </label>
                 <div>
-                  <label className={labelMini}>Satisfacción (0-5)</label>
-                  <input type="number" min={0} max={5} value={v.satisfaccion} onChange={(e) => onActualizarVerificacion({ satisfaccion: Math.min(5, Math.max(0, Number(e.target.value) || 0)) })} onWheel={(e) => e.currentTarget.blur()} className={celdaInput} />
+                  <label className={labelClass}>Satisfacción (0-5)</label>
+                  <input type="number" min={0} max={5} value={v.satisfaccion} onChange={(e) => campoVerificacion("satisfaccion", Math.min(5, Math.max(0, Number(e.target.value) || 0)))} onWheel={(e) => e.currentTarget.blur()} className={inputClass} />
                 </div>
               </div>
             )}
 
-            <div>
-              <label className={labelMini}>Observaciones de la verificación</label>
-              <textarea value={v.observaciones} onChange={(e) => onActualizarVerificacion({ observaciones: e.target.value })} rows={2} className={celdaInput + " resize-y bg-white"} placeholder="Hallazgos, no conformidades, detalles..." />
+            <div className="mb-2.5">
+              <label className={labelClass}>Observaciones de la verificación</label>
+              <textarea value={v.observaciones} onChange={(e) => campoVerificacion("observaciones", e.target.value)} rows={2} className={`${inputClass} resize-y`} placeholder="Hallazgos, no conformidades, detalles..." />
             </div>
 
-            <input ref={evidenciaRef} type="file" className="hidden" onChange={(e) => handleArchivo(e.target.files?.[0], (dataUrl, nombre) => onActualizarVerificacion({ archivoEvidencia: dataUrl, archivoEvidenciaNombre: nombre }))} />
+            <input ref={evidenciaRef} type="file" className="hidden" onChange={(e) => handleArchivoEvidencia(e.target.files?.[0])} />
             <div className="flex items-center gap-2">
-              <button onClick={() => evidenciaRef.current?.click()} className="text-[10px] font-semibold px-2 py-1 rounded border border-gray-200 hover:border-[#F5A623] bg-white">
+              <button onClick={() => evidenciaRef.current?.click()} className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-200 hover:border-[#F5A623] bg-white">
                 📎 {v.archivoEvidenciaNombre ? "Cambiar evidencia" : "Adjuntar evidencia"}
               </button>
               {v.archivoEvidenciaNombre && (
-                <a href={v.archivoEvidencia ?? "#"} download={v.archivoEvidenciaNombre} className="text-[10px] hover:opacity-80 truncate" style={{ color: NARANJA }}>
+                <a href={v.archivoEvidencia ?? "#"} download={v.archivoEvidenciaNombre} className="text-xs hover:opacity-80 truncate" style={{ color: NARANJA }}>
                   {v.archivoEvidenciaNombre}
                 </a>
               )}
             </div>
-
             {!verificacionCompleta(v) && (
-              <p className="text-[10px] text-gray-400 italic">Completá fecha, responsable y resultado para cerrar la verificación.</p>
+              <p className="text-[11px] text-gray-400 italic mt-2">Completá fecha, responsable y resultado para cerrar la verificación.</p>
             )}
           </div>
 
-          <div className="flex items-center justify-end pt-1">
-            <button onClick={onEliminar} className="text-[10px] text-gray-300 hover:text-red-500">
-              Eliminar registro
+          <div className="pt-2 border-t border-gray-100 flex items-center justify-between flex-wrap gap-2">
+            <div className="flex gap-3">
+              <button onClick={guardarCompra} disabled={saving} className="bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60 text-sm">
+                {saving ? "Guardando..." : editando ? "Guardar cambios" : "Guardar compra"}
+              </button>
+              <button onClick={limpiarFormulario} className="text-sm text-gray-400 hover:text-gray-600 bg-white px-3 py-2.5 rounded-lg border border-gray-100">
+                Limpiar
+              </button>
+            </div>
+            {editando && (
+              <button onClick={() => eliminarCompra(formCompra.id)} className="text-xs text-red-400 hover:text-red-600">
+                Eliminar esta compra
+              </button>
+            )}
+          </div>
+        </div>
+      </Seccion>
+
+      {/* Historial */}
+      <Seccion icono="🗂️" titulo="Historial de Compras">
+        {comprasOrdenadas.length === 0 ? (
+          <p className="text-gray-400 text-sm text-center py-6">Todavía no hay compras registradas a este proveedor.</p>
+        ) : (
+          <div className="space-y-2.5">
+            {comprasOrdenadas.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => abrirInforme(c)}
+                className="w-full text-left bg-[#FAFAFA] rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                      <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full text-white bg-[#1A1A1A]/80">
+                        {c.tipo === "Producto" ? "📦" : "🛠️"} {c.tipo}
+                      </span>
+                      <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full text-white" style={{ backgroundColor: colorEstadoCompra(c.estado) }}>
+                        {c.estado}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-[#1A1A1A] truncate">{c.descripcion || "Sin descripción"}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {fechaLegible(c.fecha)} · {c.cantidad} {c.unidad} · {formatoMontoCompra(c.montoTotal)} {c.moneda.split(" ")[0]}
+                    </p>
+                  </div>
+                  <span
+                    className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white whitespace-nowrap"
+                    style={{ backgroundColor: colorResultadoVerificacion(c.verificacion.resultado) }}
+                  >
+                    {c.verificacion.resultado}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </Seccion>
+
+      {/* Informe de lectura */}
+      {viendoCompra && (
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div className="bg-[#1A1A1A] p-6 relative overflow-hidden">
+            <div
+              className="absolute inset-0 opacity-[0.06]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+                backgroundSize: "28px 28px",
+              }}
+            />
+            <div className="relative flex items-start justify-between gap-3 flex-wrap">
+              <div>
+                <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-[10px] font-extrabold uppercase tracking-wide px-3 py-1 rounded-full mb-3">
+                  {viendoCompra.tipo === "Producto" ? "📦 Producto" : "🛠️ Servicio"}
+                </span>
+                <h2 className="text-white text-xl font-extrabold">{viendoCompra.descripcion || "Sin descripción"}</h2>
+                <p className="text-gray-400 text-sm mt-1">
+                  {fechaLegible(viendoCompra.fecha)} · {viendoCompra.cantidad} {viendoCompra.unidad}
+                </p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <div className="text-2xl font-extrabold px-4 py-2 rounded-xl text-white" style={{ backgroundColor: colorEstadoCompra(viendoCompra.estado) }}>
+                  {formatoMontoCompra(viendoCompra.montoTotal)}
+                </div>
+                <p className="text-gray-400 text-[11px] mt-1 uppercase tracking-wide font-bold">{viendoCompra.moneda} · {viendoCompra.estado}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-5">
+            <div>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Orden de Compra y Factura</h3>
+              <div className="grid sm:grid-cols-2 gap-2.5">
+                <div className="bg-[#FAFAFA] rounded-lg p-3">
+                  <p className="text-xs text-gray-500">N° de orden: <span className="text-[#1A1A1A] font-semibold">{viendoCompra.numeroOrdenCompra || "—"}</span></p>
+                  {viendoCompra.archivoOrdenCompraNombre ? (
+                    <a href={viendoCompra.archivoOrdenCompra ?? "#"} download={viendoCompra.archivoOrdenCompraNombre} className="text-xs hover:opacity-80 block mt-1" style={{ color: NARANJA }}>
+                      📎 {viendoCompra.archivoOrdenCompraNombre}
+                    </a>
+                  ) : (
+                    <p className="text-xs text-gray-400 mt-1">Sin archivo adjunto</p>
+                  )}
+                </div>
+                <div className="bg-[#FAFAFA] rounded-lg p-3">
+                  <p className="text-xs text-gray-500">
+                    N° de factura: <span className="text-[#1A1A1A] font-semibold">{viendoCompra.numeroFactura || "—"}</span>
+                    {viendoCompra.fechaFactura && <> · {fechaLegible(viendoCompra.fechaFactura)}</>}
+                  </p>
+                  {viendoCompra.archivoFacturaNombre ? (
+                    <a href={viendoCompra.archivoFactura ?? "#"} download={viendoCompra.archivoFacturaNombre} className="text-xs hover:opacity-80 block mt-1" style={{ color: NARANJA }}>
+                      📎 {viendoCompra.archivoFacturaNombre}
+                    </a>
+                  ) : (
+                    <p className="text-xs text-gray-400 mt-1">Sin archivo adjunto</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {viendoCompra.observaciones && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Observaciones de la compra</p>
+                <p className="text-sm text-[#1A1A1A] mt-1 whitespace-pre-wrap">{viendoCompra.observaciones}</p>
+              </div>
+            )}
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide">
+                  Verificación {viendoCompra.tipo === "Producto" ? "de lo recibido" : "del servicio"}
+                </h3>
+                <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: colorResultadoVerificacion(viendoCompra.verificacion.resultado) }}>
+                  {viendoCompra.verificacion.resultado}
+                </span>
+              </div>
+              <div className="bg-[#FAFAFA] rounded-lg p-3 space-y-2 text-xs text-gray-600">
+                <p>
+                  {viendoCompra.verificacion.fecha ? fechaLegible(viendoCompra.verificacion.fecha) : "Sin fecha"}
+                  {viendoCompra.verificacion.responsable && <> · Verificado por {viendoCompra.verificacion.responsable}</>}
+                </p>
+                {viendoCompra.tipo === "Producto" ? (
+                  <ul className="space-y-1">
+                    <li>Cantidad recibida: <strong className="text-[#1A1A1A]">{viendoCompra.verificacion.cantidadRecibida}</strong></li>
+                    <li>Estado del embalaje: <strong className="text-[#1A1A1A]">{viendoCompra.verificacion.estadoEmbalaje}</strong></li>
+                    <li>{viendoCompra.verificacion.coincideConOrden ? "✓" : "✕"} Coincide con lo pedido en la orden</li>
+                    <li>{viendoCompra.verificacion.fichaTecnicaRecibida ? "✓" : "✕"} Ficha técnica / manual recibido</li>
+                    <li>{viendoCompra.verificacion.certificadoCalidadRecibido ? "✓" : "✕"} Certificado de calidad / garantía recibido</li>
+                  </ul>
+                ) : (
+                  <ul className="space-y-1">
+                    <li>Período: <strong className="text-[#1A1A1A]">{fechaLegible(viendoCompra.verificacion.fechaInicioServicio) || "—"} a {fechaLegible(viendoCompra.verificacion.fechaFinServicio) || "—"}</strong></li>
+                    <li>{viendoCompra.verificacion.cumpleAlcanceAcordado ? "✓" : "✕"} Cumple el alcance acordado</li>
+                    <li>{viendoCompra.verificacion.cumpleTiemposAcordados ? "✓" : "✕"} Cumple los tiempos acordados</li>
+                    <li>{viendoCompra.verificacion.informeOEvidenciaRecibida ? "✓" : "✕"} Informe / evidencia del servicio recibida</li>
+                    <li>Satisfacción: <strong className="text-[#1A1A1A]">{viendoCompra.verificacion.satisfaccion}/5</strong></li>
+                  </ul>
+                )}
+                {viendoCompra.verificacion.observaciones && (
+                  <p className="pt-2 border-t border-gray-200 whitespace-pre-wrap">{viendoCompra.verificacion.observaciones}</p>
+                )}
+                {viendoCompra.verificacion.archivoEvidenciaNombre && (
+                  <a href={viendoCompra.verificacion.archivoEvidencia ?? "#"} download={viendoCompra.verificacion.archivoEvidenciaNombre} className="inline-block hover:opacity-80" style={{ color: NARANJA }}>
+                    📎 {viendoCompra.verificacion.archivoEvidenciaNombre}
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 border-t border-gray-100 flex items-center justify-between">
+            <button onClick={() => abrirEditar(viendoCompra)} className="text-sm font-semibold text-[#F5A623] hover:text-[#e09410]">
+              ✎ Editar compra
+            </button>
+            <button onClick={() => setViendoCompra(null)} className="text-sm text-gray-400 hover:text-gray-600">
+              Cerrar
             </button>
           </div>
         </div>
