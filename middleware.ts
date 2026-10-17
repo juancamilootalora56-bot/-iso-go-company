@@ -22,6 +22,21 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // /admin: panel de solicitudes de inscripción, no locale-prefixed, nunca pasa
+  // por intlMiddleware. Solo chequea que haya sesión; la pertenencia a la
+  // tabla `admins` se verifica en app/admin/layout.tsx.
+  if (pathname.startsWith("/admin")) {
+    try {
+      const { supabaseResponse, user } = await updateSession(request);
+      if (!user) {
+        return NextResponse.redirect(new URL("/es/auth/login", request.url));
+      }
+      return supabaseResponse;
+    } catch {
+      return NextResponse.redirect(new URL("/es/auth/login", request.url));
+    }
+  }
+
   // Match locale prefix
   const localePattern = /^\/(es|en|pt)(\/|$)/;
   const localeMatch = pathname.match(localePattern);

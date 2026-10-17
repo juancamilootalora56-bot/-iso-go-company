@@ -161,7 +161,7 @@ export default function LoginPage() {
           href={`/${locale}/auth/register`}
           className="text-[#F5A623] hover:text-[#e09410] font-medium"
         >
-          Regístrate gratis
+          Solicitá tu acceso
         </Link>
       </p>
     </div>

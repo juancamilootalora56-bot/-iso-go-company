@@ -128,7 +128,7 @@ export default function Header() {
                       href={`/${locale}/auth/register`}
                       className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410] transition-colors"
                     >
-                      Crear cuenta →
+                      Solicitar acceso →
                     </Link>
                   </div>
                 )}
@@ -198,7 +198,7 @@ export default function Header() {
                   onClick={() => setMenuOpen(false)}
                   className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg text-center hover:bg-[#e09410]"
                 >
-                  Crear cuenta →
+                  Solicitar acceso →
                 </Link>
               </>
             )}
