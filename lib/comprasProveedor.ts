@@ -175,3 +175,39 @@ export function resumenVerificacion(compras: CompraProveedor[]): { resultado: st
     color: colorResultadoVerificacion(resultado),
   })).filter((r) => r.cantidad > 0);
 }
+
+// --- Indicadores: compras por mes / por año / por proveedor ---
+
+export function mesDeCompra(fecha: string): string {
+  return fecha ? fecha.slice(0, 7) : "";
+}
+
+export function anioDeCompra(fecha: string): string {
+  return fecha ? fecha.slice(0, 4) : "";
+}
+
+export function resumenComprasPorMes(compras: CompraProveedor[]): { mes: string; monto: number; cantidad: number }[] {
+  const mapa = new Map<string, { monto: number; cantidad: number }>();
+  compras.forEach((c) => {
+    const mes = mesDeCompra(c.fecha);
+    if (!mes) return;
+    const actual = mapa.get(mes) ?? { monto: 0, cantidad: 0 };
+    mapa.set(mes, { monto: actual.monto + c.montoTotal, cantidad: actual.cantidad + 1 });
+  });
+  return Array.from(mapa.entries())
+    .map(([mes, v]) => ({ mes, ...v }))
+    .sort((a, b) => a.mes.localeCompare(b.mes));
+}
+
+export function resumenComprasPorAnio(compras: CompraProveedor[]): { anio: string; monto: number; cantidad: number }[] {
+  const mapa = new Map<string, { monto: number; cantidad: number }>();
+  compras.forEach((c) => {
+    const anio = anioDeCompra(c.fecha);
+    if (!anio) return;
+    const actual = mapa.get(anio) ?? { monto: 0, cantidad: 0 };
+    mapa.set(anio, { monto: actual.monto + c.montoTotal, cantidad: actual.cantidad + 1 });
+  });
+  return Array.from(mapa.entries())
+    .map(([anio, v]) => ({ anio, ...v }))
+    .sort((a, b) => a.anio.localeCompare(b.anio));
+}

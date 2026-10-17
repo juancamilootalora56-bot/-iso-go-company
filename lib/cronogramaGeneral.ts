@@ -54,7 +54,7 @@ export const MODULOS_SISTEMA: { key: string; label: string; color: string; tarea
     key: "compras",
     label: "Gestión de Compras",
     color: "#10B981",
-    tareas: ["Inscripción de Proveedores", "Lista Maestra de Proveedores", "Evaluación de Proveedores", "Órdenes de Compra"],
+    tareas: ["Inscripción de Proveedores", "Lista Maestra de Proveedores", "Indicadores de Compras", "Órdenes de Compra"],
   },
   {
     key: "comercial",

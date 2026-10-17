@@ -237,7 +237,7 @@ export default function EvaluacionProveedorForm({ userId, proveedor }: { userId:
                   <option value={`Evaluación Anual ${new Date().getFullYear()}`} />
                 </datalist>
                 <p className="text-[11px] text-gray-400 mt-1">
-                  Las evaluaciones con el mismo período forman una sola matriz en &quot;Evaluación de Proveedores&quot;, junto a las de los demás proveedores.
+                  Las evaluaciones con el mismo período forman una sola matriz en &quot;Indicadores de Compras&quot;, junto a las de los demás proveedores.
                 </p>
               </div>
               <div className="sm:col-span-2">
