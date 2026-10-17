@@ -274,3 +274,39 @@ export function tiempoPromedioCiclo(requisiciones: Requisicion[]): number | null
   });
   return Math.round(dias.reduce((a, b) => a + b, 0) / dias.length);
 }
+
+// --- Indicadores: solicitudes, aprobaciones, cotizaciones y compras ---
+
+export function estaAprobada(req: Requisicion): boolean {
+  return !!req.fechaAprobacion;
+}
+
+export function resumenSolicitudesPorMes(requisiciones: Requisicion[]): { mes: string; cantidad: number }[] {
+  const mapa = new Map<string, number>();
+  requisiciones.forEach((r) => {
+    const mes = mesDeFecha(r.fechaSolicitud || r.fechaAlta);
+    if (!mes) return;
+    mapa.set(mes, (mapa.get(mes) ?? 0) + 1);
+  });
+  return Array.from(mapa.entries())
+    .map(([mes, cantidad]) => ({ mes, cantidad }))
+    .sort((a, b) => a.mes.localeCompare(b.mes));
+}
+
+export function resumenCotizacionesPorMes(requisiciones: Requisicion[]): { mes: string; cantidad: number }[] {
+  const mapa = new Map<string, number>();
+  requisiciones.forEach((r) => {
+    r.cotizaciones.forEach((c) => {
+      const mes = mesDeFecha(c.fecha);
+      if (!mes) return;
+      mapa.set(mes, (mapa.get(mes) ?? 0) + 1);
+    });
+  });
+  return Array.from(mapa.entries())
+    .map(([mes, cantidad]) => ({ mes, cantidad }))
+    .sort((a, b) => a.mes.localeCompare(b.mes));
+}
+
+export function totalCotizaciones(requisiciones: Requisicion[]): number {
+  return requisiciones.reduce((acc, r) => acc + r.cotizaciones.length, 0);
+}

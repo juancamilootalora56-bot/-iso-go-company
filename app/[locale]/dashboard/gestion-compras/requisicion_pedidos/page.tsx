@@ -112,16 +112,15 @@ export default function RequisicionPedidosPage() {
     setDraft(requisiciones.filter((r) => r.id !== id));
   }
 
-  async function mover(id: string, nuevaEtapa: EtapaRequisicion, nota = "") {
-    const actualizadas = requisiciones.map((r) => (r.id === id ? moverEtapaRequisicion(r, nuevaEtapa, nota) : r));
+  async function mover(id: string, nuevaEtapa: EtapaRequisicion, nota = "", extra?: Partial<Requisicion>) {
+    const actualizadas = requisiciones.map((r) => (r.id === id ? { ...moverEtapaRequisicion(r, nuevaEtapa, nota), ...extra } : r));
     setDraft(actualizadas);
     await persistir(actualizadas);
   }
 
   function rechazar(id: string) {
     const motivo = prompt("¿Motivo del rechazo?") ?? "";
-    mover(id, "Rechazada", `Rechazada: ${motivo}`);
-    actualizar(id, { motivoRechazo: motivo });
+    mover(id, "Rechazada", `Rechazada: ${motivo}`, { motivoRechazo: motivo });
   }
 
   async function generarOrdenCompra(req: Requisicion) {
@@ -272,7 +271,7 @@ export default function RequisicionPedidosPage() {
                       onActualizar={(cambios) => actualizar(r.id, cambios)}
                       onEliminar={() => eliminar(r.id)}
                       onRechazar={() => rechazar(r.id)}
-                      onMover={(nuevaEtapa, nota) => mover(r.id, nuevaEtapa, nota)}
+                      onMover={(nuevaEtapa, nota, extra) => mover(r.id, nuevaEtapa, nota, extra)}
                       onGenerarOrden={() => generarOrdenCompra(r)}
                       personal={personal}
                       proveedores={proveedores}
@@ -355,7 +354,7 @@ function TarjetaRequisicion({
   onActualizar: (cambios: Partial<Requisicion>) => void;
   onEliminar: () => void;
   onRechazar: () => void;
-  onMover: (etapa: EtapaRequisicion, nota?: string) => void;
+  onMover: (etapa: EtapaRequisicion, nota?: string, extra?: Partial<Requisicion>) => void;
   onGenerarOrden: () => void;
   personal: ReturnType<typeof parsePersonal>;
   proveedores: ReturnType<typeof parseProveedores>;
@@ -509,7 +508,7 @@ function FormAutorizacion({
   req: Requisicion;
   onActualizar: (c: Partial<Requisicion>) => void;
   personal: ReturnType<typeof parsePersonal>;
-  onMover: (etapa: EtapaRequisicion, nota?: string) => void;
+  onMover: (etapa: EtapaRequisicion, nota?: string, extra?: Partial<Requisicion>) => void;
   onRechazar: () => void;
 }) {
   function aprobar() {
@@ -517,8 +516,7 @@ function FormAutorizacion({
       alert("Indicá quién aprueba.");
       return;
     }
-    onActualizar({ fechaAprobacion: new Date().toISOString().slice(0, 10) });
-    onMover("Cotización", `Aprobada por ${req.aprobador}`);
+    onMover("Cotización", `Aprobada por ${req.aprobador}`, { fechaAprobacion: new Date().toISOString().slice(0, 10) });
   }
 
   return (

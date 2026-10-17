@@ -27,8 +27,19 @@ import {
   resumenComprasPorAnio,
   type CompraProveedor,
 } from "@/lib/comprasProveedor";
+import {
+  parseRequisiciones,
+  estaAprobada,
+  resumenSolicitudesPorMes,
+  resumenCotizacionesPorMes,
+  totalCotizaciones,
+} from "@/lib/requisicionPedidos";
+import LineChartSimple from "@/components/dashboard/LineChartSimple";
 
 const NARANJA = "#F5A623";
+const MORADO = "#7C4DFF";
+const AZUL = "#3B82F6";
+const VERDE = "#22C55E";
 
 type FilaMatriz = EvaluacionProveedor & { proveedorId: string; proveedorNombre: string; proveedorRubro: string };
 type CompraConProveedor = CompraProveedor & { proveedorId: string; proveedorNombre: string };
@@ -93,9 +104,11 @@ function BarraHorizontal({
 function BarrasVerticales({
   datos,
   formatoValor,
+  color = NARANJA,
 }: {
   datos: { etiqueta: string; valor: number }[];
   formatoValor: (v: number) => string;
+  color?: string;
 }) {
   const max = Math.max(...datos.map((d) => d.valor), 1);
   return (
@@ -104,11 +117,53 @@ function BarrasVerticales({
         <div key={d.etiqueta} className="flex flex-col items-center gap-1.5 flex-shrink-0 w-16" title={`${d.etiqueta}: ${formatoValor(d.valor)}`}>
           <span className="text-[10px] font-bold text-[#1A1A1A] whitespace-nowrap">{d.valor > 0 ? formatoValor(d.valor) : ""}</span>
           <div className="w-8 bg-gray-100 rounded-t-md flex items-end" style={{ height: "120px" }}>
-            <div className="w-full rounded-t-md transition-all" style={{ height: `${Math.max((d.valor / max) * 100, d.valor > 0 ? 4 : 0)}%`, backgroundColor: NARANJA }} />
+            <div className="w-full rounded-t-md transition-all" style={{ height: `${Math.max((d.valor / max) * 100, d.valor > 0 ? 4 : 0)}%`, backgroundColor: color }} />
           </div>
           <span className="text-[10px] text-gray-400 whitespace-nowrap">{d.etiqueta}</span>
         </div>
       ))}
+    </div>
+  );
+}
+
+function MedidorConversion({
+  titulo,
+  numerador,
+  denominador,
+  etiquetaNumerador,
+  etiquetaDenominador,
+  color,
+}: {
+  titulo: string;
+  numerador: number;
+  denominador: number;
+  etiquetaNumerador: string;
+  etiquetaDenominador: string;
+  color: string;
+}) {
+  const pct = denominador > 0 ? (numerador / denominador) * 100 : 0;
+  return (
+    <div className="bg-[#FAFAFA] rounded-xl border border-gray-100 p-4">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">{titulo}</p>
+        <span className="text-lg font-extrabold" style={{ color }}>{pct.toFixed(0)}%</span>
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center gap-3">
+          <p className="text-xs text-gray-500 w-28 flex-shrink-0">{etiquetaDenominador}</p>
+          <div className="flex-1 bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div className="h-full bg-gray-400 rounded-full" style={{ width: "100%" }} />
+          </div>
+          <span className="text-xs font-bold text-[#1A1A1A] w-8 text-right flex-shrink-0">{denominador}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <p className="text-xs text-gray-500 w-28 flex-shrink-0">{etiquetaNumerador}</p>
+          <div className="flex-1 bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, pct)}%`, backgroundColor: color }} />
+          </div>
+          <span className="text-xs font-bold text-[#1A1A1A] w-8 text-right flex-shrink-0">{numerador}</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -170,6 +225,15 @@ export default function IndicadoresComprasPage() {
     mapaProveedor.set(c.proveedorId, { nombre: actual.nombre, monto: actual.monto + c.montoTotal, cantidad: actual.cantidad + 1 });
   });
   const rankingProveedores = Array.from(mapaProveedor.values()).sort((a, b) => b.monto - a.monto);
+
+  // --- Requisición de Pedidos: solicitudes, aprobaciones, cotizaciones y compras ---
+  const requisiciones = parseRequisiciones(docs["requisiciones_pedidos_lista"] ?? "");
+  const solicitudesPorMes = resumenSolicitudesPorMes(requisiciones).slice(-12);
+  const cotizacionesPorMes = resumenCotizacionesPorMes(requisiciones).slice(-12);
+  const totalSolicitudes = requisiciones.length;
+  const solicitudesAprobadas = requisiciones.filter(estaAprobada).length;
+  const cantidadCotizaciones = totalCotizaciones(requisiciones);
+  const comprasEfectuadas = requisiciones.filter((r) => r.etapa === "Compra").length;
 
   return (
     <div className="max-w-6xl mx-auto space-y-4">
@@ -367,6 +431,81 @@ export default function IndicadoresComprasPage() {
                 </Seccion>
               );
             })}
+          </div>
+        )}
+      </div>
+
+      {/* Requisición de Pedidos */}
+      <div>
+        <h2 className="text-lg font-bold text-[#1A1A1A] mb-1">Requisición de Pedidos</h2>
+        <p className="text-gray-500 text-xs mb-3">Volumen de solicitudes y cotizaciones del pipeline de compras, y sus tasas de conversión.</p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          {[
+            { icon: "📝", valor: totalSolicitudes, label: "Solicitudes totales" },
+            { icon: "✅", valor: solicitudesAprobadas, label: "Solicitudes aprobadas" },
+            { icon: "💬", valor: cantidadCotizaciones, label: "Cotizaciones totales" },
+            { icon: "🛒", valor: comprasEfectuadas, label: "Compras efectuadas" },
+          ].map((k) => (
+            <div key={k.label} className="bg-white rounded-xl border border-gray-100 p-4">
+              <p className="text-xl mb-1">{k.icon}</p>
+              <p className="text-2xl font-bold text-[#1A1A1A]">{k.valor}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{k.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {requisiciones.length === 0 ? (
+          <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
+            <p className="text-gray-500 text-sm mb-2">Todavía no hay requisiciones de pedidos registradas.</p>
+            <Link href={`${basePath}/requisicion_pedidos`} className="text-sm text-[#F5A623] font-semibold hover:text-[#e09410]">
+              Ir a Requisición de Pedidos →
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <MedidorConversion
+                titulo="Solicitudes → Aprobadas"
+                numerador={solicitudesAprobadas}
+                denominador={totalSolicitudes}
+                etiquetaNumerador="Aprobadas"
+                etiquetaDenominador="Solicitadas"
+                color={VERDE}
+              />
+              <MedidorConversion
+                titulo="Cotizaciones → Compras"
+                numerador={comprasEfectuadas}
+                denominador={cantidadCotizaciones}
+                etiquetaNumerador="Compras"
+                etiquetaDenominador="Cotizaciones"
+                color={AZUL}
+              />
+            </div>
+
+            <Seccion icono="📈" titulo="Solicitudes por Mes">
+              {solicitudesPorMes.length > 0 ? (
+                <LineChartSimple
+                  puntos={solicitudesPorMes.map((m) => ({ label: etiquetaMes(m.mes), valor: m.cantidad }))}
+                  color={NARANJA}
+                  gradientId="solicitudesPorMes"
+                />
+              ) : (
+                <p className="text-gray-400 text-sm text-center py-6">Sin solicitudes registradas todavía.</p>
+              )}
+            </Seccion>
+
+            <Seccion icono="💬" titulo="Cotizaciones por Mes">
+              {cotizacionesPorMes.length > 0 ? (
+                <BarrasVerticales
+                  datos={cotizacionesPorMes.map((m) => ({ etiqueta: etiquetaMes(m.mes), valor: m.cantidad }))}
+                  formatoValor={(v) => String(v)}
+                  color={MORADO}
+                />
+              ) : (
+                <p className="text-gray-400 text-sm text-center py-6">Sin cotizaciones registradas todavía.</p>
+              )}
+            </Seccion>
           </div>
         )}
       </div>
