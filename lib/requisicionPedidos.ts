@@ -130,6 +130,8 @@ export type Requisicion = {
 
   // 5. Compra
   ordenCompraId: string | null;
+  archivoOrdenCompra: string | null; // orden de compra propia de la empresa, si la tiene (data URL)
+  archivoOrdenCompraNombre: string;
 
   etapa: EtapaRequisicion;
   bitacora: EventoRequisicion[];
@@ -161,6 +163,8 @@ export function requisicionVacia(codigo: string): Requisicion {
     cotizacionGanadoraId: null,
     criterioSeleccion: "",
     ordenCompraId: null,
+    archivoOrdenCompra: null,
+    archivoOrdenCompraNombre: "",
     etapa: "Solicitud",
     bitacora: [{ id: crypto.randomUUID(), fecha: hoy, nota: "Requisición creada", etapaDesde: "", etapaHasta: "Solicitud" }],
     observaciones: "",

@@ -340,18 +340,47 @@ function TarjetaRequisicion({
           {req.etapa === "Autorización" && <FormAutorizacion req={req} onActualizar={onActualizar} personal={personal} onMover={onMover} onRechazar={onRechazar} />}
           {req.etapa === "Cotización" && <FormCotizacion req={req} onActualizar={onActualizar} proveedores={proveedores} onMover={onMover} />}
           {req.etapa === "Selección" && <FormSeleccion req={req} onActualizar={onActualizar} onMover={onMover} />}
-          {req.etapa === "Compra" && <FormCompra req={req} onGenerarOrden={onGenerarOrden} ordenesCompra={ordenesCompra} basePath={basePath} />}
+          {req.etapa === "Compra" && <FormCompra req={req} onActualizar={onActualizar} onGenerarOrden={onGenerarOrden} ordenesCompra={ordenesCompra} basePath={basePath} />}
           {req.etapa === "Rechazada" && (
             <p className="text-xs text-gray-500 pt-2">Motivo: {req.motivoRechazo || "Sin motivo registrado"}</p>
           )}
 
-          <div className="flex items-center justify-between pt-2 mt-2 border-t border-gray-100">
-            <p className="text-[9px] text-gray-300">{req.bitacora.length} evento{req.bitacora.length !== 1 ? "s" : ""} en bitácora</p>
+          <BitacoraRequisicion req={req} />
+
+          <div className="flex items-center justify-end pt-2 mt-1">
             <button onClick={onEliminar} className="text-[10px] text-gray-300 hover:text-red-500">
               Eliminar
             </button>
           </div>
         </div>
+      )}
+    </div>
+  );
+}
+
+function BitacoraRequisicion({ req }: { req: Requisicion }) {
+  const [abierta, setAbierta] = useState(false);
+  const eventos = [...req.bitacora].reverse();
+
+  return (
+    <div className="pt-2 mt-2 border-t border-gray-100">
+      <button onClick={() => setAbierta(!abierta)} className="text-[9px] font-semibold text-gray-400 hover:text-[#1A1A1A]">
+        {abierta ? "▲" : "▼"} {req.bitacora.length} evento{req.bitacora.length !== 1 ? "s" : ""} en bitácora — trazabilidad completa
+      </button>
+      {abierta && (
+        <ul className="mt-1.5 space-y-1.5 max-h-48 overflow-y-auto pr-1">
+          {eventos.map((ev) => (
+            <li key={ev.id} className="text-[10px] text-gray-500 flex gap-2">
+              <span className="text-gray-300 whitespace-nowrap flex-shrink-0">{ev.fecha}</span>
+              <span>
+                {ev.nota}
+                {ev.etapaDesde && ev.etapaHasta && (
+                  <span className="text-gray-300"> ({ev.etapaDesde} → {ev.etapaHasta})</span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
@@ -681,17 +710,36 @@ function FormSeleccion({ req, onActualizar, onMover }: { req: Requisicion; onAct
 
 function FormCompra({
   req,
+  onActualizar,
   onGenerarOrden,
   ordenesCompra,
   basePath,
 }: {
   req: Requisicion;
+  onActualizar: (c: Partial<Requisicion>) => void;
   onGenerarOrden: () => void;
   ordenesCompra: ReturnType<typeof parseOrdenesCompra>;
   basePath: string;
 }) {
   const ganadora = req.cotizaciones.find((c) => c.id === req.cotizacionGanadoraId);
   const ordenExiste = req.ordenCompraId && ordenesCompra.some((o) => o.id === req.ordenCompraId);
+  const archivoRef = useRef<HTMLInputElement>(null);
+
+  function handleArchivoPropio(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > MAX_ARCHIVO_BYTES) {
+      alert("El archivo es muy pesado (máx. 2.5MB).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => onActualizar({ archivoOrdenCompra: reader.result as string, archivoOrdenCompraNombre: file.name });
+    reader.readAsDataURL(file);
+  }
+
+  function quitarArchivoPropio() {
+    onActualizar({ archivoOrdenCompra: null, archivoOrdenCompraNombre: "" });
+  }
 
   return (
     <div className="space-y-2 pt-2">
@@ -710,6 +758,26 @@ function FormCompra({
           🛒 Generar Orden de Compra
         </button>
       )}
+
+      <div className="bg-[#FAFAFA] rounded-lg p-2 space-y-1.5">
+        <p className="text-[10px] text-gray-500">¿La empresa ya tiene su propia Orden de Compra? Adjuntala acá.</p>
+        <input ref={archivoRef} type="file" onChange={handleArchivoPropio} className="hidden" />
+        <div className="flex items-center gap-2">
+          <button onClick={() => archivoRef.current?.click()} className="text-[10px] font-semibold px-2 py-1 rounded border border-gray-200 hover:border-[#F5A623]">
+            📎 {req.archivoOrdenCompraNombre ? "Cambiar" : "Adjuntar"} Orden de Compra
+          </button>
+          {req.archivoOrdenCompraNombre && (
+            <>
+              <a href={req.archivoOrdenCompra ?? "#"} download={req.archivoOrdenCompraNombre} className="text-[10px] hover:opacity-80 truncate" style={{ color: NARANJA }}>
+                {req.archivoOrdenCompraNombre}
+              </a>
+              <button onClick={quitarArchivoPropio} className="text-[10px] text-red-300 hover:text-red-600 flex-shrink-0">
+                ✕
+              </button>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
