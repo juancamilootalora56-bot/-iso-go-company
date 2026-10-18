@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const { name, company, phone, email, norm, message } = await req.json();
 
     await resend.emails.send({
-      from: "Iso Go Company <onboarding@resend.dev>",
+      from: "Iso Go Company <contacto@isogo.company>",
       to: "info@isogo.company",
       subject: `Nueva solicitud de cotización — ${norm}`,
       html: `

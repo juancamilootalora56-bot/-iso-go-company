@@ -127,7 +127,7 @@ export async function POST(request: Request) {
   }
 
   const { error: emailError } = await resend.emails.send({
-    from: "Iso Go Company <onboarding@resend.dev>",
+    from: "Iso Go Company <acceso@isogo.company>",
     to: solicitud.email,
     subject: "Tu acceso a Iso Go Company está listo",
     html: emailInvitacion(solicitud.nombre, solicitud.empresa, actionLink),
