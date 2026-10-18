@@ -134,13 +134,27 @@ export function etapasPermitidas(permisos: PermisosColaborador, modulo: string, 
 // (cada uno ve solo la suya), sin necesidad de que el dueño se la asigne
 // explícitamente. Como el acceso a datos (RLS de gestion_documentos) es por
 // módulo completo, hay que garantizar que el módulo "operativa" quede
-// presente en los permisos para que la consulta no quede bloqueada.
+// presente en los permisos para que la consulta no quede bloqueada. La
+// pantalla además lee la ficha de la persona desde "talento_humano"
+// (personal_lista), así que ese módulo también necesita quedar presente en
+// la RLS — pero con el árbol de actividades vacío, para que no aparezca en
+// el sidebar ni en la página de inicio de Talento Humano.
 export function conAccesoRelacionActividades(permisos: PermisosColaborador): PermisosColaborador {
-  const actual = permisos.operativa;
-  if (actual && "completo" in actual && actual.completo) return permisos;
-  const actividades = actual && "actividades" in actual ? actual.actividades : {};
-  if ("relacion_actividades" in actividades) return permisos;
-  return { ...permisos, operativa: { actividades: { ...actividades, relacion_actividades: true } } };
+  let resultado = permisos;
+
+  const operativa = resultado.operativa;
+  if (!(operativa && "completo" in operativa && operativa.completo)) {
+    const actividades = operativa && "actividades" in operativa ? operativa.actividades : {};
+    if (!("relacion_actividades" in actividades)) {
+      resultado = { ...resultado, operativa: { actividades: { ...actividades, relacion_actividades: true } } };
+    }
+  }
+
+  if (!resultado.talento_humano) {
+    resultado = { ...resultado, talento_humano: { actividades: {} } };
+  }
+
+  return resultado;
 }
 
 // ¿Tiene el colaborador algún acceso real más allá del acceso de base a
