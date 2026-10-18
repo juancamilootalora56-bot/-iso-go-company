@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { usePuedeVerActividad } from "@/hooks/usePuedeVerActividad";
 import { parseProyectosDiseno, proyectoDisenoAbierto, proyectoDisenoVencido } from "@/lib/disenoDesarrollo";
 import { parseCambiosDiseno, cambioDisenoAbierto } from "@/lib/cambiosDiseno";
 import { parsePlanesCalidad } from "@/lib/planesCalidad";
@@ -13,6 +14,7 @@ export default function GestionDisenoDesarrolloPage() {
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-diseno-desarrollo`;
+  const puedeVer = usePuedeVerActividad("diseno_desarrollo");
 
   const { docs, loading } = useGestionDocumentos("diseno_desarrollo", user?.id ?? null);
   const proyectos = parseProyectosDiseno(docs["proyectos_diseno_lista"] ?? "");
@@ -49,6 +51,7 @@ export default function GestionDisenoDesarrolloPage() {
       )}
 
       <div className="space-y-2">
+        {puedeVer("inscripcion_proyecto") && (
         <Link
           href={`${basePath}/inscripcion_proyecto`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
@@ -65,7 +68,9 @@ export default function GestionDisenoDesarrolloPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#14B8A6] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("proyectos") && (
         <Link
           href={`${basePath}/proyectos`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
@@ -90,7 +95,9 @@ export default function GestionDisenoDesarrolloPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#14B8A6] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("control_cambios") && (
         <Link
           href={`${basePath}/control_cambios`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
@@ -116,7 +123,9 @@ export default function GestionDisenoDesarrolloPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#14B8A6] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("planes_calidad") && (
         <Link
           href={`${basePath}/planes_calidad`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
@@ -141,7 +150,9 @@ export default function GestionDisenoDesarrolloPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#14B8A6] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("indicadores") && (
         <Link
           href={`${basePath}/indicadores`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
@@ -159,6 +170,7 @@ export default function GestionDisenoDesarrolloPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#14B8A6] transition-colors">›</span>
         </Link>
+        )}
       </div>
 
       <div className="mt-6 bg-[#1A1A1A] rounded-xl p-6 text-center">

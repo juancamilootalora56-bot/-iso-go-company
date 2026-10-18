@@ -5,23 +5,34 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
-import { MODULOS_PERMISOS, type Colaborador } from "@/lib/colaboradoresCliente";
+import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { parsePersonal } from "@/lib/personal";
+import { actividadesVisibles, tieneAccesoModulo, conAccesoRelacionActividades, MODULOS_PERMISOS, type Colaborador, type PermisosColaborador } from "@/lib/colaboradoresCliente";
+import SelectorPermisosColaborador from "@/components/dashboard/SelectorPermisosColaborador";
 import { TEMAS_PANEL, type TemaPanelKey } from "@/lib/temaPanel";
 
 const MAX_LOGO_BYTES = 800_000; // ~800KB
-const MAX_FOTO_BYTES = 800_000;
 
 function colaboradorVacio() {
   return {
-    nombre: "",
-    apellido: "",
-    cargo: "",
-    identificacion: "",
+    empleadoId: "",
     email: "",
     password: "",
-    foto: null as string | null,
-    permisos: [] as string[],
+    permisos: {} as PermisosColaborador,
   };
+}
+
+function resumenPermisos(permisos: PermisosColaborador): string {
+  const resumen = MODULOS_PERMISOS
+    .filter((m) => tieneAccesoModulo(permisos, m.modulo))
+    .map((m) => {
+      const p = permisos[m.modulo];
+      const completo = p && "completo" in p && p.completo;
+      if (completo) return m.label;
+      const cant = actividadesVisibles(permisos, m.modulo).length;
+      return `${m.label} (${cant})`;
+    });
+  return resumen.join(" · ") || "Sin módulos asignados";
 }
 
 export default function PerfilPage() {
@@ -30,7 +41,9 @@ export default function PerfilPage() {
   const locale = params.locale as string;
 
   const logoInputRef = useRef<HTMLInputElement>(null);
-  const fotoColabInputRef = useRef<HTMLInputElement>(null);
+
+  const { docs: docsPersonal } = useGestionDocumentos("talento_humano", user?.id ?? null);
+  const personal = parsePersonal(docsPersonal["personal_lista"] ?? "");
 
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState("");
@@ -121,32 +134,17 @@ export default function PerfilPage() {
     }
   }
 
-  function handleFotoColab(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > MAX_FOTO_BYTES) {
-      setErrorColab("La foto es muy pesada. Usá una imagen de menos de 800KB.");
-      return;
-    }
-    setErrorColab(null);
-    const reader = new FileReader();
-    reader.onload = () => setFormColab((f) => ({ ...f, foto: reader.result as string }));
-    reader.readAsDataURL(file);
-  }
-
-  function togglePermiso(modulo: string) {
-    setFormColab((f) => ({
-      ...f,
-      permisos: f.permisos.includes(modulo) ? f.permisos.filter((m) => m !== modulo) : [...f.permisos, modulo],
-    }));
-  }
-
   async function handleCrearColaborador(e: React.FormEvent) {
     e.preventDefault();
     setErrorColab(null);
     setCreado(null);
-    if (!formColab.nombre.trim() || !formColab.apellido.trim() || !formColab.email.trim()) {
-      setErrorColab("Nombre, apellido y email son obligatorios.");
+    const empleado = personal.find((p) => p.id === formColab.empleadoId);
+    if (!empleado) {
+      setErrorColab("Elegí a la persona (ya cargada en Alta de Personal) a la que le vas a dar acceso.");
+      return;
+    }
+    if (!formColab.email.trim()) {
+      setErrorColab("El email de acceso es obligatorio.");
       return;
     }
     setCreandoColab(true);
@@ -156,12 +154,13 @@ export default function PerfilPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formColab.email,
-          nombre: formColab.nombre,
-          apellido: formColab.apellido,
-          cargo: formColab.cargo,
-          identificacion: formColab.identificacion,
-          foto: formColab.foto,
-          permisos: formColab.permisos,
+          empleadoId: empleado.id,
+          nombre: empleado.nombre,
+          apellido: empleado.apellido,
+          cargo: empleado.cargo,
+          identificacion: empleado.identificacion,
+          foto: empleado.foto,
+          permisos: conAccesoRelacionActividades(formColab.permisos),
           password: formColab.password || undefined,
         }),
       });
@@ -172,7 +171,6 @@ export default function PerfilPage() {
       }
       setCreado({ email: formColab.email, password: data.password });
       setFormColab(colaboradorVacio());
-      if (fotoColabInputRef.current) fotoColabInputRef.current.value = "";
 
       const supabase = createClient();
       const { data: updated } = await supabase
@@ -383,98 +381,86 @@ export default function PerfilPage() {
         )}
 
         <form onSubmit={handleCrearColaborador} className="space-y-4 border-b border-gray-100 pb-5">
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => fotoColabInputRef.current?.click()}
-              className="relative w-16 h-16 rounded-full bg-[#FAFAFA] border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0"
-            >
-              {formColab.foto ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={formColab.foto} alt="Foto" className="w-full h-full object-cover" />
-              ) : (
-                <svg className="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                </svg>
-              )}
-              <span className="absolute bottom-0 right-0 bg-white rounded-full p-1 border border-gray-200 text-xs">✎</span>
-            </button>
-            <input ref={fotoColabInputRef} type="file" accept="image/*" onChange={handleFotoColab} className="hidden" />
-            <p className="text-xs text-gray-500">Foto del colaborador (opcional)</p>
-          </div>
+          {(() => {
+            const idsConAcceso = new Set(colaboradores.map((c) => c.empleado_id).filter(Boolean));
+            const disponibles = personal.filter((p) => !idsConAcceso.has(p.id));
+            const seleccionado = personal.find((p) => p.id === formColab.empleadoId) ?? null;
+            return (
+              <>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Persona (de Alta de Personal)</label>
+                  <select
+                    value={formColab.empleadoId}
+                    onChange={(e) => setFormColab((f) => ({ ...f, empleadoId: e.target.value }))}
+                    className={inputClass}
+                  >
+                    <option value="">Seleccioná a quién le das acceso...</option>
+                    {disponibles.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nombre} {p.apellido} {p.cargo ? `— ${p.cargo}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                  {personal.length === 0 && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      Todavía no cargaste a nadie en Alta de Personal (Gestión del Talento Humano).
+                    </p>
+                  )}
+                  {personal.length > 0 && disponibles.length === 0 && (
+                    <p className="text-xs text-gray-400 mt-1">Todo tu personal cargado ya tiene acceso al sistema.</p>
+                  )}
+                </div>
 
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Nombre</label>
-              <input
-                value={formColab.nombre}
-                onChange={(e) => setFormColab((f) => ({ ...f, nombre: e.target.value }))}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Apellido</label>
-              <input
-                value={formColab.apellido}
-                onChange={(e) => setFormColab((f) => ({ ...f, apellido: e.target.value }))}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Cargo</label>
-              <input
-                value={formColab.cargo}
-                onChange={(e) => setFormColab((f) => ({ ...f, cargo: e.target.value }))}
-                placeholder="Ej: Coordinadora Administrativa"
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Identificación</label>
-              <input
-                value={formColab.identificacion}
-                onChange={(e) => setFormColab((f) => ({ ...f, identificacion: e.target.value }))}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Email (usuario)</label>
-              <input
-                type="email"
-                value={formColab.email}
-                onChange={(e) => setFormColab((f) => ({ ...f, email: e.target.value }))}
-                placeholder="colaborador@empresa.com"
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Contraseña</label>
-              <input
-                value={formColab.password}
-                onChange={(e) => setFormColab((f) => ({ ...f, password: e.target.value }))}
-                placeholder="Generar automática"
-                className={inputClass}
-              />
-            </div>
-          </div>
+                {seleccionado && (
+                  <div className="flex items-center gap-3 bg-[#FAFAFA] rounded-xl p-3">
+                    <div className="w-12 h-12 rounded-full bg-gray-100 flex-shrink-0 overflow-hidden">
+                      {seleccionado.foto && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={seleccionado.foto} alt={seleccionado.nombre} className="w-full h-full object-cover" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[#1A1A1A] truncate">
+                        {seleccionado.nombre} {seleccionado.apellido}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">{seleccionado.cargo || "—"}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Email (usuario)</label>
+                    <input
+                      type="email"
+                      value={formColab.email}
+                      onChange={(e) => setFormColab((f) => ({ ...f, email: e.target.value }))}
+                      placeholder="colaborador@empresa.com"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Contraseña</label>
+                    <input
+                      value={formColab.password}
+                      onChange={(e) => setFormColab((f) => ({ ...f, password: e.target.value }))}
+                      placeholder="Generar automática"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              </>
+            );
+          })()}
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-2">Módulos que puede trabajar</label>
-            <div className="grid sm:grid-cols-2 gap-2">
-              {MODULOS_PERMISOS.map((m) => (
-                <label key={m.modulo} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formColab.permisos.includes(m.modulo)}
-                    onChange={() => togglePermiso(m.modulo)}
-                    className="w-4 h-4 accent-[#F5A623]"
-                  />
-                  <span className="text-sm text-gray-700">
-                    {m.icon} {m.label}
-                  </span>
-                </label>
-              ))}
-            </div>
+            <label className="block text-xs font-medium text-gray-500 mb-2">
+              Módulos y actividades que puede trabajar
+            </label>
+            <SelectorPermisosColaborador value={formColab.permisos} onChange={(p) => setFormColab((f) => ({ ...f, permisos: p }))} />
+            <p className="text-[11px] text-gray-400 mt-2">
+              Relación de Actividades queda siempre disponible para todos — cada uno ve únicamente la suya.
+            </p>
           </div>
 
           <button
@@ -507,7 +493,7 @@ export default function PerfilPage() {
                       {!c.activo && <span className="ml-2 text-[10px] font-bold text-gray-400 uppercase">Inactivo</span>}
                     </p>
                     <p className="text-xs text-gray-500 truncate">
-                      {c.cargo || "—"} · {c.permisos.length} módulo{c.permisos.length !== 1 ? "s" : ""}
+                      {c.cargo || "—"} · {resumenPermisos(c.permisos)}
                     </p>
                   </div>
                   <button

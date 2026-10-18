@@ -49,7 +49,7 @@ const inputClass =
 const labelClass = "block text-xs font-medium text-gray-500 mb-1";
 
 export default function RelacionActividadesColaboradorPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador: colaboradorSesion } = useDashboardUser();
   const params = useParams();
   const locale = params.locale as string;
   const colaboradorId = params.id as string;
@@ -91,6 +91,18 @@ export default function RelacionActividadesColaboradorPage() {
           ← Relación de Actividades
         </Link>
         <p className="text-gray-500 text-sm">No se encontró este colaborador.</p>
+      </div>
+    );
+  }
+
+  // Un colaborador solo puede ver/registrar su propia planilla, nunca la de otro.
+  if (colaboradorSesion && colaboradorSesion.empleadoId !== colaboradorId) {
+    return (
+      <div className="max-w-3xl mx-auto space-y-3">
+        <Link href={`${basePath}/relacion_actividades`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
+          ← Relación de Actividades
+        </Link>
+        <p className="text-gray-500 text-sm">No tenés acceso a la planilla de otro colaborador.</p>
       </div>
     );
   }

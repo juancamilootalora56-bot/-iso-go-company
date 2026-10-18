@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { usePuedeVerActividad } from "@/hooks/usePuedeVerActividad";
 import { parsePersonal } from "@/lib/personal";
 import { parseVacantes } from "@/lib/seleccionPersonal";
 
@@ -12,6 +13,7 @@ export default function GestionTalentoHumanoPage() {
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-talento-humano`;
+  const puedeVer = usePuedeVerActividad("talento_humano");
 
   const { docs, loading } = useGestionDocumentos("talento_humano", user?.id ?? null);
   const cantidadPersonal = parsePersonal(docs["personal_lista"] ?? "").length;
@@ -25,6 +27,7 @@ export default function GestionTalentoHumanoPage() {
       </div>
 
       <div className="space-y-2">
+        {puedeVer("seleccion_personal") && (
         <Link
           href={`${basePath}/seleccion_personal`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -49,7 +52,9 @@ export default function GestionTalentoHumanoPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("alta_personal") && (
         <Link
           href={`${basePath}/alta_personal`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -68,7 +73,9 @@ export default function GestionTalentoHumanoPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("gestion_personal") && (
         <Link
           href={`${basePath}/gestion_personal`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -94,7 +101,9 @@ export default function GestionTalentoHumanoPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("capacitaciones_generales") && (
         <Link
           href={`${basePath}/capacitaciones_generales`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -113,7 +122,9 @@ export default function GestionTalentoHumanoPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("evaluaciones_generales") && (
         <Link
           href={`${basePath}/evaluaciones_generales`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -132,6 +143,7 @@ export default function GestionTalentoHumanoPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
         {[
           { icon: "🚪", imagen: "/gestion-talento-humano/induccion.jpg", titulo: "Inducción de personal", descripcion: "Proceso de incorporación de nuevos integrantes." },

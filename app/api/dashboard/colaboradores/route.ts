@@ -12,11 +12,11 @@ function generarPassword() {
 }
 
 export async function POST(request: Request) {
-  const { email, nombre, apellido, cargo, identificacion, foto, permisos, password: passwordInput } =
+  const { email, nombre, apellido, cargo, identificacion, foto, permisos, empleadoId, password: passwordInput } =
     await request.json();
 
-  if (!email || !nombre || !apellido) {
-    return NextResponse.json({ error: "Email, nombre y apellido son obligatorios" }, { status: 400 });
+  if (!email || !nombre || !apellido || !empleadoId) {
+    return NextResponse.json({ error: "Email y la persona de Alta de Personal son obligatorios" }, { status: 400 });
   }
 
   const supabase = await createServerClient();
@@ -59,13 +59,14 @@ export async function POST(request: Request) {
   const { error: insertError } = await admin.from("client_colaboradores").insert({
     id: created.user.id,
     owner_id: user.id,
+    empleado_id: empleadoId,
     nombre,
     apellido,
     cargo: cargo || null,
     identificacion: identificacion || null,
     email,
     foto: foto || null,
-    permisos: Array.isArray(permisos) ? permisos : [],
+    permisos: permisos && typeof permisos === "object" ? permisos : {},
     activo: true,
   });
 

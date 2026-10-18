@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { usePuedeVerActividad } from "@/hooks/usePuedeVerActividad";
 import { parseClientes } from "@/lib/clientes";
 
 export default function GestionComercialPage() {
@@ -11,6 +12,7 @@ export default function GestionComercialPage() {
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-comercial`;
+  const puedeVer = usePuedeVerActividad("comercial");
 
   const { docs, loading } = useGestionDocumentos("comercial", user?.id ?? null);
   const cantidadClientes = parseClientes(docs["clientes_lista"] ?? "").length;
@@ -23,6 +25,7 @@ export default function GestionComercialPage() {
       </div>
 
       <div className="space-y-2">
+        {puedeVer("inscripcion_clientes") && (
         <Link
           href={`${basePath}/inscripcion_clientes`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -41,7 +44,9 @@ export default function GestionComercialPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("lista_maestra_clientes") && (
         <Link
           href={`${basePath}/lista_maestra_clientes`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -66,7 +71,9 @@ export default function GestionComercialPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("satisfaccion_clientes") && (
         <Link
           href={`${basePath}/satisfaccion_clientes`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -85,7 +92,9 @@ export default function GestionComercialPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("pqrsf") && (
         <Link
           href={`${basePath}/pqrsf`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -104,7 +113,9 @@ export default function GestionComercialPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("seguimiento_ventas") && (
         <Link
           href={`${basePath}/seguimiento_ventas`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -123,6 +134,7 @@ export default function GestionComercialPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
         <div className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 opacity-70">
           <span className="relative flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center bg-gray-100 border-2 border-gray-200">

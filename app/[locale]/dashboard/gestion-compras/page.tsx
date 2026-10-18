@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { usePuedeVerActividad } from "@/hooks/usePuedeVerActividad";
 import { parseProveedores } from "@/lib/proveedores";
 import { parseRequisiciones } from "@/lib/requisicionPedidos";
 
@@ -12,6 +13,7 @@ export default function GestionComprasPage() {
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-compras`;
+  const puedeVer = usePuedeVerActividad("compras");
 
   const { docs, loading } = useGestionDocumentos("compras", user?.id ?? null);
   const cantidadProveedores = parseProveedores(docs["proveedores_lista"] ?? "").length;
@@ -25,6 +27,7 @@ export default function GestionComprasPage() {
       </div>
 
       <div className="space-y-2">
+        {puedeVer("requisicion_pedidos") && (
         <Link
           href={`${basePath}/requisicion_pedidos`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -49,7 +52,9 @@ export default function GestionComprasPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("inscripcion_proveedores") && (
         <Link
           href={`${basePath}/inscripcion_proveedores`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -68,7 +73,9 @@ export default function GestionComprasPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("lista_maestra_proveedores") && (
         <Link
           href={`${basePath}/lista_maestra_proveedores`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -93,7 +100,9 @@ export default function GestionComprasPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("indicadores_compras") && (
         <Link
           href={`${basePath}/indicadores_compras`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -112,7 +121,9 @@ export default function GestionComprasPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("ordenes_compra") && (
         <Link
           href={`${basePath}/ordenes_compra`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -131,6 +142,7 @@ export default function GestionComprasPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
         {[
           { icon: "📦", imagen: "/gestion-compras/control_recepcion.jpg", titulo: "Control de recepción", descripcion: "Verificación de productos y servicios recibidos." },

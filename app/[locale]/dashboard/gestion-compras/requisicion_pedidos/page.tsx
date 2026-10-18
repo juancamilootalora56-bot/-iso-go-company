@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { etapasPermitidas } from "@/lib/colaboradoresCliente";
 import { parsePersonal } from "@/lib/personal";
 import { parseProveedores } from "@/lib/proveedores";
 import { parseOrdenesCompra, ordenCompraVacia, itemOrdenVacio } from "@/lib/ordenesCompra";
@@ -49,7 +50,7 @@ const labelClass = "block text-xs font-medium text-gray-500 mb-1";
 const celdaInput = "w-full text-[11px] bg-[#FAFAFA] border border-gray-200 rounded px-2 py-1.5 focus:outline-none focus:border-[#F5A623]";
 
 export default function RequisicionPedidosPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador } = useDashboardUser();
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-compras`;
@@ -147,12 +148,18 @@ export default function RequisicionPedidosPage() {
     await persistir(requisicionesActualizadas, [...ordenesCompra, nuevaOrden]);
   }
 
+  // Un colaborador puede tener acceso restringido a solo algunas etapas del
+  // pipeline (ej. solo "Solicitud"). null = acceso completo (dueño, o
+  // colaborador con la actividad completa habilitada).
+  const etapasVisibles = colaborador ? etapasPermitidas(colaborador.permisos, "compras", "requisicion_pedidos") : null;
+  const etapasPipelineVisibles = etapasVisibles === null ? ETAPAS_PIPELINE_COMPRAS : ETAPAS_PIPELINE_COMPRAS.filter((e) => etapasVisibles.includes(e));
+
   const requisicionesDelMes = requisiciones.filter((r) => mesDeFecha(r.fechaAlta) === mes);
   const filtradas = requisicionesDelMes.filter((r) => !filtroTipo || r.tipo === filtroTipo);
-  const activas = filtradas.filter((r) => r.etapa !== "Rechazada");
-  const rechazadas = filtradas.filter((r) => r.etapa === "Rechazada");
-  const resumen = resumenPorEtapaRequisicion(requisicionesDelMes);
-  const tiempoProm = tiempoPromedioCiclo(requisicionesDelMes);
+  const activas = filtradas.filter((r) => r.etapa !== "Rechazada" && (etapasVisibles === null || etapasVisibles.includes(r.etapa)));
+  const rechazadas = etapasVisibles === null ? filtradas.filter((r) => r.etapa === "Rechazada") : [];
+  const resumen = resumenPorEtapaRequisicion(requisicionesDelMes).filter((r) => etapasPipelineVisibles.includes(r.etapa as EtapaRequisicion));
+  const tiempoProm = etapasVisibles === null ? tiempoPromedioCiclo(requisicionesDelMes) : null;
   const indiceMes = meses.indexOf(mes);
   const hayMesAnterior = indiceMes > 0;
   const hayMesSiguiente = indiceMes >= 0 && indiceMes < meses.length - 1;
@@ -244,8 +251,8 @@ export default function RequisicionPedidosPage() {
 
       {/* Pipeline Kanban */}
       <div className="overflow-x-auto pb-2">
-        <div className="flex gap-3" style={{ minWidth: ETAPAS_PIPELINE_COMPRAS.length * 280 }}>
-          {ETAPAS_PIPELINE_COMPRAS.map((etapa) => {
+        <div className="flex gap-3" style={{ minWidth: etapasPipelineVisibles.length * 280 }}>
+          {etapasPipelineVisibles.map((etapa) => {
             const columna = activas.filter((r) => r.etapa === etapa);
             const color = colorEtapaRequisicion(etapa);
             return (

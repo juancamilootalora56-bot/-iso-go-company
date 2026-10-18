@@ -1,6 +1,7 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
@@ -9,14 +10,23 @@ import { parsePersonal } from "@/lib/personal";
 const NARANJA = "#F5A623";
 
 export default function RelacionActividadesPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador } = useDashboardUser();
   const params = useParams();
+  const router = useRouter();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-operativa`;
 
   const { docs, loading } = useGestionDocumentos("talento_humano", user?.id ?? null);
 
-  if (loading) {
+  // Un colaborador siempre va directo a su propia planilla — nunca ve la
+  // lista completa del equipo.
+  useEffect(() => {
+    if (colaborador?.empleadoId) {
+      router.replace(`${basePath}/relacion_actividades/${colaborador.empleadoId}`);
+    }
+  }, [colaborador, basePath, router]);
+
+  if (loading || colaborador?.empleadoId) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
   }
 

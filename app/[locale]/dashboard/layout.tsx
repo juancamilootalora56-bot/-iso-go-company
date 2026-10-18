@@ -7,6 +7,7 @@ import { useParams, useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/hooks/useUser";
 import { DashboardUserProvider } from "@/components/dashboard/DashboardUserContext";
+import { tieneAccesoModulo, type PermisosColaborador } from "@/lib/colaboradoresCliente";
 import {
   Home,
   Landmark,
@@ -35,7 +36,7 @@ const navItems: { href: string; label: string; icon: LucideIcon; color: string; 
   { href: "/perfil", label: "Perfil", icon: UserCircle, color: "#64748B", modulo: null, soloOwner: true },
 ];
 
-type ColaboradorInfo = { ownerId: string; permisos: string[]; activo: boolean };
+type ColaboradorInfo = { ownerId: string; empleadoId: string | null; permisos: PermisosColaborador; activo: boolean };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const params = useParams();
@@ -78,12 +79,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       const supabase = createClient();
       const { data } = await supabase
         .from("client_colaboradores")
-        .select("owner_id, permisos, activo")
+        .select("owner_id, empleado_id, permisos, activo")
         .eq("id", rawUser.id)
         .maybeSingle();
 
       if (data) {
-        setColaboradorInfo({ ownerId: data.owner_id, permisos: data.permisos ?? [], activo: data.activo });
+        setColaboradorInfo({ ownerId: data.owner_id, empleadoId: data.empleado_id, permisos: data.permisos ?? {}, activo: data.activo });
         const { data: ownerProf } = await supabase.from("profiles").select("*").eq("id", data.owner_id).maybeSingle();
         setOwnerProfile(ownerProf);
       }
@@ -152,7 +153,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!esColaborador) return true;
     if (item.soloOwner) return false;
     if (!item.modulo) return true;
-    return colaboradorInfo!.permisos.includes(item.modulo);
+    return tieneAccesoModulo(colaboradorInfo!.permisos, item.modulo);
   });
 
   const displayName = rawProfile?.full_name || rawUser?.email?.split("@")[0] || "Usuario";
@@ -306,7 +307,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Page content */}
         <main className="flex-1 p-6">
-          <DashboardUserProvider value={{ user: effectiveUser, profile: effectiveProfile }}>{children}</DashboardUserProvider>
+          <DashboardUserProvider
+            value={{
+              user: effectiveUser,
+              profile: effectiveProfile,
+              colaborador: esColaborador ? { empleadoId: colaboradorInfo!.empleadoId, permisos: colaboradorInfo!.permisos } : null,
+            }}
+          >
+            {children}
+          </DashboardUserProvider>
         </main>
       </div>
     </div>

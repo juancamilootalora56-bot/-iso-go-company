@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { usePuedeVerActividad } from "@/hooks/usePuedeVerActividad";
 import { parseOportunidadesMejora, estaAbiertaOM } from "@/lib/oportunidadesMejora";
 import { parseLeccionesAprendidas } from "@/lib/leccionesAprendidas";
 import { parseProcedimientos, parseInstructivos, parseFormatos } from "@/lib/procedimientos";
@@ -36,6 +37,7 @@ export default function GestionCalidadPage() {
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-calidad`;
+  const puedeVer = usePuedeVerActividad("calidad");
 
   const { docs, loading } = useGestionDocumentos("calidad", user?.id ?? null);
   const oportunidades = parseOportunidadesMejora(docs["oportunidades_mejora_lista"] ?? "");
@@ -79,6 +81,7 @@ export default function GestionCalidadPage() {
       )}
 
       <div className="space-y-2">
+        {puedeVer("procedimientos") && (
         <Link
           href={`${basePath}/procedimientos`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
@@ -103,7 +106,9 @@ export default function GestionCalidadPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("oportunidades_mejora") && (
         <Link
           href={`${basePath}/oportunidades_mejora`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
@@ -128,7 +133,9 @@ export default function GestionCalidadPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("lecciones_aprendidas") && (
         <Link
           href={`${basePath}/lecciones_aprendidas`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
@@ -153,7 +160,9 @@ export default function GestionCalidadPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("matrices") && (
         <Link
           href={`${basePath}/matrices`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
@@ -169,6 +178,8 @@ export default function GestionCalidadPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
         </Link>
+        )}
+        {puedeVer("caracterizaciones") && (
         <Link
           href={`${basePath}/caracterizaciones`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
@@ -193,6 +204,8 @@ export default function GestionCalidadPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
         </Link>
+        )}
+        {puedeVer("control_documentos") && (
         <Link
           href={`${basePath}/control_documentos`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
@@ -217,6 +230,7 @@ export default function GestionCalidadPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F97316] transition-colors">›</span>
         </Link>
+        )}
         <TarjetaBloqueada titulo="Gestión de Auditoría" descripcion="Acceso restringido." />
       </div>
 

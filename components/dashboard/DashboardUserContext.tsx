@@ -2,6 +2,7 @@
 
 import { createContext, useContext } from "react";
 import type { User } from "@supabase/supabase-js";
+import type { PermisosColaborador } from "@/lib/colaboradoresCliente";
 
 type Profile = {
   id: string;
@@ -22,12 +23,20 @@ type Profile = {
   tema_panel: string | null;
 };
 
+export type ColaboradorContextInfo = {
+  empleadoId: string | null;
+  permisos: PermisosColaborador;
+};
+
 type DashboardUserContextValue = {
   user: User | null;
   profile: Profile | null;
+  // null = es el dueño de la cuenta (acceso completo). Si no es null, es un
+  // colaborador y hay que filtrar lo que ve según `permisos`.
+  colaborador: ColaboradorContextInfo | null;
 };
 
-const DashboardUserContext = createContext<DashboardUserContextValue>({ user: null, profile: null });
+const DashboardUserContext = createContext<DashboardUserContextValue>({ user: null, profile: null, colaborador: null });
 
 export const DashboardUserProvider = DashboardUserContext.Provider;
 

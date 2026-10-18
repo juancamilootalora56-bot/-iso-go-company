@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { usePuedeVerActividad } from "@/hooks/usePuedeVerActividad";
 import { parseProductos } from "@/lib/productosFabricados";
 import { parseServicios } from "@/lib/servicios";
 import { parseInventario, todosLosMantenimientos, todasLasCalibraciones } from "@/lib/inventario";
@@ -14,6 +15,7 @@ export default function GestionOperativaPage() {
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-operativa`;
+  const puedeVer = usePuedeVerActividad("operativa");
 
   const { docs, loading } = useGestionDocumentos("operativa", user?.id ?? null);
   const cantidadProductos = parseProductos(docs["productos_lista"] ?? "").length;
@@ -31,6 +33,7 @@ export default function GestionOperativaPage() {
       </div>
 
       <div className="space-y-2">
+        {puedeVer("inscripcion_productos") && (
         <Link
           href={`${basePath}/inscripcion_productos`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -49,7 +52,9 @@ export default function GestionOperativaPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("lista_maestra_productos") && (
         <Link
           href={`${basePath}/lista_maestra_productos`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -74,7 +79,9 @@ export default function GestionOperativaPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("inscripcion_servicios") && (
         <Link
           href={`${basePath}/inscripcion_servicios`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -92,7 +99,9 @@ export default function GestionOperativaPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("lista_maestra_servicios") && (
         <Link
           href={`${basePath}/lista_maestra_servicios`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -117,7 +126,9 @@ export default function GestionOperativaPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("inscripcion_inventario") && (
         <Link
           href={`${basePath}/inscripcion_inventario`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -136,7 +147,9 @@ export default function GestionOperativaPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("lista_maestra_inventario") && (
         <Link
           href={`${basePath}/lista_maestra_inventario`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -161,7 +174,9 @@ export default function GestionOperativaPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("programa_mantenimiento") && (
         <Link
           href={`${basePath}/programa_mantenimiento`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -186,7 +201,9 @@ export default function GestionOperativaPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {puedeVer("no_conformidades") && (
         <Link
           href={`${basePath}/no_conformidades`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
@@ -212,7 +229,9 @@ export default function GestionOperativaPage() {
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
         </Link>
+        )}
 
+        {/* Relación de Actividades: siempre visible, cada colaborador ve solo la suya. */}
         <Link
           href={`${basePath}/relacion_actividades`}
           className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"

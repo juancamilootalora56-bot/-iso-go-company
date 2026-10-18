@@ -5,7 +5,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
-import { MODULOS_PERMISOS, type Colaborador } from "@/lib/colaboradoresCliente";
+import { MODULOS_PERMISOS, tieneAccesoModulo, actividadesVisibles, conAccesoRelacionActividades, type Colaborador, type PermisosColaborador } from "@/lib/colaboradoresCliente";
+import SelectorPermisosColaborador from "@/components/dashboard/SelectorPermisosColaborador";
 
 const MAX_FOTO_BYTES = 800_000;
 
@@ -43,9 +44,15 @@ export default function ColaboradoresResultadoPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  function labelsPermisos(permisos: string[]) {
-    return permisos
-      .map((p) => MODULOS_PERMISOS.find((m) => m.modulo === p)?.label ?? p)
+  function labelsPermisos(permisos: PermisosColaborador) {
+    return MODULOS_PERMISOS
+      .filter((m) => tieneAccesoModulo(permisos, m.modulo))
+      .map((m) => {
+        const p = permisos[m.modulo];
+        const completo = p && "completo" in p && p.completo;
+        if (completo) return m.label;
+        return `${m.label} (${actividadesVisibles(permisos, m.modulo).length})`;
+      })
       .join(", ");
   }
 
@@ -95,19 +102,6 @@ export default function ColaboradoresResultadoPage() {
     reader.readAsDataURL(file);
   }
 
-  function togglePermisoEdit(modulo: string) {
-    setEditando((c) =>
-      c
-        ? {
-            ...c,
-            permisos: c.permisos.includes(modulo)
-              ? c.permisos.filter((m) => m !== modulo)
-              : [...c.permisos, modulo],
-          }
-        : c
-    );
-  }
-
   async function guardarEdicion() {
     if (!editando) return;
     if (!editando.nombre.trim() || !editando.apellido.trim()) {
@@ -125,7 +119,7 @@ export default function ColaboradoresResultadoPage() {
         cargo: editando.cargo,
         identificacion: editando.identificacion,
         foto: editando.foto,
-        permisos: editando.permisos,
+        permisos: conAccesoRelacionActividades(editando.permisos),
       })
       .eq("id", editando.id);
     setSavingEdit(false);
@@ -303,22 +297,11 @@ export default function ColaboradoresResultadoPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">Módulos que puede trabajar</label>
-              <div className="space-y-1.5">
-                {MODULOS_PERMISOS.map((m) => (
-                  <label key={m.modulo} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={editando.permisos.includes(m.modulo)}
-                      onChange={() => togglePermisoEdit(m.modulo)}
-                      className="w-4 h-4 accent-[#F5A623]"
-                    />
-                    <span className="text-sm text-gray-700">
-                      {m.icon} {m.label}
-                    </span>
-                  </label>
-                ))}
-              </div>
+              <label className="block text-xs font-medium text-gray-500 mb-2">Módulos y actividades que puede trabajar</label>
+              <SelectorPermisosColaborador
+                value={editando.permisos}
+                onChange={(p) => setEditando((c) => (c ? { ...c, permisos: p } : c))}
+              />
             </div>
 
             <div className="flex items-center gap-3 pt-2">

@@ -12,6 +12,8 @@ import { estaCompletoActividad, contarRiesgos } from "@/lib/gestionGerenciaCompl
 import { parseObjetivos } from "@/lib/objetivosCalidad";
 import AvanceModulosChart from "@/components/dashboard/AvanceModulosChart";
 import { temaPanelDe } from "@/lib/temaPanel";
+import { tieneAccesoReal } from "@/lib/colaboradoresCliente";
+import { parsePersonal } from "@/lib/personal";
 
 const NORM_SLUGS: Record<string, string> = {
   "ISO 9001": "iso-9001",
@@ -40,8 +42,9 @@ export default function DashboardPage() {
   const params = useParams();
   const locale = params.locale as string;
   const { user, profile } = useUser();
-  const { user: effectiveUser, profile: effectiveProfile } = useDashboardUser();
+  const { user: effectiveUser, profile: effectiveProfile, colaborador } = useDashboardUser();
   const { docs: docsGerencia, loading: loadingGerencia } = useGestionDocumentos("gerencia", effectiveUser?.id ?? null);
+  const { docs: docsTH } = useGestionDocumentos("talento_humano", effectiveUser?.id ?? null);
   const [colaboradoresCount, setColaboradoresCount] = useState(0);
 
   useEffect(() => {
@@ -63,6 +66,67 @@ export default function DashboardPage() {
   const objetivosCount = parseObjetivos(docsGerencia["objetivos_calidad"] ?? "").length;
   const riesgosCount = contarRiesgos(docsGerencia);
   const tema = temaPanelDe(effectiveProfile?.tema_panel);
+
+  // Colaborador sin ningún módulo asignado todavía: en vez del panel
+  // general, ve su propia ficha de personal en modo lectura.
+  if (colaborador && !tieneAccesoReal(colaborador.permisos)) {
+    const miFicha = parsePersonal(docsTH["personal_lista"] ?? "").find((p) => p.id === colaborador.empleadoId);
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div className="bg-[#1A1A1A] p-6 flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-white/10 border-2 border-white/20 flex-shrink-0 overflow-hidden flex items-center justify-center">
+              {miFicha?.foto ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={miFicha.foto} alt={miFicha.nombre} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-2xl text-white/50">👤</span>
+              )}
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-white text-lg font-bold truncate">
+                {miFicha ? `${miFicha.nombre} ${miFicha.apellido}` : displayName}
+              </h1>
+              <p className="text-[#F5A623] text-sm font-semibold truncate">{miFicha?.cargo || "Sin cargo asignado"}</p>
+            </div>
+          </div>
+          <div className="p-6 space-y-4">
+            <p className="text-sm text-gray-500">
+              Todavía no tenés ningún módulo habilitado. Cuando el administrador de tu empresa te dé acceso a una
+              actividad, vas a verla acá en el menú.
+            </p>
+            {miFicha && (
+              <div className="grid sm:grid-cols-2 gap-3 pt-2 border-t border-gray-100">
+                <div className="bg-[#FAFAFA] rounded-xl p-3">
+                  <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Área</p>
+                  <p className="text-sm text-[#1A1A1A] mt-0.5">{miFicha.area || "—"}</p>
+                </div>
+                <div className="bg-[#FAFAFA] rounded-xl p-3">
+                  <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Email</p>
+                  <p className="text-sm text-[#1A1A1A] mt-0.5">{miFicha.email || "—"}</p>
+                </div>
+                <div className="bg-[#FAFAFA] rounded-xl p-3">
+                  <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Teléfono</p>
+                  <p className="text-sm text-[#1A1A1A] mt-0.5">{miFicha.telefono || "—"}</p>
+                </div>
+                <div className="bg-[#FAFAFA] rounded-xl p-3">
+                  <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400">Fecha de ingreso</p>
+                  <p className="text-sm text-[#1A1A1A] mt-0.5">{miFicha.fechaIngreso || "—"}</p>
+                </div>
+              </div>
+            )}
+            <Link
+              href={`/${locale}/dashboard/gestion-operativa/relacion_actividades`}
+              className="inline-block text-sm font-semibold hover:opacity-80"
+              style={{ color: "#F5A623" }}
+            >
+              Ir a mi Relación de Actividades →
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
