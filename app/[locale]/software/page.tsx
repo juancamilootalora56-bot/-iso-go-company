@@ -22,32 +22,32 @@ const features = [
   {
     icon: "📊",
     title: "Dashboards de gestión en tiempo real",
-    desc: "Visualiza el cumplimiento de tu sistema ISO en tiempo real. Indicadores por proceso, área y norma en un solo panel. Sin reportes manuales, sin Excel, sin esperar el mes.",
+    desc: "Visualiza el cumplimiento de tu sistema ISO en tiempo real. Avance por módulo, objetivos de calidad y riesgos identificados en un solo panel. Sin reportes manuales, sin Excel, sin esperar el mes.",
   },
   {
-    icon: "⚠️",
-    title: "Alertas automáticas de no conformidades",
-    desc: "Cuando un indicador sale del rango aceptable, el sistema notifica automáticamente al responsable con el protocolo de acción a seguir. Las no conformidades no se pierden ni se demoran.",
+    icon: "👥",
+    title: "Permisos granulares por colaborador",
+    desc: "Cada persona de tu equipo ve solo lo que necesita. Dale acceso a un módulo completo, a una actividad puntual, a una etapa de un proceso, o a un documento específico — vos elegís el nivel de detalle, sin compartir de más.",
   },
   {
     icon: "📁",
     title: "Gestión documental con control de versiones",
-    desc: "Todos tus procedimientos, instructivos y registros en un repositorio centralizado con control de versiones, aprobaciones digitales y alertas de vencimiento.",
+    desc: "Procedimientos, instructivos y formatos organizados por proceso, cada uno con su versión, vigencia y estado (vigente, en revisión, obsoleto). Todo centralizado y trazable.",
   },
   {
-    icon: "🔗",
-    title: "Trazabilidad completa de procesos",
-    desc: "Para industrias alimentarias, manufactura y salud: trazabilidad de lote desde la materia prima hasta el producto terminado. Cada paso registrado y auditable en segundos.",
+    icon: "⚠️",
+    title: "No Conformidades con matriz y gráficos",
+    desc: "Cada caso queda registrado con etapa de detección, severidad, causa raíz y costo de no calidad. Una matriz tipo Excel y gráficos automáticos te muestran dónde están los problemas reales.",
   },
   {
-    icon: "📅",
-    title: "Preparación automatizada para auditorías",
-    desc: "El sistema genera automáticamente el paquete de evidencias para auditoría interna y externa. Saber si estás listo para ser auditado es un clic.",
+    icon: "🧩",
+    title: "Diseño y Desarrollo paso a paso",
+    desc: "Seguí cada proyecto nuevo según la cláusula 8.3 de ISO 9001: planificación, entradas, salidas, revisión, verificación, validación y cierre, con el avance siempre visible.",
   },
   {
     icon: "📈",
     title: "Indicadores de desempeño por proceso",
-    desc: "KPIs personalizados para cada proceso certificado. Tendencias históricas, análisis de causa raíz y planes de mejora integrados en la misma plataforma.",
+    desc: "KPIs por módulo (Calidad, Compras, Diseño y Desarrollo), con tendencias históricas y análisis que te ayudan a priorizar dónde actuar primero.",
   },
 ];
 
@@ -110,62 +110,60 @@ export default async function SoftwarePage() {
                 ))}
               </div>
             </div>
-            {/* Mock UI */}
-            <div className="bg-gray-900 rounded-2xl overflow-hidden shadow-2xl">
-              <div className="bg-gray-800 px-4 py-3 flex items-center gap-2">
+            {/* Mock UI — réplica del panel de inicio real de la plataforma */}
+            <div className="bg-[#1A1A1A] rounded-2xl overflow-hidden shadow-2xl">
+              <div className="bg-[#242424] px-4 py-3 flex items-center gap-2 border-b border-white/5">
                 <div className="w-3 h-3 rounded-full bg-red-400" />
                 <div className="w-3 h-3 rounded-full bg-yellow-400" />
                 <div className="w-3 h-3 rounded-full bg-green-400" />
-                <span className="text-gray-400 text-xs ml-2">Plataforma ISO Go — Vista general</span>
+                <span className="text-gray-400 text-xs ml-2">Panel de Gestión de Calidad</span>
               </div>
               <div className="p-6 space-y-4">
                 <div className="grid grid-cols-4 gap-3">
                   {[
-                    { label: "Procesos OK", val: "94%", color: "text-green-400" },
-                    { label: "NC Abiertas", val: "2", color: "text-yellow-400" },
-                    { label: "Docs vencidos", val: "0", color: "text-green-400" },
-                    { label: "Auditoría", val: "45d", color: "text-blue-400" },
+                    { label: "Actividades", val: "13/14" },
+                    { label: "Objetivos de Calidad", val: "32" },
+                    { label: "Riesgos identificados", val: "15" },
+                    { label: "Colaboradores", val: "4" },
                   ].map((s) => (
-                    <div key={s.label} className="bg-gray-700 rounded-lg p-2 text-center">
-                      <div className={`font-bold ${s.color}`}>{s.val}</div>
-                      <div className="text-gray-500 text-xs">{s.label}</div>
+                    <div key={s.label} className="bg-white/5 rounded-lg p-2.5 text-center">
+                      <div className="font-bold text-[#F5A623]">{s.val}</div>
+                      <div className="text-gray-400 text-[10px] mt-0.5">{s.label}</div>
                     </div>
                   ))}
                 </div>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <div className="text-gray-400 text-xs mb-3 font-semibold uppercase tracking-wide">Alertas activas</div>
+                <div className="bg-white/5 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Avance por módulo</span>
+                    <span className="text-[#F5A623] text-xs font-bold">79% promedio</span>
+                  </div>
                   <div className="space-y-2">
                     {[
-                      { text: "NC-047: Proveedor sin evaluación — vence en 3 días", type: "warning" },
-                      { text: "Indicador satisfacción cliente bajo umbral mínimo", type: "alert" },
-                      { text: "Documento PR-012 por aprobar — espera 2 días", type: "info" },
-                    ].map((alert) => (
-                      <div key={alert.text} className={`text-xs px-3 py-2 rounded ${
-                        alert.type === "warning" ? "bg-yellow-900/40 text-yellow-300" :
-                        alert.type === "alert" ? "bg-red-900/40 text-red-300" :
-                        "bg-blue-900/40 text-blue-300"
-                      }`}>
-                        {alert.text}
+                      { label: "Gerencia", pct: 93 },
+                      { label: "Operativa", pct: 100 },
+                      { label: "Diseño y Desarrollo", pct: 67 },
+                      { label: "Calidad", pct: 75 },
+                    ].map((m) => (
+                      <div key={m.label}>
+                        <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                          <span>{m.label}</span><span>{m.pct}%</span>
+                        </div>
+                        <div className="h-1.5 bg-white/10 rounded-full">
+                          <div className="h-1.5 bg-[#F5A623] rounded-full" style={{ width: `${m.pct}%` }} />
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <div className="text-gray-400 text-xs mb-2 font-semibold uppercase tracking-wide">Cumplimiento por norma</div>
-                  {[
-                    { norm: "ISO 9001", pct: 97 },
-                    { norm: "ISO 14001", pct: 91 },
-                    { norm: "ISO 45001", pct: 89 },
-                  ].map((n) => (
-                    <div key={n.norm} className="mb-2">
-                      <div className="flex justify-between text-xs text-gray-400 mb-1">
-                        <span>{n.norm}</span><span>{n.pct}%</span>
+                <div className="bg-white/5 rounded-lg p-4">
+                  <div className="text-gray-400 text-xs mb-3 font-semibold uppercase tracking-wide">Accesos rápidos</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {["Gestión de la Gerencia", "Objetivos de Calidad", "Organigrama", "Colaboradores"].map((item) => (
+                      <div key={item} className="text-[11px] text-gray-300 bg-white/5 rounded-md px-2.5 py-2 border border-white/5">
+                        {item}
                       </div>
-                      <div className="h-1.5 bg-gray-600 rounded-full">
-                        <div className="h-1.5 bg-[#F5A623] rounded-full" style={{ width: `${n.pct}%` }} />
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
