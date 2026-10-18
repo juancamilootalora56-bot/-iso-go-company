@@ -5,7 +5,10 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { createClient } from "@/lib/supabase/client";
+import { otorgarAccesoPorRegistro } from "@/lib/colaboradoresCliente";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
+import SelectorAccesoColaboradores from "@/components/dashboard/SelectorAccesoColaboradores";
 import {
   parseServicios,
   servicioVacio,
@@ -73,6 +76,9 @@ export default function InscripcionServiciosPage() {
     setSaving(true);
     const actualizados = [...servicios.filter((s) => s.id !== form.id), form];
     await save(ITEM_KEY, JSON.stringify(actualizados));
+    if (user?.id) {
+      await otorgarAccesoPorRegistro(createClient() as never, user.id, form.colaboradoresConAcceso ?? [], "operativa", "lista_maestra_servicios");
+    }
     setServicios(actualizados);
     setForm(servicioVacio());
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -219,6 +225,14 @@ export default function InscripcionServiciosPage() {
           <label className={labelClass}>Observaciones</label>
           <textarea value={form.observaciones} onChange={(e) => campo("observaciones", e.target.value)} rows={3} className={`${inputClass} resize-y`} />
         </Seccion>
+
+        <div className="flex justify-end">
+          <SelectorAccesoColaboradores
+            ownerId={user?.id ?? null}
+            value={form.colaboradoresConAcceso ?? []}
+            onChange={(ids) => campo("colaboradoresConAcceso", ids)}
+          />
+        </div>
 
         <div className="flex items-center gap-3 sticky bottom-4">
           <button

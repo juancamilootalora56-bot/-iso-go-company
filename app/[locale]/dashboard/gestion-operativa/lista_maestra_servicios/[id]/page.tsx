@@ -28,7 +28,7 @@ function fechaLegible(iso?: string) {
 }
 
 export default function PerfilServicioPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador } = useDashboardUser();
   const params = useParams();
   const locale = params.locale as string;
   const id = params.id as string;
@@ -52,6 +52,20 @@ export default function PerfilServicioPage() {
         </Link>
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
           <p className="text-gray-500 text-sm">No se encontró este servicio.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const soloLectura = !!colaborador;
+  if (colaborador && !s.colaboradoresConAcceso?.includes(colaborador.empleadoId ?? "")) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <Link href={`${basePath}/lista_maestra_servicios`} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
+          ← Lista Maestra de Servicios
+        </Link>
+        <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
+          <p className="text-gray-500 text-sm">No tenés acceso a este servicio.</p>
         </div>
       </div>
     );
@@ -99,13 +113,17 @@ export default function PerfilServicioPage() {
             </span>
           )}
         </div>
-        <Link
-          href={`${basePath}/inscripcion_servicios`}
-          className="relative z-10 text-xs font-semibold text-[#F5A623] hover:text-[#e09410] flex-shrink-0 self-center sm:self-start bg-white/5 border border-white/10 px-3 py-1.5 rounded-full"
-        >
-          ✎ Editar datos
-        </Link>
+        {!soloLectura && (
+          <Link
+            href={`${basePath}/inscripcion_servicios`}
+            className="relative z-10 text-xs font-semibold text-[#F5A623] hover:text-[#e09410] flex-shrink-0 self-center sm:self-start bg-white/5 border border-white/10 px-3 py-1.5 rounded-full"
+          >
+            ✎ Editar datos
+          </Link>
+        )}
       </div>
+
+      {soloLectura && <p className="text-xs font-semibold text-gray-400">🔒 Modo solo lectura — no se puede modificar</p>}
 
       {/* Pestañas */}
       <div className="bg-white rounded-2xl border border-gray-100 overflow-x-auto sticky top-0 z-20">
@@ -157,7 +175,11 @@ export default function PerfilServicioPage() {
         </div>
       )}
 
-      {tab === "proceso" && <ProcesoOperativoForm userId={user?.id ?? null} entidadId={s.id} />}
+      {tab === "proceso" && (
+        <fieldset disabled={soloLectura} className="border-0 p-0 m-0 min-w-0">
+          <ProcesoOperativoForm userId={user?.id ?? null} entidadId={s.id} />
+        </fieldset>
+      )}
       {tab === "diagrama" && <DiagramaFlujoView userId={user?.id ?? null} entidadId={s.id} />}
     </div>
   );

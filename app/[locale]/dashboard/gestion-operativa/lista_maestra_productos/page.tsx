@@ -9,7 +9,7 @@ import { parseProductos, colorEstadoProducto } from "@/lib/productosFabricados";
 const ITEM_KEY = "productos_lista";
 
 export default function ListaMaestraProductosPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador } = useDashboardUser();
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-operativa`;
@@ -20,7 +20,12 @@ export default function ListaMaestraProductosPage() {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
   }
 
-  const productos = parseProductos(docs[ITEM_KEY] ?? "");
+  const todos = parseProductos(docs[ITEM_KEY] ?? "");
+  // Un colaborador solo ve los productos puntuales que se le compartieron
+  // desde el selector del propio registro.
+  const productos = colaborador
+    ? todos.filter((p) => p.colaboradoresConAcceso?.includes(colaborador.empleadoId ?? ""))
+    : todos;
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -33,17 +38,23 @@ export default function ListaMaestraProductosPage() {
           <h1 className="text-2xl font-bold text-[#1A1A1A]">Lista Maestra de Productos</h1>
           <p className="text-gray-500 text-sm mt-1">Perfil y proceso operativo de cada producto fabricado.</p>
         </div>
-        <Link href={`${basePath}/inscripcion_productos`} className="text-sm text-[#F5A623] font-semibold hover:text-[#e09410]">
-          + Agregar / editar producto
-        </Link>
+        {!colaborador && (
+          <Link href={`${basePath}/inscripcion_productos`} className="text-sm text-[#F5A623] font-semibold hover:text-[#e09410]">
+            + Agregar / editar producto
+          </Link>
+        )}
       </div>
 
       {productos.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
-          <p className="text-gray-500 text-sm mb-4">Todavía no diste de alta ningún producto.</p>
-          <Link href={`${basePath}/inscripcion_productos`} className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] text-sm">
-            Dar de alta un producto
-          </Link>
+          <p className="text-gray-500 text-sm mb-4">
+            {colaborador ? "Todavía no te compartieron ningún producto." : "Todavía no diste de alta ningún producto."}
+          </p>
+          {!colaborador && (
+            <Link href={`${basePath}/inscripcion_productos`} className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] text-sm">
+              Dar de alta un producto
+            </Link>
+          )}
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">

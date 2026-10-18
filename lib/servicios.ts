@@ -18,6 +18,11 @@ export type Servicio = {
   estado: string;
   fechaAlta: string;
   observaciones: string;
+
+  // IDs de Empleado (lib/personal.ts) de los colaboradores con acceso de
+  // solo lectura a este servicio puntual, sin importar si tienen el
+  // módulo Gestión Operativa asignado desde su perfil.
+  colaboradoresConAcceso: string[];
 };
 
 export const CATEGORIAS_SERVICIO = [
@@ -65,6 +70,7 @@ export function servicioVacio(): Servicio {
     estado: "Activo",
     fechaAlta: new Date().toISOString().slice(0, 10),
     observaciones: "",
+    colaboradoresConAcceso: [],
   };
 }
 
@@ -72,7 +78,8 @@ export function parseServicios(contenido: string): Servicio[] {
   if (!contenido) return [];
   try {
     const parsed = JSON.parse(contenido);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((s: Servicio) => ({ ...s, colaboradoresConAcceso: s.colaboradoresConAcceso ?? [] }));
   } catch {
     return [];
   }

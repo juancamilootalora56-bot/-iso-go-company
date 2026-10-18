@@ -13,6 +13,11 @@ export type ProductoFabricado = {
   estado: string;
   fechaAlta: string;
   observaciones: string;
+
+  // IDs de Empleado (lib/personal.ts) de los colaboradores con acceso de
+  // solo lectura a este producto puntual, sin importar si tienen el
+  // módulo Gestión Operativa asignado desde su perfil.
+  colaboradoresConAcceso: string[];
 };
 
 export const CATEGORIAS_PRODUCTO = [
@@ -58,6 +63,7 @@ export function productoVacio(): ProductoFabricado {
     estado: "Activo",
     fechaAlta: new Date().toISOString().slice(0, 10),
     observaciones: "",
+    colaboradoresConAcceso: [],
   };
 }
 
@@ -65,7 +71,8 @@ export function parseProductos(contenido: string): ProductoFabricado[] {
   if (!contenido) return [];
   try {
     const parsed = JSON.parse(contenido);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((p: ProductoFabricado) => ({ ...p, colaboradoresConAcceso: p.colaboradoresConAcceso ?? [] }));
   } catch {
     return [];
   }

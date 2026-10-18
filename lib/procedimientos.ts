@@ -89,6 +89,12 @@ export type Procedimiento = {
   fechaElaboracion: string;
   fechaAprobacion: string;
   observaciones: string;
+
+  // IDs de Empleado (lib/personal.ts) de los colaboradores a los que el
+  // dueño les dio acceso de solo lectura a este procedimiento puntual
+  // (con sus instructivos y formatos), sin importar si tienen el módulo
+  // Gestión de Calidad asignado desde su perfil.
+  colaboradoresConAcceso: string[];
 };
 
 export function siguienteCodigo(prefijo: string, numerosUsados: number[]): string {
@@ -124,6 +130,7 @@ export function procedimientoVacio(codigo: string): Procedimiento {
     fechaElaboracion: new Date().toISOString().slice(0, 10),
     fechaAprobacion: "",
     observaciones: "",
+    colaboradoresConAcceso: [],
   };
 }
 
@@ -137,6 +144,7 @@ export function parseProcedimientos(contenido: string): Procedimiento[] {
       definiciones: p.definiciones ?? [],
       desarrollo: p.desarrollo ?? [],
       registros: p.registros ?? [],
+      colaboradoresConAcceso: p.colaboradoresConAcceso ?? [],
     }));
   } catch {
     return [];

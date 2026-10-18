@@ -186,6 +186,57 @@ export function actividadesVisibles(permisos: PermisosColaborador, modulo: strin
   return todas.filter((a) => a in p.actividades);
 }
 
+// Cliente mínimo necesario para otorgarAccesoPorRegistro — evita importar el
+// tipo completo de @supabase/supabase-js solo para esta firma.
+type ClienteSupabase = {
+  from: (tabla: string) => {
+    select: (campos: string) => { eq: (c: string, v: string) => { in: (c: string, v: string[]) => Promise<{ data: unknown[] | null }> } };
+    update: (valores: Record<string, unknown>) => { eq: (c: string, v: string) => Promise<unknown> };
+  };
+};
+
+// Cuando el dueño comparte un registro puntual (un procedimiento, un
+// producto, un servicio) con colaboradores desde el selector del propio
+// registro, hay que garantizarles la misma actividad que ya existe en el
+// árbol de permisos del perfil — si no, la RLS de gestion_documentos les
+// bloquea la lectura del módulo entero y tampoco verían la actividad en su
+// sidebar. No les quita nada si ya tenían más acceso (ej. el módulo
+// completo); solo suma si hacía falta.
+export async function otorgarAccesoPorRegistro(
+  supabase: ClienteSupabase,
+  ownerId: string,
+  empleadoIds: string[],
+  modulo: string,
+  actividad: string
+): Promise<void> {
+  const ids = empleadoIds.filter(Boolean);
+  if (ids.length === 0) return;
+
+  const { data } = await supabase
+    .from("client_colaboradores")
+    .select("id, empleado_id, permisos")
+    .eq("owner_id", ownerId)
+    .in("empleado_id", ids);
+
+  const colaboradores = (data ?? []) as { id: string; empleado_id: string; permisos: PermisosColaborador | null }[];
+
+  for (const c of colaboradores) {
+    const permisos: PermisosColaborador = c.permisos ?? {};
+    if (tieneAccesoActividad(permisos, modulo, actividad)) continue;
+
+    const actual = permisos[modulo];
+    if (actual && "completo" in actual && actual.completo) continue;
+    const actividades = actual && "actividades" in actual ? actual.actividades : {};
+
+    const nuevosPermisos: PermisosColaborador = {
+      ...permisos,
+      [modulo]: { actividades: { ...actividades, [actividad]: true } },
+    };
+
+    await supabase.from("client_colaboradores").update({ permisos: nuevosPermisos }).eq("id", c.id);
+  }
+}
+
 export type Colaborador = {
   id: string;
   owner_id: string;

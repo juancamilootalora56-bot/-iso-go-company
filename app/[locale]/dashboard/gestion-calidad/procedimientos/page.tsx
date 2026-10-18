@@ -20,7 +20,7 @@ const ITEM_KEY = "procedimientos_lista";
 const NARANJA = "#F97316";
 
 export default function ProcedimientosPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador } = useDashboardUser();
   const params = useParams();
   const router = useRouter();
   const locale = params.locale as string;
@@ -29,7 +29,14 @@ export default function ProcedimientosPage() {
   const { docs, loading, save } = useGestionDocumentos("calidad", user?.id ?? null);
   const { docs: docsGerencia, loading: loadingGerencia } = useGestionDocumentos("gerencia", user?.id ?? null);
 
-  const procedimientos = useMemo(() => parseProcedimientos(docs[ITEM_KEY] ?? ""), [docs]);
+  const todos = useMemo(() => parseProcedimientos(docs[ITEM_KEY] ?? ""), [docs]);
+  // Un colaborador solo ve los procedimientos puntuales que se le compartieron
+  // desde el selector del propio registro (independiente de tener o no el
+  // módulo Gestión de Calidad asignado completo desde su perfil).
+  const procedimientos = useMemo(
+    () => (colaborador ? todos.filter((p) => p.colaboradoresConAcceso?.includes(colaborador.empleadoId ?? "")) : todos),
+    [todos, colaborador]
+  );
   const procesosMapa = useMemo(() => parseLista(docsGerencia["mapa_procesos_seleccion"] ?? ""), [docsGerencia]);
   const clasificacion = useMemo(() => parseClasificacion(docsGerencia["mapa_procesos_clasificacion"] ?? ""), [docsGerencia]);
 
@@ -92,12 +99,14 @@ export default function ProcedimientosPage() {
             procedimiento puede tener instructivos y formatos asociados.
           </p>
         </div>
-        <button
-          onClick={nuevoProcedimiento}
-          className="bg-[#F97316] text-white font-bold px-4 py-2.5 rounded-lg hover:bg-[#C2410C] transition-colors text-sm flex-shrink-0"
-        >
-          + Nuevo procedimiento
-        </button>
+        {!colaborador && (
+          <button
+            onClick={nuevoProcedimiento}
+            className="bg-[#F97316] text-white font-bold px-4 py-2.5 rounded-lg hover:bg-[#C2410C] transition-colors text-sm flex-shrink-0"
+          >
+            + Nuevo procedimiento
+          </button>
+        )}
       </div>
 
       {procedimientos.length > 0 && (
@@ -126,10 +135,14 @@ export default function ProcedimientosPage() {
 
       {procedimientos.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
-          <p className="text-gray-500 text-sm mb-2">Todavía no hay procedimientos registrados.</p>
-          <button onClick={nuevoProcedimiento} className="text-sm font-semibold hover:opacity-80" style={{ color: NARANJA }}>
-            Crear el primero →
-          </button>
+          <p className="text-gray-500 text-sm mb-2">
+            {colaborador ? "Todavía no te compartieron ningún procedimiento." : "Todavía no hay procedimientos registrados."}
+          </p>
+          {!colaborador && (
+            <button onClick={nuevoProcedimiento} className="text-sm font-semibold hover:opacity-80" style={{ color: NARANJA }}>
+              Crear el primero →
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-6">

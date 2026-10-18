@@ -9,7 +9,7 @@ import { parseServicios, colorEstadoServicio } from "@/lib/servicios";
 const ITEM_KEY = "servicios_lista";
 
 export default function ListaMaestraServiciosPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador } = useDashboardUser();
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-operativa`;
@@ -20,7 +20,10 @@ export default function ListaMaestraServiciosPage() {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
   }
 
-  const servicios = parseServicios(docs[ITEM_KEY] ?? "");
+  const todos = parseServicios(docs[ITEM_KEY] ?? "");
+  const servicios = colaborador
+    ? todos.filter((s) => s.colaboradoresConAcceso?.includes(colaborador.empleadoId ?? ""))
+    : todos;
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -33,17 +36,23 @@ export default function ListaMaestraServiciosPage() {
           <h1 className="text-2xl font-bold text-[#1A1A1A]">Lista Maestra de Servicios</h1>
           <p className="text-gray-500 text-sm mt-1">Perfil y proceso operativo de cada servicio prestado.</p>
         </div>
-        <Link href={`${basePath}/inscripcion_servicios`} className="text-sm text-[#F5A623] font-semibold hover:text-[#e09410]">
-          + Agregar / editar servicio
-        </Link>
+        {!colaborador && (
+          <Link href={`${basePath}/inscripcion_servicios`} className="text-sm text-[#F5A623] font-semibold hover:text-[#e09410]">
+            + Agregar / editar servicio
+          </Link>
+        )}
       </div>
 
       {servicios.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
-          <p className="text-gray-500 text-sm mb-4">Todavía no diste de alta ningún servicio.</p>
-          <Link href={`${basePath}/inscripcion_servicios`} className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] text-sm">
-            Dar de alta un servicio
-          </Link>
+          <p className="text-gray-500 text-sm mb-4">
+            {colaborador ? "Todavía no te compartieron ningún servicio." : "Todavía no diste de alta ningún servicio."}
+          </p>
+          {!colaborador && (
+            <Link href={`${basePath}/inscripcion_servicios`} className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] text-sm">
+              Dar de alta un servicio
+            </Link>
+          )}
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">

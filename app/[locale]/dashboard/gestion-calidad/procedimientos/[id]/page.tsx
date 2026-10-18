@@ -5,7 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { createClient } from "@/lib/supabase/client";
+import { otorgarAccesoPorRegistro } from "@/lib/colaboradoresCliente";
 import EncabezadoDocumento from "@/components/dashboard/EncabezadoDocumento";
+import SelectorAccesoColaboradores from "@/components/dashboard/SelectorAccesoColaboradores";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
 import {
   parseProcedimientos,
@@ -43,7 +46,7 @@ const textareaClass = inputClass + " resize-y";
 type Tab = "documento" | "instructivos" | "formatos";
 
 export default function ProcedimientoPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador } = useDashboardUser();
   const params = useParams();
   const router = useRouter();
   const locale = params.locale as string;
@@ -84,6 +87,20 @@ export default function ProcedimientoPage() {
     );
   }
 
+  // Un colaborador solo puede ver los procedimientos puntuales que se le
+  // compartieron desde el selector de acceso, y siempre en modo lectura.
+  const soloLectura = !!colaborador;
+  if (colaborador && !actual.colaboradoresConAcceso?.includes(colaborador.empleadoId ?? "")) {
+    return (
+      <div className="max-w-3xl mx-auto space-y-3">
+        <Link href={`${basePath}/procedimientos`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
+          ← Procedimientos
+        </Link>
+        <p className="text-gray-500 text-sm">No tenés acceso a este procedimiento.</p>
+      </div>
+    );
+  }
+
   function actualizar(cambios: Partial<Procedimiento>) {
     setPlan({ ...actual!, ...cambios });
     setGuardado(false);
@@ -94,6 +111,9 @@ export default function ProcedimientoPage() {
       ? todosProcedimientos.map((p) => (p.id === actual!.id ? actual! : p))
       : [...todosProcedimientos, actual!];
     await save(ITEM_KEY_PROC, JSON.stringify(lista));
+    if (user?.id) {
+      await otorgarAccesoPorRegistro(createClient() as never, user.id, actual!.colaboradoresConAcceso ?? [], "calidad", "procedimientos");
+    }
     setPlan(null);
     setGuardado(true);
     setTimeout(() => setGuardado(false), 2000);
@@ -159,13 +179,29 @@ export default function ProcedimientoPage() {
         <Link href={`${basePath}/procedimientos`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
           ← Procedimientos
         </Link>
-        <button onClick={eliminarProcedimiento} className="text-xs text-red-500 hover:text-red-700">
-          Eliminar procedimiento
-        </button>
+        <div className="flex items-center gap-3">
+          {!soloLectura && (
+            <SelectorAccesoColaboradores
+              ownerId={user?.id ?? null}
+              value={actual.colaboradoresConAcceso ?? []}
+              onChange={(ids) => actualizar({ colaboradoresConAcceso: ids })}
+            />
+          )}
+          {!soloLectura && (
+            <button onClick={eliminarProcedimiento} className="text-xs text-red-500 hover:text-red-700">
+              Eliminar procedimiento
+            </button>
+          )}
+        </div>
       </div>
+
+      {soloLectura && (
+        <p className="text-xs font-semibold text-gray-400">🔒 Modo solo lectura — no se puede modificar</p>
+      )}
 
       {/* Encabezado del documento */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
+      <fieldset disabled={soloLectura} className="border-0 p-0 m-0 min-w-0">
         <EncabezadoDocumento />
         <div className="flex items-start justify-between flex-wrap gap-3">
           <div className="flex-1 min-w-[220px]">
@@ -229,6 +265,7 @@ export default function ProcedimientoPage() {
             )}
           </div>
         </div>
+      </fieldset>
       </div>
 
       {/* Tabs */}
@@ -250,6 +287,7 @@ export default function ProcedimientoPage() {
         ))}
       </div>
 
+      <fieldset disabled={soloLectura} className="border-0 p-0 m-0 min-w-0 space-y-4">
       {tab === "documento" && (
         <div className="space-y-4">
           <Seccion numero="1" icono="🎯" titulo="Objetivo">
@@ -434,6 +472,7 @@ export default function ProcedimientoPage() {
           </div>
         </div>
       )}
+      </fieldset>
     </div>
   );
 }
