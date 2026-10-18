@@ -85,7 +85,10 @@ export default function PerfilPersonalPage() {
     );
   }
 
-  const tabsVisibles = soloLectura ? TABS.filter((t) => t.key === "generales") : TABS;
+  // En modo lectura se ven todas las pestañas, pero los formularios quedan
+  // bloqueados (ver <fieldset disabled> más abajo) — nada de lo que hay en
+  // documentación/entrevista/funciones/etc. se puede modificar.
+  const tabsVisibles = TABS;
 
   return (
     <div className="max-w-4xl mx-auto space-y-4">
@@ -203,12 +206,21 @@ export default function PerfilPersonalPage() {
         </div>
       )}
 
-      {tab === "documentacion" && <DocumentacionPersonalForm userId={user?.id ?? null} empleado={p} />}
-      {tab === "entrevista" && <EntrevistaPersonalForm userId={user?.id ?? null} empleado={p} />}
-      {tab === "funciones" && <ManualFuncionesForm userId={user?.id ?? null} empleado={p} />}
-      {tab === "capacitacion" && <CapacitacionPersonalForm userId={user?.id ?? null} empleado={p} />}
-      {tab === "referencias" && <ReferenciasPersonalForm userId={user?.id ?? null} empleado={p} />}
-      {tab === "evaluacion" && <EvaluacionDesempenoForm userId={user?.id ?? null} empleado={p} />}
+      {["documentacion", "entrevista", "funciones", "capacitacion", "referencias", "evaluacion"].includes(tab) && (
+        <fieldset disabled={soloLectura} className="border-0 p-0 m-0 min-w-0 relative">
+          {soloLectura && (
+            <p className="text-xs font-semibold text-gray-400 mb-2">🔒 Modo solo lectura — no se puede modificar</p>
+          )}
+          <div className={soloLectura ? "opacity-75" : undefined}>
+            {tab === "documentacion" && <DocumentacionPersonalForm userId={user?.id ?? null} empleado={p} />}
+            {tab === "entrevista" && <EntrevistaPersonalForm userId={user?.id ?? null} empleado={p} />}
+            {tab === "funciones" && <ManualFuncionesForm userId={user?.id ?? null} empleado={p} />}
+            {tab === "capacitacion" && <CapacitacionPersonalForm userId={user?.id ?? null} empleado={p} />}
+            {tab === "referencias" && <ReferenciasPersonalForm userId={user?.id ?? null} empleado={p} />}
+            {tab === "evaluacion" && <EvaluacionDesempenoForm userId={user?.id ?? null} empleado={p} />}
+          </div>
+        </fieldset>
+      )}
 
       {!["generales", "documentacion", "entrevista", "funciones", "capacitacion", "referencias", "evaluacion"].includes(tab) && (
         <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-14 text-center">
