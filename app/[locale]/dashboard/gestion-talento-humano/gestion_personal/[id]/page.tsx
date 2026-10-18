@@ -36,7 +36,7 @@ function fechaLegible(iso?: string) {
 }
 
 export default function PerfilPersonalPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador: colaboradorSesion } = useDashboardUser();
   const params = useParams();
   const searchParams = useSearchParams();
   const locale = params.locale as string;
@@ -66,6 +66,26 @@ export default function PerfilPersonalPage() {
       </div>
     );
   }
+
+  // Un colaborador siempre puede ver su propia ficha, sin importar qué
+  // módulos le haya asignado el dueño — pero nunca la de otra persona, y
+  // solo en modo lectura (sin datos laborales/evaluaciones editables).
+  const soloLectura = !!colaboradorSesion;
+
+  if (colaboradorSesion && colaboradorSesion.empleadoId !== id) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <Link href={`${basePath}/gestion_personal`} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
+          ← Gestión del Personal
+        </Link>
+        <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
+          <p className="text-gray-500 text-sm">No tenés acceso a la ficha de otro colaborador.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const tabsVisibles = soloLectura ? TABS.filter((t) => t.key === "generales") : TABS;
 
   return (
     <div className="max-w-4xl mx-auto space-y-4">
@@ -101,18 +121,20 @@ export default function PerfilPersonalPage() {
             {p.email && <span>✉️ {p.email}</span>}
           </div>
         </div>
-        <Link
-          href={`${basePath}/alta_personal`}
-          className="relative z-10 text-xs font-semibold text-[#F5A623] hover:text-[#e09410] flex-shrink-0 self-center sm:self-start bg-white/5 border border-white/10 px-3 py-1.5 rounded-full"
-        >
-          ✎ Editar datos
-        </Link>
+        {!soloLectura && (
+          <Link
+            href={`${basePath}/alta_personal`}
+            className="relative z-10 text-xs font-semibold text-[#F5A623] hover:text-[#e09410] flex-shrink-0 self-center sm:self-start bg-white/5 border border-white/10 px-3 py-1.5 rounded-full"
+          >
+            ✎ Editar datos
+          </Link>
+        )}
       </div>
 
       {/* Pestañas */}
       <div className="bg-white rounded-2xl border border-gray-100 overflow-x-auto sticky top-0 z-20">
         <div className="flex">
-          {TABS.map((t) => (
+          {tabsVisibles.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}

@@ -244,6 +244,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Link>
             );
           })}
+
+          {/* Todo colaborador puede ver su propia ficha de personal, sin
+              importar qué módulos le haya asignado el dueño. */}
+          {esColaborador && colaboradorInfo!.empleadoId && (
+            <Link
+              href={`/${locale}/dashboard/gestion-talento-humano/gestion_personal/${colaboradorInfo!.empleadoId}`}
+              onClick={() => setSidebarOpen(false)}
+              title={collapsed ? "Mi Ficha" : undefined}
+              className={`flex items-center gap-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                collapsed ? "px-0 justify-center" : "px-3"
+              } ${
+                pathname === `/${locale}/dashboard/gestion-talento-humano/gestion_personal/${colaboradorInfo!.empleadoId}`
+                  ? "bg-[#1A1A1A] text-white shadow-sm"
+                  : "text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A]"
+              }`}
+            >
+              <UserCircle size={18} strokeWidth={2} className="flex-shrink-0" style={{ color: "#64748B" }} />
+              {!collapsed && "Mi Ficha"}
+            </Link>
+          )}
         </nav>
 
         {/* User info + logout */}
