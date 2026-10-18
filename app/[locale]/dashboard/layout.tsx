@@ -35,11 +35,6 @@ const navItems: { href: string; label: string; icon: LucideIcon; color: string; 
   { href: "/perfil", label: "Perfil", icon: UserCircle, color: "#64748B", modulo: null, soloOwner: true },
 ];
 
-// Portal del cliente todavía en desarrollo (sistema ISO 9001 en construcción).
-// Mientras tanto, solo esta cuenta puede entrar a probarlo. No tiene relación
-// con los colaboradores internos del CRM (esos se manejan aparte).
-const ALLOWED_CLIENT_EMAILS = ["juan@isogo.company"];
-
 type ColaboradorInfo = { ownerId: string; permisos: string[]; activo: boolean };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -79,11 +74,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       setResolviendoColaborador(false);
       return;
     }
-    const emailAutorizadoDirecto = rawUser.email && ALLOWED_CLIENT_EMAILS.includes(rawUser.email.toLowerCase());
-    if (emailAutorizadoDirecto) {
-      setResolviendoColaborador(false);
-      return;
-    }
     (async () => {
       const supabase = createClient();
       const { data } = await supabase
@@ -120,10 +110,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const esColaborador = !!colaboradorInfo;
-  const emailAutorizado = rawUser?.email && ALLOWED_CLIENT_EMAILS.includes(rawUser.email.toLowerCase());
-  const accesoPermitido = emailAutorizado || (esColaborador && colaboradorInfo!.activo);
+  const colaboradorDesactivado = esColaborador && !colaboradorInfo!.activo;
 
-  if (rawUser && !accesoPermitido) {
+  if (rawUser && colaboradorDesactivado) {
     return (
       <div className="min-h-screen bg-[#1A1A1A] flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-[#242424] rounded-2xl p-10 shadow-2xl border border-white/5 text-center">
@@ -134,21 +123,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </svg>
           </div>
 
-          <h1 className="text-2xl font-bold text-white mb-3">
-            {esColaborador ? "Acceso desactivado" : "Plataforma en construcción"}
-          </h1>
+          <h1 className="text-2xl font-bold text-white mb-3">Acceso desactivado</h1>
           <p className="text-gray-400 text-sm leading-relaxed mb-8">
-            {esColaborador
-              ? "Tu acceso a este sistema fue desactivado. Contactá al administrador de tu empresa."
-              : "Estamos terminando de armar tu sistema de gestión ISO 9001. Pronto vas a tener acceso completo a tu panel."}
+            Tu acceso a este sistema fue desactivado. Contactá al administrador de tu empresa.
           </p>
-
-          {!esColaborador && (
-            <div className="bg-[#F5A623]/10 border border-[#F5A623]/20 rounded-xl p-4 mb-8">
-              <p className="text-[#F5A623] font-semibold text-sm">🚀 Lanzamiento próximo</p>
-              <p className="text-gray-500 text-xs mt-1">Te vamos a avisar apenas esté listo.</p>
-            </div>
-          )}
 
           <button
             onClick={handleLogout}
