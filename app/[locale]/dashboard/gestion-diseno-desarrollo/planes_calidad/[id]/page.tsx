@@ -7,6 +7,8 @@ import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
 import CampoConAyuda from "@/components/dashboard/CampoConAyuda";
+import OrganigramaEditor from "@/components/dashboard/OrganigramaEditor";
+import ManualesProyectoTab from "@/components/dashboard/ManualesProyectoTab";
 import {
   parsePlanesCalidad,
   actividadFaseVacia,
@@ -25,6 +27,8 @@ const labelClass = "block text-xs font-medium text-gray-500 mb-1";
 const cellInput =
   "w-full bg-transparent border-0 focus:outline-none focus:ring-0 focus:bg-[#FFF6E5] px-2 py-1.5 text-xs text-[#1A1A1A] placeholder-gray-300 rounded transition-colors";
 
+type Tab = "planes" | "organigrama" | "manuales" | "cronograma";
+
 export default function PerfilPlanCalidadPage() {
   const { user } = useDashboardUser();
   const params = useParams();
@@ -36,6 +40,7 @@ export default function PerfilPlanCalidadPage() {
   const { docs, loading, save } = useGestionDocumentos("diseno_desarrollo", user?.id ?? null);
 
   const [plan, setPlan] = useState<PlanCalidad | null>(null);
+  const [tab, setTab] = useState<Tab>("planes");
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -155,7 +160,28 @@ export default function PerfilPlanCalidadPage() {
 
       {success && <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">✓ Plan guardado</div>}
 
-      {/* 1. Datos del plan */}
+      {/* Pestañas */}
+      <div className="flex items-center gap-1 bg-white rounded-xl border border-gray-100 p-1.5 w-fit overflow-x-auto">
+        {[
+          { key: "planes" as Tab, label: "📘 Planes" },
+          { key: "organigrama" as Tab, label: "🧩 Organigrama" },
+          { key: "manuales" as Tab, label: "📋 Manuales" },
+          { key: "cronograma" as Tab, label: "📅 Cronograma del Proyecto" },
+        ].map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap ${
+              tab === t.key ? "bg-[#1A1A1A] text-white" : "text-gray-500 hover:bg-gray-50"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "planes" && (
+        <div className="space-y-4">
       <Seccion numero="1" icono="📘" titulo="Planes">
         <div className="space-y-5">
           <div>
@@ -204,9 +230,20 @@ export default function PerfilPlanCalidadPage() {
           />
         </div>
       </Seccion>
+        </div>
+      )}
 
-      {/* 3. Cronograma */}
-      <Seccion numero="3" icono="📅" titulo="Cronograma del Proyecto">
+      {tab === "organigrama" && (
+        <OrganigramaEditor
+          modulo="diseno_desarrollo"
+          itemKeyNodos={`organigrama_plan_${plan.id}`}
+          itemKeyConexiones={`organigrama_plan_conexiones_${plan.id}`}
+        />
+      )}
+
+      {tab === "manuales" && <ManualesProyectoTab userId={user?.id ?? null} planId={plan.id} />}
+
+      {tab === "cronograma" && (
         <div className="space-y-5">
           <div className="grid sm:grid-cols-3 gap-3">
             <div>
@@ -304,18 +341,20 @@ export default function PerfilPlanCalidadPage() {
             + Agregar fase
           </button>
         </div>
-      </Seccion>
+      )}
 
-      <div className="flex justify-center pt-2">
-        <button
-          type="button"
-          onClick={guardar}
-          disabled={saving}
-          className="bg-[#F5A623] text-[#1A1A1A] font-bold px-10 py-3 rounded-lg hover:bg-[#e09410] disabled:opacity-60 shadow-lg"
-        >
-          {saving ? "Guardando..." : "Guardar"}
-        </button>
-      </div>
+      {(tab === "planes" || tab === "cronograma") && (
+        <div className="flex justify-center pt-2">
+          <button
+            type="button"
+            onClick={guardar}
+            disabled={saving}
+            className="bg-[#F5A623] text-[#1A1A1A] font-bold px-10 py-3 rounded-lg hover:bg-[#e09410] disabled:opacity-60 shadow-lg"
+          >
+            {saving ? "Guardando..." : "Guardar"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
