@@ -7,7 +7,8 @@ export type TemaPanelKey =
   | "grafito"
   | "purpura"
   | "petroleo"
-  | "chocolate";
+  | "chocolate"
+  | "indigo";
 
 export type TemaPanel = {
   label: string;
@@ -130,6 +131,18 @@ export const TEMAS_PANEL: Record<TemaPanelKey, TemaPanel> = {
     textMuted: "#CBAA93",
     cardBg: "rgba(255,255,255,0.06)",
     cardBorder: "rgba(255,255,255,0.1)",
+  },
+  indigo: {
+    label: "Índigo",
+    swatch: "#3730A3",
+    isLight: false,
+    bgFrom: "#241A5E",
+    bgTo: "#3730A3",
+    gridColor: "#ffffff",
+    textPrimary: "#FFFFFF",
+    textMuted: "#B5ADE8",
+    cardBg: "rgba(255,255,255,0.07)",
+    cardBorder: "rgba(255,255,255,0.12)",
   },
 };
 
