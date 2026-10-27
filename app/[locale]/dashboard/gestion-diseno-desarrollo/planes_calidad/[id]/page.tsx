@@ -191,12 +191,12 @@ export default function PerfilPlanCalidadPage() {
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="relative z-10 w-14 h-14 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden hover:border-[#14B8A6]/50 transition-colors"
+          className="relative z-10 w-24 h-24 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center text-3xl flex-shrink-0 overflow-hidden hover:border-[#14B8A6]/50 transition-colors p-2"
           title="Cambiar foto del proyecto"
         >
           {plan.foto ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={plan.foto} alt={plan.nombreProyecto} className="w-full h-full object-cover" />
+            <img src={plan.foto} alt={plan.nombreProyecto} className="w-full h-full object-contain" />
           ) : (
             "📑"
           )}
