@@ -5,11 +5,14 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { createClient } from "@/lib/supabase/client";
+import { otorgarAccesoPorRegistro } from "@/lib/colaboradoresCliente";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
 import CampoConAyuda from "@/components/dashboard/CampoConAyuda";
 import OrganigramaEditor from "@/components/dashboard/OrganigramaEditor";
 import ManualesProyectoTab from "@/components/dashboard/ManualesProyectoTab";
 import PlanGestionObraTab from "@/components/dashboard/PlanGestionObraTab";
+import SelectorAccesoColaboradores from "@/components/dashboard/SelectorAccesoColaboradores";
 import {
   parsePlanesCalidad,
   actividadFaseVacia,
@@ -31,7 +34,7 @@ const cellInput =
 type Tab = "planes" | "organigrama" | "manuales" | "obra" | "cronograma";
 
 export default function PerfilPlanCalidadPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador } = useDashboardUser();
   const params = useParams();
   const router = useRouter();
   const locale = params.locale as string;
@@ -66,6 +69,21 @@ export default function PerfilPlanCalidadPage() {
             <p className="text-gray-500 text-sm">No se encontró este plan de calidad.</p>
           </div>
         )}
+      </div>
+    );
+  }
+
+  // Un colaborador solo puede trabajar en los planes puntuales que se le
+  // compartieron desde el selector de acceso del propio plan.
+  if (colaborador && !plan.colaboradoresConAcceso?.includes(colaborador.empleadoId ?? "")) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <Link href={`${basePath}/planes_calidad`} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
+          ← Planes de Calidad
+        </Link>
+        <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
+          <p className="text-gray-500 text-sm">No tenés acceso a este plan de calidad.</p>
+        </div>
       </div>
     );
   }
@@ -106,6 +124,9 @@ export default function PerfilPlanCalidadPage() {
     const planes = parsePlanesCalidad(docs[ITEM_KEY] ?? "");
     const actualizados = [...planes.filter((p) => p.id !== plan.id), plan];
     await save(ITEM_KEY, JSON.stringify(actualizados));
+    if (user?.id) {
+      await otorgarAccesoPorRegistro(createClient() as never, user.id, plan.colaboradoresConAcceso ?? [], "diseno_desarrollo", "planes_calidad");
+    }
     setSaving(false);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 2000);
@@ -125,9 +146,20 @@ export default function PerfilPlanCalidadPage() {
         <Link href={`${basePath}/planes_calidad`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
           ← Planes de Calidad
         </Link>
-        <button type="button" onClick={eliminarPlan} className="text-xs text-gray-400 hover:text-red-500">
-          Eliminar plan
-        </button>
+        <div className="flex items-center gap-3">
+          {!colaborador && (
+            <SelectorAccesoColaboradores
+              ownerId={user?.id ?? null}
+              value={plan.colaboradoresConAcceso ?? []}
+              onChange={(ids) => campo("colaboradoresConAcceso", ids)}
+            />
+          )}
+          {!colaborador && (
+            <button type="button" onClick={eliminarPlan} className="text-xs text-gray-400 hover:text-red-500">
+              Eliminar plan
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Encabezado */}

@@ -37,6 +37,12 @@ export type PlanCalidad = {
 
   estado: string; // ver ESTADOS_PLAN_CALIDAD
   fechaAlta: string;
+
+  // IDs de Empleado (lib/personal.ts) de los colaboradores con acceso de
+  // edición completa a este plan puntual (pueden trabajarlo entero: Planes,
+  // Organigrama, Manuales, Cronograma y Plan de Gestión de Obra), sin
+  // importar si tienen el módulo Diseño y Desarrollo asignado desde su perfil.
+  colaboradoresConAcceso: string[];
 };
 
 export const ESTADOS_PLAN_CALIDAD = ["Planificado", "En ejecución", "Completado", "Suspendido"];
@@ -103,6 +109,7 @@ export function planCalidadVacio(codigo: string): PlanCalidad {
     fases: [faseVacia(1)],
     estado: "Planificado",
     fechaAlta: new Date().toISOString().slice(0, 10),
+    colaboradoresConAcceso: [],
   };
 }
 
@@ -116,6 +123,7 @@ export function parsePlanesCalidad(contenido: string): PlanCalidad[] {
       fases: Array.isArray(p.fases)
         ? p.fases.map((f) => ({ ...f, actividades: Array.isArray(f.actividades) ? f.actividades : [] }))
         : [],
+      colaboradoresConAcceso: p.colaboradoresConAcceso ?? [],
     }));
   } catch {
     return [];

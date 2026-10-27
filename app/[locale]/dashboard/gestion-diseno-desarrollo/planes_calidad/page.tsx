@@ -17,7 +17,7 @@ import {
 const ITEM_KEY = "planes_calidad_lista";
 
 export default function PlanesCalidadListaPage() {
-  const { user } = useDashboardUser();
+  const { user, colaborador } = useDashboardUser();
   const params = useParams();
   const router = useRouter();
   const locale = params.locale as string;
@@ -29,7 +29,12 @@ export default function PlanesCalidadListaPage() {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
   }
 
-  const planes = parsePlanesCalidad(docs[ITEM_KEY] ?? "");
+  const todos = parsePlanesCalidad(docs[ITEM_KEY] ?? "");
+  // Un colaborador solo ve los planes de calidad puntuales que se le
+  // compartieron desde el selector del propio plan.
+  const planes = colaborador
+    ? todos.filter((p) => p.colaboradoresConAcceso?.includes(colaborador.empleadoId ?? ""))
+    : todos;
 
   async function nuevoPlan() {
     const nuevo = planCalidadVacio(siguienteRadicadoPC(planes.map((p) => numeroDeRadicadoPC(p.codigo))));
@@ -49,25 +54,31 @@ export default function PlanesCalidadListaPage() {
           <h1 className="text-2xl font-bold text-[#1A1A1A]">Planes de Calidad</h1>
           <p className="text-gray-500 text-sm mt-1">Un plan de calidad por cada producto, proyecto o contrato (ISO 9001 / guía ISO 10005).</p>
         </div>
-        <button
-          type="button"
-          onClick={nuevoPlan}
-          className="text-sm text-[#14B8A6] font-semibold hover:text-[#0d9488]"
-        >
-          + Nuevo plan de calidad
-        </button>
+        {!colaborador && (
+          <button
+            type="button"
+            onClick={nuevoPlan}
+            className="text-sm text-[#14B8A6] font-semibold hover:text-[#0d9488]"
+          >
+            + Nuevo plan de calidad
+          </button>
+        )}
       </div>
 
       {planes.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
-          <p className="text-gray-500 text-sm mb-4">Todavía no creaste ningún plan de calidad.</p>
-          <button
-            type="button"
-            onClick={nuevoPlan}
-            className="inline-block bg-[#14B8A6] text-white font-bold px-5 py-2.5 rounded-lg hover:bg-[#0d9488] text-sm"
-          >
-            Crear el primer plan de calidad
-          </button>
+          <p className="text-gray-500 text-sm mb-4">
+            {colaborador ? "Todavía no te compartieron ningún plan de calidad." : "Todavía no creaste ningún plan de calidad."}
+          </p>
+          {!colaborador && (
+            <button
+              type="button"
+              onClick={nuevoPlan}
+              className="inline-block bg-[#14B8A6] text-white font-bold px-5 py-2.5 rounded-lg hover:bg-[#0d9488] text-sm"
+            >
+              Crear el primer plan de calidad
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
