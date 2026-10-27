@@ -21,6 +21,11 @@ type Profile = {
   descripcion_empresa: string | null;
   procesos_empresa: string | null;
   tema_panel: string | null;
+  // Excepción puntual por cliente: si está seteado, restringe qué pestañas
+  // ve un colaborador en su propia ficha de Gestión del Personal (Mi Ficha).
+  // null/vacío = comportamiento por defecto (todas las pestañas), igual que
+  // siempre. Solo se setea manualmente para clientes puntuales que lo pidan.
+  mi_ficha_tabs_colaborador: string[] | null;
 };
 
 export type ColaboradorContextInfo = {

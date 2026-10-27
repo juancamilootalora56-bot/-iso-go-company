@@ -21,6 +21,7 @@ interface Profile {
   descripcion_empresa: string | null;
   procesos_empresa: string | null;
   tema_panel: string | null;
+  mi_ficha_tabs_colaborador: string[] | null;
 }
 
 interface UseUserResult {

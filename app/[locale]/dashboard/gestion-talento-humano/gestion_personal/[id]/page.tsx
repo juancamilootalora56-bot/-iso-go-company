@@ -36,7 +36,7 @@ function fechaLegible(iso?: string) {
 }
 
 export default function PerfilPersonalPage() {
-  const { user, colaborador: colaboradorSesion } = useDashboardUser();
+  const { user, profile, colaborador: colaboradorSesion } = useDashboardUser();
   const params = useParams();
   const searchParams = useSearchParams();
   const locale = params.locale as string;
@@ -44,7 +44,20 @@ export default function PerfilPersonalPage() {
   const basePath = `/${locale}/dashboard/gestion-talento-humano`;
 
   const { docs, loading } = useGestionDocumentos("talento_humano", user?.id ?? null);
-  const tabInicial = TABS.some((t) => t.key === searchParams.get("tab")) ? (searchParams.get("tab") as string) : "generales";
+
+  // Excepción puntual por cliente: si el dueño tiene configurado
+  // mi_ficha_tabs_colaborador, el colaborador solo ve esas pestañas en su
+  // propia ficha. Para todos los demás clientes (campo vacío) no cambia nada.
+  const soloLectura = !!colaboradorSesion;
+  const restriccionCliente = profile?.mi_ficha_tabs_colaborador;
+  const tabsVisibles =
+    soloLectura && restriccionCliente && restriccionCliente.length > 0
+      ? TABS.filter((t) => restriccionCliente.includes(t.key))
+      : TABS;
+
+  const tabQuery = searchParams.get("tab");
+  const tabInicial =
+    tabQuery && tabsVisibles.some((t) => t.key === tabQuery) ? tabQuery : tabsVisibles[0]?.key ?? "generales";
   const [tab, setTab] = useState(tabInicial);
 
   if (loading) {
@@ -70,8 +83,6 @@ export default function PerfilPersonalPage() {
   // Un colaborador siempre puede ver su propia ficha, sin importar qué
   // módulos le haya asignado el dueño — pero nunca la de otra persona, y
   // solo en modo lectura (sin datos laborales/evaluaciones editables).
-  const soloLectura = !!colaboradorSesion;
-
   if (colaboradorSesion && colaboradorSesion.empleadoId !== id) {
     return (
       <div className="max-w-3xl mx-auto">
@@ -84,11 +95,6 @@ export default function PerfilPersonalPage() {
       </div>
     );
   }
-
-  // En modo lectura se ven todas las pestañas, pero los formularios quedan
-  // bloqueados (ver <fieldset disabled> más abajo) — nada de lo que hay en
-  // documentación/entrevista/funciones/etc. se puede modificar.
-  const tabsVisibles = TABS;
 
   return (
     <div className="max-w-4xl mx-auto space-y-4">
