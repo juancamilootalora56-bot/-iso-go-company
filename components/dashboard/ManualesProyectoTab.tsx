@@ -101,7 +101,7 @@ function TarjetaManual({
 
           <div className="flex justify-end pt-1 border-t border-gray-100">
             <button onClick={onDelete} className="text-xs text-red-500 hover:text-red-700">
-              Eliminar manual
+              Eliminar responsabilidad
             </button>
           </div>
         </div>
@@ -154,12 +154,12 @@ export default function ManualesProyectoTab({ userId, planId }: { userId: string
   return (
     <div className="space-y-4">
       <p className="text-gray-500 text-sm">
-        Un manual de funciones por cada persona del proyecto. Si el proyecto tiene 10 colaboradores, agregá 10 manuales.
+        Una responsabilidad por cada persona del proyecto. Si el proyecto tiene 10 colaboradores, agregá 10 responsabilidades.
       </p>
 
       {manuales.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
-          <p className="text-gray-500 text-sm mb-2">Todavía no hay manuales cargados.</p>
+          <p className="text-gray-500 text-sm mb-2">Todavía no hay responsabilidades cargadas.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -171,12 +171,12 @@ export default function ManualesProyectoTab({ userId, planId }: { userId: string
 
       <div className="flex items-center justify-between flex-wrap gap-3">
         <button type="button" onClick={agregarManual} className="text-sm font-semibold text-[#F5A623] hover:text-[#e09410]">
-          + Agregar manual
+          + Agregar responsabilidad
         </button>
         <div className="flex items-center gap-3">
           {saved && <span className="text-xs text-green-600 font-semibold">Guardado ✓</span>}
           <button type="button" onClick={guardar} disabled={saving} className="bg-[#1A1A1A] text-white font-bold px-5 py-2.5 rounded-lg hover:bg-[#333] transition-colors text-sm disabled:opacity-60">
-            {saving ? "Guardando..." : "Guardar manuales"}
+            {saving ? "Guardando..." : "Guardar responsabilidades"}
           </button>
         </div>
       </div>

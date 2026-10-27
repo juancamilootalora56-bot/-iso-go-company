@@ -198,7 +198,7 @@ export default function PerfilPlanCalidadPage() {
         {[
           { key: "planes" as Tab, label: "📘 Planes" },
           { key: "organigrama" as Tab, label: "🧩 Organigrama" },
-          { key: "manuales" as Tab, label: "📋 Manuales" },
+          { key: "manuales" as Tab, label: "📋 Responsabilidades" },
           { key: "obra" as Tab, label: "🏗️ Plan de Gestión de Obra" },
           { key: "cronograma" as Tab, label: "📅 Cronograma del Proyecto" },
         ].map((t) => (
