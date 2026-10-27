@@ -91,8 +91,13 @@ export default function PlanesCalidadListaPage() {
                 className="bg-white rounded-xl border border-gray-100 p-5 text-left hover:border-[#14B8A6]/40 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#E6FFFB] to-[#CCFBF1] flex-shrink-0 flex items-center justify-center text-xl">
-                    📑
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#E6FFFB] to-[#CCFBF1] flex-shrink-0 flex items-center justify-center text-xl overflow-hidden">
+                    {p.foto ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.foto} alt={p.nombreProyecto} className="w-full h-full object-cover" />
+                    ) : (
+                      "📑"
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-sm text-[#1A1A1A] truncate">{p.nombreProyecto || "Sin nombre"}</p>

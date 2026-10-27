@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
@@ -24,6 +24,7 @@ import {
 } from "@/lib/planesCalidad";
 
 const ITEM_KEY = "planes_calidad_lista";
+const MAX_FOTO_BYTES = 800_000; // ~800KB
 
 const inputClass =
   "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:outline-none focus:border-[#F5A623] transition-colors";
@@ -47,6 +48,8 @@ export default function PerfilPlanCalidadPage() {
   const [tab, setTab] = useState<Tab>("planes");
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [fotoError, setFotoError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!loading) {
@@ -90,6 +93,19 @@ export default function PerfilPlanCalidadPage() {
 
   function campo<K extends keyof PlanCalidad>(key: K, value: PlanCalidad[K]) {
     setPlan((p) => (p ? { ...p, [key]: value } : p));
+  }
+
+  function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > MAX_FOTO_BYTES) {
+      setFotoError("La imagen es muy pesada. Usá una de menos de 800KB.");
+      return;
+    }
+    setFotoError(null);
+    const reader = new FileReader();
+    reader.onload = () => campo("foto", reader.result as string);
+    reader.readAsDataURL(file);
   }
 
   function actualizarFase(faseId: string, cambios: Partial<FaseCronograma>) {
@@ -172,12 +188,25 @@ export default function PerfilPlanCalidadPage() {
           }}
         />
         <div className="absolute -top-16 -right-16 w-56 h-56 bg-[#14B8A6]/20 rounded-full blur-3xl" />
-        <span className="relative z-10 w-14 h-14 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center text-2xl flex-shrink-0">
-          📑
-        </span>
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="relative z-10 w-14 h-14 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden hover:border-[#14B8A6]/50 transition-colors"
+          title="Cambiar foto del proyecto"
+        >
+          {plan.foto ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={plan.foto} alt={plan.nombreProyecto} className="w-full h-full object-cover" />
+          ) : (
+            "📑"
+          )}
+          <span className="absolute bottom-0 right-0 bg-[#14B8A6] text-white rounded-full p-1 border-2 border-[#1A1A1A] text-[9px] leading-none">✎</span>
+        </button>
+        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFoto} className="hidden" />
         <div className="relative z-10 flex-1 min-w-0">
           <h1 className="text-xl font-bold text-white">{plan.nombreProyecto || "Nuevo plan de calidad"}</h1>
           <p className="text-[#14B8A6] font-semibold text-sm">{plan.codigo}</p>
+          {fotoError && <p className="text-red-400 text-xs mt-0.5">{fotoError}</p>}
         </div>
         <select
           value={plan.estado}

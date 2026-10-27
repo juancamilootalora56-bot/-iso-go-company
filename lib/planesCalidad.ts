@@ -22,6 +22,7 @@ export type PlanCalidad = {
   id: string;
   codigo: string; // ej: PC-0001
   nombreProyecto: string;
+  foto: string | null; // data URL (base64)
 
   introduccion: string;
   alcance: string;
@@ -98,6 +99,7 @@ export function planCalidadVacio(codigo: string): PlanCalidad {
     id: crypto.randomUUID(),
     codigo,
     nombreProyecto: "",
+    foto: null,
     introduccion: "",
     alcance: "",
     definiciones: "",
@@ -120,6 +122,7 @@ export function parsePlanesCalidad(contenido: string): PlanCalidad[] {
     if (!Array.isArray(parsed)) return [];
     return parsed.map((p: PlanCalidad) => ({
       ...p,
+      foto: p.foto ?? null,
       fases: Array.isArray(p.fases)
         ? p.fases.map((f) => ({ ...f, actividades: Array.isArray(f.actividades) ? f.actividades : [] }))
         : [],
