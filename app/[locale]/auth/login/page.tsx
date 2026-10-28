@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const params = useParams();
-  const router = useRouter();
   const locale = params.locale as string;
 
   const [email, setEmail] = useState("");
@@ -35,12 +34,16 @@ export default function LoginPage() {
           .eq("id", signInData.user.id)
           .maybeSingle();
 
+        // Navegación dura (no router.push): evita que Next.js reutilice la
+        // caché de navegación de una sesión anterior en esta misma pestaña
+        // (otro usuario, u otro cliente) y muestre por un instante el panel
+        // de la cuenta previa antes de corregirse con los datos reales.
         if (perfilInterno?.activo) {
-          router.push("/crm");
+          window.location.href = "/crm";
           return;
         }
 
-        router.push(`/${locale}/dashboard`);
+        window.location.href = `/${locale}/dashboard`;
       }
     } catch {
       setError("Error de conexión. Intenta de nuevo.");

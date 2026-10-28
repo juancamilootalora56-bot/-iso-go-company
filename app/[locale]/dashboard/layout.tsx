@@ -95,8 +95,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push(`/${locale}/auth/login`);
-    router.refresh();
+    // Navegación dura: si alguien más entra después en esta misma pestaña,
+    // evita que Next.js reutilice la caché de navegación de esta sesión.
+    window.location.href = `/${locale}/auth/login`;
   }
 
   if (loading || resolviendoColaborador) {
