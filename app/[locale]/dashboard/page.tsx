@@ -67,6 +67,21 @@ export default function DashboardPage() {
   const riesgosCount = contarRiesgos(docsGerencia);
   const tema = temaPanelDe(effectiveProfile?.tema_panel);
 
+  // Evita el "flash" de tema por defecto: todo colaborador recién creado
+  // también tiene su propia fila en `profiles` (la crea un trigger de la
+  // base al dar de alta su login), pero esa fila es un esqueleto sin
+  // company_name/tema_panel — solo el perfil del DUEÑO los tiene. Si
+  // effectiveProfile todavía no es el del dueño (se está resolviendo),
+  // mostramos una carga neutra en vez de pintar el tema/branding
+  // equivocado por un instante.
+  if (colaborador && !effectiveProfile?.company_name) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="w-8 h-8 border-2 border-[#F5A623] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   // Colaborador sin ningún módulo asignado todavía: en vez del panel
   // general, ve su propia ficha de personal en modo lectura.
   if (colaborador && !tieneAccesoReal(colaborador.permisos)) {

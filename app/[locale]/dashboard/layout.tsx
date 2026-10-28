@@ -113,6 +113,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const esColaborador = !!colaboradorInfo;
   const colaboradorDesactivado = esColaborador && !colaboradorInfo!.activo;
 
+  // Mismo blindaje que en el dashboard de inicio: el colaborador también
+  // tiene su propia fila (esqueleto) en `profiles`, creada automáticamente
+  // al dar de alta su login — sin company_name/logo/tema. Mientras el
+  // perfil real del dueño no haya llegado todavía, mostramos la pantalla
+  // de carga en vez del sidebar con la marca por defecto de Iso Go.
+  if (esColaborador && !ownerProfile) {
+    return (
+      <div className="min-h-screen bg-[#F4F4F4] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-[#F5A623] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-gray-500 text-sm">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (rawUser && colaboradorDesactivado) {
     return (
       <div className="min-h-screen bg-[#1A1A1A] flex items-center justify-center px-4">
