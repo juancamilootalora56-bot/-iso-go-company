@@ -71,7 +71,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [rawUser, loading, locale, router]);
 
   useEffect(() => {
-    if (loading || !rawUser) {
+    // Mientras `loading` siga en true todavía no sabemos si hay usuario —
+    // no tocar resolviendoColaborador acá. Este mismo efecto se vuelve a
+    // correr en cuanto `loading` cambie a false (está en las dependencias).
+    // Bug que arregla esto: antes, este efecto corría una primera vez con
+    // loading=true (el estado inicial) y apagaba resolviendoColaborador
+    // de una, antes incluso de saber si rawUser existía. Cuando loading
+    // pasaba a false un instante después, el chequeo real de colaborador
+    // arrancaba de nuevo pero la pantalla ya no estaba bloqueada — se
+    // alcanzaba a pintar un render con los datos a medio cargar (perfil
+    // propio del colaborador en vez del de la empresa, sidebar sin
+    // filtrar) antes de que la consulta real terminara.
+    if (loading) {
+      return;
+    }
+    if (!rawUser) {
       setResolviendoColaborador(false);
       return;
     }
