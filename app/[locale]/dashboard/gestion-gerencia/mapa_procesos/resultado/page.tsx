@@ -5,9 +5,67 @@ import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseLista, parseClasificacion } from "@/lib/mapaProcesos";
+import { Target, Workflow, ShieldCheck, ChevronDown, ChevronUp, Users, Heart } from "lucide-react";
 
 const ITEM_KEY_SELECCION = "mapa_procesos_seleccion";
 const ITEM_KEY_CLASIFICACION = "mapa_procesos_clasificacion";
+
+function Chip({ texto }: { texto: string }) {
+  return (
+    <span className="bg-white text-[#1A1A1A] text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm border border-gray-100 border-l-4 border-l-[#F5A623] hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default">
+      {texto}
+    </span>
+  );
+}
+
+function Banda({
+  icono: Icono,
+  titulo,
+  procesos,
+  conFlechas,
+}: {
+  icono: typeof Target;
+  titulo: string;
+  procesos: string[];
+  conFlechas?: boolean;
+}) {
+  return (
+    <div className="bg-[#FAFAFA] rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-[#1A1A1A] to-[#2A2A2A]">
+        <Icono size={15} className="text-[#F5A623] flex-shrink-0" />
+        <h3 className="text-white text-xs font-bold uppercase tracking-wide flex-1">{titulo}</h3>
+        <span className="bg-white/10 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{procesos.length}</span>
+      </div>
+      <div className="p-4 flex flex-wrap items-center justify-center gap-2.5">
+        {procesos.length === 0 ? (
+          <span className="text-gray-400 text-xs italic py-2">Sin procesos asignados</span>
+        ) : (
+          procesos.map((p, i) => (
+            <span key={p} className="flex items-center gap-2.5">
+              <Chip texto={p} />
+              {conFlechas && i < procesos.length - 1 && <span className="text-gray-300 text-sm">›</span>}
+            </span>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BandaLateral({ icono: Icono, texto, variante }: { icono: typeof Users; texto: string; variante: "entrada" | "salida" }) {
+  const gradient = variante === "entrada" ? "from-[#1A1A1A] to-[#2A2A2A]" : "from-[#F5A623] to-[#e09410]";
+  return (
+    <div className={`bg-gradient-to-b ${gradient} rounded-2xl flex flex-col items-center justify-center gap-3 px-3 py-6 flex-shrink-0 w-16 sm:w-20`}>
+      <Icono size={18} className="text-white flex-shrink-0" />
+      <span
+        className="text-white text-[11px] font-bold leading-tight text-center"
+        style={{ writingMode: "vertical-rl", transform: variante === "entrada" ? "rotate(180deg)" : undefined }}
+      >
+        {texto}
+      </span>
+    </div>
+  );
+}
 
 export default function MapaProcesosResultadoPage() {
   const { user } = useDashboardUser();
@@ -31,26 +89,47 @@ export default function MapaProcesosResultadoPage() {
   const vacio = procesos.length === 0;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       <Link href={basePath} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
         ← Gestión de la Gerencia
       </Link>
 
-      <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">Mapa de Procesos</h1>
-          <p className="text-gray-500 text-sm mt-1">Paso 3 de 3 — Tu mapa de procesos.</p>
+      {/* Encabezado */}
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 overflow-hidden mb-6">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 bg-[#F5A623]/20 rounded-full blur-3xl" />
+        <div className="relative z-10 flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#F5A623" }}>
+              Paso 3 de 3
+            </p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white mt-0.5">Mapa de Procesos</h1>
+            <p className="text-gray-400 text-sm mt-1">ISO 9001, cláusula 4.4 — Enfoque basado en procesos</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-center">
+              <p className="text-white text-2xl font-extrabold">{procesos.length}</p>
+              <p className="text-gray-400 text-[10px] uppercase tracking-wide">Procesos</p>
+            </div>
+            <Link
+              href={`${basePath}/mapa_procesos/clasificar`}
+              className="text-xs font-bold text-[#1A1A1A] bg-[#F5A623] hover:bg-[#e09410] transition-colors px-4 py-2.5 rounded-lg flex-shrink-0"
+            >
+              ✎ Editar clasificación
+            </Link>
+          </div>
         </div>
-        <Link
-          href={`${basePath}/mapa_procesos/clasificar`}
-          className="text-sm text-[#F5A623] font-semibold hover:text-[#e09410]"
-        >
-          ✎ Editar clasificación
-        </Link>
       </div>
 
       {vacio ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
+        <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center">
           <p className="text-gray-500 text-sm mb-4">Todavía no armaste tu mapa de procesos.</p>
           <Link
             href={`${basePath}/mapa_procesos`}
@@ -60,87 +139,27 @@ export default function MapaProcesosResultadoPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h2 className="text-center font-bold text-[#1A1A1A] mb-6 text-lg">MAPA DE PROCESOS</h2>
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6">
+          <div className="flex items-stretch gap-3 sm:gap-4">
+            <BandaLateral icono={Users} texto="Requisitos del cliente y partes interesadas" variante="entrada" />
 
-          <div className="flex items-stretch gap-2">
-            {/* Necesidades del cliente */}
-            <div
-              className="bg-[#F5A623] rounded-lg flex items-center justify-center px-2 py-4 flex-shrink-0"
-              style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
-            >
-              <span className="text-white text-xs font-bold whitespace-nowrap">Requisitos del cliente y partes interesadas</span>
-            </div>
+            <div className="flex-1 flex flex-col gap-2 min-w-0">
+              <Banda icono={Target} titulo="Procesos Estratégicos" procesos={estrategicos} />
 
-            {/* Centro */}
-            <div className="flex-1 flex flex-col gap-1">
-              {/* Estratégicos */}
-              <div className="bg-[#2EA3F2] rounded-lg p-3">
-                <p className="text-white text-xs font-bold text-center mb-2">Procesos Estratégicos</p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {estrategicos.length === 0 ? (
-                    <span className="text-white/70 text-xs italic">Sin procesos asignados</span>
-                  ) : (
-                    estrategicos.map((p) => (
-                      <span key={p} className="bg-white text-[#1A1A1A] text-xs font-medium px-3 py-1.5 rounded-lg shadow-sm">
-                        {p}
-                      </span>
-                    ))
-                  )}
-                </div>
+              <div className="flex justify-center text-[#F5A623] py-0.5">
+                <ChevronDown size={16} className="animate-bounce" style={{ animationDuration: "1.6s" }} />
               </div>
 
-              <div className="flex justify-center text-[#F5A623] text-lg leading-none py-1">▾ ▾ ▾</div>
+              <Banda icono={Workflow} titulo="Procesos Misionales (cadena de valor)" procesos={misionales} conFlechas />
 
-              {/* Misionales */}
-              <div className="bg-[#2EA3F2] rounded-lg p-3">
-                <p className="text-white text-xs font-bold text-center mb-2">Procesos Misionales (cadena de valor)</p>
-                <div className="flex flex-wrap items-center justify-center gap-1">
-                  {misionales.length === 0 ? (
-                    <span className="text-white/70 text-xs italic">Sin procesos asignados</span>
-                  ) : (
-                    misionales.map((p, i) => (
-                      <span key={p} className="flex items-center gap-1">
-                        <span className="bg-white text-[#1A1A1A] text-xs font-medium px-3 py-1.5 rounded-lg shadow-sm">
-                          {p}
-                        </span>
-                        {i < misionales.length - 1 && <span className="text-white text-sm">›</span>}
-                      </span>
-                    ))
-                  )}
-                </div>
+              <div className="flex justify-center text-[#F5A623] py-0.5">
+                <ChevronUp size={16} className="animate-bounce" style={{ animationDuration: "1.6s" }} />
               </div>
 
-              <div className="flex justify-center text-[#F5A623] text-lg leading-none py-1">▴ ▴ ▴</div>
-
-              {/* Apoyo */}
-              <div className="bg-[#2EA3F2] rounded-lg p-3">
-                <p className="text-white text-xs font-bold text-center mb-2">Procesos de Apoyo</p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {apoyo.length === 0 ? (
-                    <span className="text-white/70 text-xs italic">Sin procesos asignados</span>
-                  ) : (
-                    apoyo.map((p) => (
-                      <span key={p} className="bg-white text-[#1A1A1A] text-xs font-medium px-3 py-1.5 rounded-lg shadow-sm">
-                        {p}
-                      </span>
-                    ))
-                  )}
-                </div>
-              </div>
+              <Banda icono={ShieldCheck} titulo="Procesos de Apoyo" procesos={apoyo} />
             </div>
 
-            {/* Satisfacción del cliente */}
-            <div
-              className="bg-[#F9C48A] rounded-lg flex items-center justify-center px-2 py-4 flex-shrink-0"
-            >
-              <span
-                className="text-[#1A1A1A] text-xs font-bold whitespace-nowrap"
-                style={{ writingMode: "vertical-rl" }}
-              >
-                Satisfacción del cliente y partes interesadas
-              </span>
-            </div>
+            <BandaLateral icono={Heart} texto="Satisfacción del cliente y partes interesadas" variante="salida" />
           </div>
         </div>
       )}
