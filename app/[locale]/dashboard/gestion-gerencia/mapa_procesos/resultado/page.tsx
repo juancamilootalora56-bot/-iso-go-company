@@ -1,23 +1,26 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseLista, parseClasificacion } from "@/lib/mapaProcesos";
+import { parseCaracterizaciones, caracterizacionVacia, siguienteCodigo, numeroDeCodigo } from "@/lib/caracterizacionProcesos";
 import { Target, Workflow, ShieldCheck, ChevronDown, ChevronUp, Users, Heart } from "lucide-react";
 
 const ITEM_KEY_SELECCION = "mapa_procesos_seleccion";
 const ITEM_KEY_CLASIFICACION = "mapa_procesos_clasificacion";
+const ITEM_KEY_CARACTERIZACIONES = "caracterizaciones_lista";
 
-function Chip({ texto, color }: { texto: string; color: string }) {
+function Chip({ texto, color, onClick }: { texto: string; color: string; onClick: () => void }) {
   return (
-    <span
-      className="bg-white text-[#1A1A1A] text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm border border-gray-100 border-l-4 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default"
+    <button
+      onClick={onClick}
+      className="bg-white text-[#1A1A1A] text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm border border-gray-100 border-l-4 hover:shadow-md hover:-translate-y-0.5 transition-all"
       style={{ borderLeftColor: color }}
     >
       {texto}
-    </span>
+    </button>
   );
 }
 
@@ -28,6 +31,7 @@ function Banda({
   conFlechas,
   colorDesde,
   colorHasta,
+  onClickProceso,
 }: {
   icono: typeof Target;
   titulo: string;
@@ -35,6 +39,7 @@ function Banda({
   conFlechas?: boolean;
   colorDesde: string;
   colorHasta: string;
+  onClickProceso: (proceso: string) => void;
 }) {
   return (
     <div className="bg-[#FAFAFA] rounded-2xl border border-gray-100 overflow-hidden">
@@ -52,7 +57,7 @@ function Banda({
         ) : (
           procesos.map((p, i) => (
             <span key={p} className="flex items-center gap-2.5">
-              <Chip texto={p} color={colorHasta} />
+              <Chip texto={p} color={colorHasta} onClick={() => onClickProceso(p)} />
               {conFlechas && i < procesos.length - 1 && <span className="text-gray-300 text-sm">›</span>}
             </span>
           ))
@@ -80,23 +85,41 @@ function BandaLateral({ icono: Icono, texto, variante }: { icono: typeof Users; 
 export default function MapaProcesosResultadoPage() {
   const { user, profile } = useDashboardUser();
   const params = useParams();
+  const router = useRouter();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-gerencia`;
+  const basePathCalidad = `/${locale}/dashboard/gestion-calidad`;
 
   const { docs, loading } = useGestionDocumentos("gerencia", user?.id ?? null);
+  const { docs: docsCalidad, loading: loadingCalidad, save: saveCalidad } = useGestionDocumentos("calidad", user?.id ?? null);
 
-  if (loading) {
+  if (loading || loadingCalidad) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
   }
 
   const procesos = parseLista(docs[ITEM_KEY_SELECCION] ?? "");
   const clasificacion = parseClasificacion(docs[ITEM_KEY_CLASIFICACION] ?? "");
+  const caracterizaciones = parseCaracterizaciones(docsCalidad[ITEM_KEY_CARACTERIZACIONES] ?? "");
 
   const estrategicos = procesos.filter((p) => clasificacion[p] === "estrategicos");
   const misionales = procesos.filter((p) => clasificacion[p] === "misionales");
   const apoyo = procesos.filter((p) => clasificacion[p] === "apoyo");
 
   const vacio = procesos.length === 0;
+
+  // Lleva a la caracterización del proceso clickeado — si ya existe, directo
+  // a verla/editarla; si no, la crea (misma lógica que en Caracterizaciones).
+  async function irACaracterizacion(proceso: string, categoria: string) {
+    const existente = caracterizaciones.find((c) => c.proceso === proceso);
+    if (existente) {
+      router.push(`${basePathCalidad}/caracterizaciones/${existente.id}`);
+      return;
+    }
+    const codigo = siguienteCodigo(caracterizaciones.map((c) => numeroDeCodigo(c.codigo)));
+    const nueva = caracterizacionVacia(proceso, categoria, codigo);
+    await saveCalidad(ITEM_KEY_CARACTERIZACIONES, JSON.stringify([...caracterizaciones, nueva]));
+    router.push(`${basePathCalidad}/caracterizaciones/${nueva.id}`);
+  }
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -151,6 +174,9 @@ export default function MapaProcesosResultadoPage() {
         </div>
       ) : (
         <div className="relative bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 overflow-hidden">
+          <p className="relative text-center text-xs text-gray-400 mb-4">
+            Hacé clic en un proceso para ver o crear su caracterización
+          </p>
           {profile?.logo_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -169,6 +195,7 @@ export default function MapaProcesosResultadoPage() {
                 procesos={estrategicos}
                 colorDesde="#4F46E5"
                 colorHasta="#4338CA"
+                onClickProceso={(p) => irACaracterizacion(p, "estrategicos")}
               />
 
               <div className="flex justify-center text-gray-300 py-0.5">
@@ -182,6 +209,7 @@ export default function MapaProcesosResultadoPage() {
                 conFlechas
                 colorDesde="#F5A623"
                 colorHasta="#e09410"
+                onClickProceso={(p) => irACaracterizacion(p, "misionales")}
               />
 
               <div className="flex justify-center text-gray-300 py-0.5">
@@ -194,6 +222,7 @@ export default function MapaProcesosResultadoPage() {
                 procesos={apoyo}
                 colorDesde="#0EA5A4"
                 colorHasta="#0d8f8e"
+                onClickProceso={(p) => irACaracterizacion(p, "apoyo")}
               />
             </div>
 
