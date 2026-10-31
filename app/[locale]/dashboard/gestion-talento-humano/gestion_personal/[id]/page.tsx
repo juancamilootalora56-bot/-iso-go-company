@@ -192,6 +192,11 @@ export default function PerfilPersonalPage() {
               <Dato icono="📄" label="Tipo de contrato" valor={p.tipoContrato} />
               <Dato icono="⏰" label="Jornada" valor={p.jornada} />
               <Dato icono="💵" label="Salario" valor={p.salario} />
+              <Dato
+                icono="🗂️"
+                label="Proceso"
+                valor={p.proceso ? `${p.proceso}${p.esJefeProceso ? " · Jefe de proceso" : ""}` : undefined}
+              />
             </div>
           </Seccion>
 

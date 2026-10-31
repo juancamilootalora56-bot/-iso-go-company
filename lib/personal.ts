@@ -27,6 +27,12 @@ export type Empleado = {
   jornada: string;
   salario: string;
   jefeDirecto: string;
+  // Proceso ISO al que pertenece (de Mapa de Procesos) y si es el responsable
+  // de ese proceso — usado por el Calendario de Colaboradores para decidir
+  // qué calendarios puede ver cada colaborador (el suyo, o además el de todo
+  // su proceso si es el jefe). Opcionales para no romper fichas ya cargadas.
+  proceso?: string;
+  esJefeProceso?: boolean;
 
   // Formación
   nivelEducativo: string;
@@ -71,6 +77,8 @@ export function empleadoVacio(): Empleado {
     jornada: "",
     salario: "",
     jefeDirecto: "",
+    proceso: "",
+    esJefeProceso: false,
     nivelEducativo: "",
     profesion: "",
     observaciones: "",

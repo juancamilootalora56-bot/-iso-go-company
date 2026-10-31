@@ -7,7 +7,7 @@ import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parsePersonal } from "@/lib/personal";
-import { actividadesVisibles, tieneAccesoModulo, conAccesoRelacionActividades, MODULOS_PERMISOS, type Colaborador, type PermisosColaborador } from "@/lib/colaboradoresCliente";
+import { actividadesVisibles, tieneAccesoModulo, conAccesosBaseColaborador, MODULOS_PERMISOS, type Colaborador, type PermisosColaborador } from "@/lib/colaboradoresCliente";
 import SelectorPermisosColaborador from "@/components/dashboard/SelectorPermisosColaborador";
 import { TEMAS_PANEL, type TemaPanelKey } from "@/lib/temaPanel";
 
@@ -160,7 +160,7 @@ export default function PerfilPage() {
           cargo: empleado.cargo,
           identificacion: empleado.identificacion,
           foto: empleado.foto,
-          permisos: conAccesoRelacionActividades(formColab.permisos),
+          permisos: conAccesosBaseColaborador(formColab.permisos),
           password: formColab.password || undefined,
         }),
       });

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
-import { MODULOS_PERMISOS, tieneAccesoModulo, actividadesVisibles, conAccesoRelacionActividades, type Colaborador, type PermisosColaborador } from "@/lib/colaboradoresCliente";
+import { MODULOS_PERMISOS, tieneAccesoModulo, actividadesVisibles, conAccesosBaseColaborador, type Colaborador, type PermisosColaborador } from "@/lib/colaboradoresCliente";
 import SelectorPermisosColaborador from "@/components/dashboard/SelectorPermisosColaborador";
 
 const MAX_FOTO_BYTES = 800_000;
@@ -119,7 +119,7 @@ export default function ColaboradoresResultadoPage() {
         cargo: editando.cargo,
         identificacion: editando.identificacion,
         foto: editando.foto,
-        permisos: conAccesoRelacionActividades(editando.permisos),
+        permisos: conAccesosBaseColaborador(editando.permisos),
       })
       .eq("id", editando.id);
     setSavingEdit(false);

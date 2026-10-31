@@ -16,6 +16,7 @@ import {
   NIVELES_EDUCATIVOS,
   type Empleado,
 } from "@/lib/personal";
+import { parseLista as parseProcesos, PROCESOS_COMUNES } from "@/lib/mapaProcesos";
 
 const ITEM_KEY = "personal_lista";
 const MAX_FOTO_BYTES = 800_000; // ~800KB
@@ -27,7 +28,14 @@ export default function AltaPersonalPage() {
   const basePath = `/${locale}/dashboard/gestion-talento-humano`;
 
   const { docs, loading, save } = useGestionDocumentos("talento_humano", user?.id ?? null);
+  const { docs: docsGerencia } = useGestionDocumentos("gerencia", user?.id ?? null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Procesos ya definidos en el Mapa de Procesos de la empresa (si los hay);
+  // si todavía no armó su mapa, caemos en la lista de procesos comunes como
+  // sugerencia. El campo sigue siendo texto libre (datalist), nunca bloquea.
+  const procesosEmpresa = parseProcesos(docsGerencia["mapa_procesos_seleccion"] ?? "");
+  const sugerenciasProceso = procesosEmpresa.length > 0 ? procesosEmpresa : PROCESOS_COMUNES;
 
   const [personal, setPersonal] = useState<Empleado[]>([]);
   const [form, setForm] = useState<Empleado>(empleadoVacio());
@@ -266,9 +274,35 @@ export default function AltaPersonalPage() {
                 {JORNADAS.map((j) => <option key={j} value={j}>{j}</option>)}
               </select>
             </div>
-            <div className="sm:col-span-2">
+            <div>
               <label className={labelClass}>Salario</label>
               <input value={form.salario} onChange={(e) => campo("salario", e.target.value)} className={inputClass} placeholder="Opcional" />
+            </div>
+            <div>
+              <label className={labelClass}>Proceso</label>
+              <input
+                value={form.proceso ?? ""}
+                onChange={(e) => campo("proceso", e.target.value)}
+                className={inputClass}
+                placeholder="Ej: Gestión Comercial"
+                list="sugerencias-proceso"
+              />
+              <datalist id="sugerencias-proceso">
+                {sugerenciasProceso.map((p) => <option key={p} value={p} />)}
+              </datalist>
+              <p className="text-[11px] text-gray-400 mt-1">Define a qué proceso pertenece en el Calendario de Colaboradores.</p>
+            </div>
+            <div className="sm:col-span-2 flex items-center gap-2 pt-1">
+              <input
+                id="es-jefe-proceso"
+                type="checkbox"
+                checked={form.esJefeProceso ?? false}
+                onChange={(e) => campo("esJefeProceso", e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 accent-[#F5A623]"
+              />
+              <label htmlFor="es-jefe-proceso" className="text-sm text-gray-600">
+                Es responsable/jefe de este proceso — podrá ver el calendario de todo su equipo
+              </label>
             </div>
           </div>
         </Seccion>

@@ -39,6 +39,7 @@ export const ACTIVIDADES_POR_MODULO: Record<string, ActividadCatalogo[]> = {
     { actividad: "gestion_personal", label: "Gestión del Personal" },
     { actividad: "capacitaciones_generales", label: "Capacitaciones Generales" },
     { actividad: "evaluaciones_generales", label: "Evaluaciones Generales" },
+    { actividad: "calendario_personal", label: "Calendario de Colaboradores" },
   ],
   compras: [
     { actividad: "requisicion_pedidos", label: "Requisición de Pedidos" },
@@ -130,16 +131,13 @@ export function etapasPermitidas(permisos: PermisosColaborador, modulo: string, 
   return a.etapas;
 }
 
-// Relación de Actividades queda siempre disponible para todo colaborador
-// (cada uno ve solo la suya), sin necesidad de que el dueño se la asigne
-// explícitamente. Como el acceso a datos (RLS de gestion_documentos) es por
-// módulo completo, hay que garantizar que el módulo "operativa" quede
-// presente en los permisos para que la consulta no quede bloqueada. La
-// pantalla además lee la ficha de la persona desde "talento_humano"
-// (personal_lista), así que ese módulo también necesita quedar presente en
-// la RLS — pero con el árbol de actividades vacío, para que no aparezca en
-// el sidebar ni en la página de inicio de Talento Humano.
-export function conAccesoRelacionActividades(permisos: PermisosColaborador): PermisosColaborador {
+// Accesos de base que todo colaborador tiene siempre, sin que el dueño se
+// los asigne explícitamente — hoy son Relación de Actividades (su propia
+// planilla) y el Calendario de Colaboradores (su propio calendario). Como el
+// acceso a datos (RLS de gestion_documentos) es por módulo completo, hay que
+// garantizar que los módulos "operativa" y "talento_humano" queden presentes
+// en los permisos para que la consulta no quede bloqueada.
+export function conAccesosBaseColaborador(permisos: PermisosColaborador): PermisosColaborador {
   let resultado = permisos;
 
   const operativa = resultado.operativa;
@@ -150,16 +148,21 @@ export function conAccesoRelacionActividades(permisos: PermisosColaborador): Per
     }
   }
 
-  if (!resultado.talento_humano) {
-    resultado = { ...resultado, talento_humano: { actividades: {} } };
+  const talentoHumano = resultado.talento_humano;
+  if (!(talentoHumano && "completo" in talentoHumano && talentoHumano.completo)) {
+    const actividades = talentoHumano && "actividades" in talentoHumano ? talentoHumano.actividades : {};
+    if (!("calendario_personal" in actividades)) {
+      resultado = { ...resultado, talento_humano: { actividades: { ...actividades, calendario_personal: true } } };
+    }
   }
 
   return resultado;
 }
 
-// ¿Tiene el colaborador algún acceso real más allá del acceso de base a
-// Relación de Actividades que se le otorga siempre a todos? Se usa para
-// decidir si al entrar ve el panel general o directamente su propia ficha.
+// ¿Tiene el colaborador algún acceso real más allá de los accesos de base
+// (Relación de Actividades y Calendario de Colaboradores) que se le otorgan
+// siempre a todos? Se usa para decidir si al entrar ve el panel general o
+// directamente su propia ficha.
 export function tieneAccesoReal(permisos: PermisosColaborador): boolean {
   for (const modulo of Object.keys(permisos)) {
     const p = permisos[modulo];
@@ -171,6 +174,8 @@ export function tieneAccesoReal(permisos: PermisosColaborador): boolean {
     const actividades = Object.keys(p.actividades);
     if (modulo === "operativa") {
       if (actividades.some((a) => a !== "relacion_actividades")) return true;
+    } else if (modulo === "talento_humano") {
+      if (actividades.some((a) => a !== "calendario_personal")) return true;
     } else if (actividades.length > 0) {
       return true;
     }
