@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
@@ -31,9 +31,19 @@ export default function CaracterizacionPage() {
   const { user } = useDashboardUser();
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = params.locale as string;
   const id = params.id as string;
   const basePath = `/${locale}/dashboard/gestion-calidad`;
+
+  // Si se llegó acá haciendo clic en un proceso del Mapa de Procesos
+  // (Gestión de la Gerencia), "atrás" vuelve al mapa en vez de al listado
+  // de Caracterizaciones.
+  const vieneDelMapa = searchParams.get("origen") === "mapa";
+  const volverHref = vieneDelMapa
+    ? `/${locale}/dashboard/gestion-gerencia/mapa_procesos/resultado`
+    : `${basePath}/caracterizaciones`;
+  const volverLabel = vieneDelMapa ? "← Mapa de Procesos" : "← Caracterizaciones";
 
   const { docs, loading, save } = useGestionDocumentos("calidad", user?.id ?? null);
 
@@ -54,8 +64,8 @@ export default function CaracterizacionPage() {
   if (!actual) {
     return (
       <div className="max-w-3xl mx-auto space-y-3">
-        <Link href={`${basePath}/caracterizaciones`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
-          ← Caracterizaciones
+        <Link href={volverHref} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
+          {volverLabel}
         </Link>
         <p className="text-gray-500 text-sm">Esta caracterización no existe o fue eliminada.</p>
       </div>
@@ -78,7 +88,7 @@ export default function CaracterizacionPage() {
   async function eliminar() {
     if (!confirm(`¿Eliminar la caracterización de "${actual!.proceso}"?`)) return;
     await save(ITEM_KEY, JSON.stringify(todas.filter((c) => c.id !== actual!.id)));
-    router.push(`${basePath}/caracterizaciones`);
+    router.push(volverHref);
   }
 
   const pct = completitud(actual);
@@ -88,8 +98,8 @@ export default function CaracterizacionPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-5 pb-16">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <Link href={`${basePath}/caracterizaciones`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
-          ← Caracterizaciones
+        <Link href={volverHref} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
+          {volverLabel}
         </Link>
         <button onClick={eliminar} className="text-xs text-red-500 hover:text-red-700">
           Eliminar caracterización

@@ -112,13 +112,13 @@ export default function MapaProcesosResultadoPage() {
   async function irACaracterizacion(proceso: string, categoria: string) {
     const existente = caracterizaciones.find((c) => c.proceso === proceso);
     if (existente) {
-      router.push(`${basePathCalidad}/caracterizaciones/${existente.id}`);
+      router.push(`${basePathCalidad}/caracterizaciones/${existente.id}?origen=mapa`);
       return;
     }
     const codigo = siguienteCodigo(caracterizaciones.map((c) => numeroDeCodigo(c.codigo)));
     const nueva = caracterizacionVacia(proceso, categoria, codigo);
     await saveCalidad(ITEM_KEY_CARACTERIZACIONES, JSON.stringify([...caracterizaciones, nueva]));
-    router.push(`${basePathCalidad}/caracterizaciones/${nueva.id}`);
+    router.push(`${basePathCalidad}/caracterizaciones/${nueva.id}?origen=mapa`);
   }
 
   return (
