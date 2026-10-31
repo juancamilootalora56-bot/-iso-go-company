@@ -11,6 +11,7 @@ import { ITEMS_GERENCIA } from "@/lib/gestionGerenciaItems";
 import { estaCompletoActividad, contarRiesgos } from "@/lib/gestionGerenciaCompletitud";
 import { parseObjetivos } from "@/lib/objetivosCalidad";
 import AvanceModulosChart from "@/components/dashboard/AvanceModulosChart";
+import CalendarioResumenWidget from "@/components/dashboard/CalendarioResumenWidget";
 import { temaPanelDe } from "@/lib/temaPanel";
 import { tieneAccesoReal } from "@/lib/colaboradoresCliente";
 import { parsePersonal } from "@/lib/personal";
@@ -44,7 +45,7 @@ export default function DashboardPage() {
   const { user, profile } = useUser();
   const { user: effectiveUser, profile: effectiveProfile, colaborador } = useDashboardUser();
   const { docs: docsGerencia, loading: loadingGerencia } = useGestionDocumentos("gerencia", effectiveUser?.id ?? null);
-  const { docs: docsTH } = useGestionDocumentos("talento_humano", effectiveUser?.id ?? null);
+  const { docs: docsTH, loading: loadingTH } = useGestionDocumentos("talento_humano", effectiveUser?.id ?? null);
   const [colaboradoresCount, setColaboradoresCount] = useState(0);
 
   useEffect(() => {
@@ -242,6 +243,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Calendario de Colaboradores */}
+      <CalendarioResumenWidget docs={docsTH} loading={loadingTH} />
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Avance por módulo */}

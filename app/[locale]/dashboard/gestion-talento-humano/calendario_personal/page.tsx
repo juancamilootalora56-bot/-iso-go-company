@@ -19,6 +19,7 @@ import {
   mesSiguiente,
   diasGrilla,
   DIAS_SEMANA,
+  personasVisiblesCalendario,
 } from "@/lib/calendarioPersonal";
 
 const ITEM_KEY_PERSONAL = "personal_lista";
@@ -52,17 +53,7 @@ export default function CalendarioPersonalPage() {
   const empleadoPropioId = colaborador?.empleadoId ?? null;
   const propio = empleadoPropioId ? personal.find((p) => p.id === empleadoPropioId) ?? null : null;
   const esJefe = !esOwner && !!propio?.esJefeProceso && !!propio?.proceso;
-
-  let personasVisibles: Empleado[];
-  if (esOwner) {
-    personasVisibles = personal;
-  } else if (esJefe) {
-    personasVisibles = personal.filter((p) => p.proceso === propio!.proceso || p.id === propio!.id);
-  } else if (propio) {
-    personasVisibles = [propio];
-  } else {
-    personasVisibles = [];
-  }
+  const personasVisibles = personasVisiblesCalendario(personal, empleadoPropioId, esOwner);
 
   const idsEditables = new Set(esOwner ? personasVisibles.map((p) => p.id) : propio ? [propio.id] : []);
 

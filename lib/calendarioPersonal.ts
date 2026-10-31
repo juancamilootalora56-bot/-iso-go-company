@@ -2,6 +2,8 @@
 // guardado con el mismo patrón que Relación de Actividades: un item_key por
 // colaborador y mes dentro del módulo "talento_humano".
 
+import type { Empleado } from "./personal";
+
 export type EventoCalendario = {
   id: string;
   fecha: string; // YYYY-MM-DD
@@ -120,3 +122,19 @@ function toISO(d: Date): string {
 }
 
 export const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+
+// Misma regla de alcance que usa la página del Calendario de Colaboradores:
+// el dueño ve a todos, un jefe de proceso ve a su equipo + él mismo, y un
+// colaborador regular solo se ve a sí mismo.
+export function personasVisiblesCalendario(
+  personal: Empleado[],
+  empleadoPropioId: string | null,
+  esOwner: boolean
+): Empleado[] {
+  if (esOwner) return personal;
+  const propio = empleadoPropioId ? personal.find((p) => p.id === empleadoPropioId) ?? null : null;
+  const esJefe = !!propio?.esJefeProceso && !!propio?.proceso;
+  if (esJefe) return personal.filter((p) => p.proceso === propio!.proceso || p.id === propio!.id);
+  if (propio) return [propio];
+  return [];
+}
