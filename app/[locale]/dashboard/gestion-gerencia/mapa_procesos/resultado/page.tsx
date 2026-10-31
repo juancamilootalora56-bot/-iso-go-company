@@ -124,13 +124,6 @@ export default function MapaProcesosResultadoPage() {
             <p className="text-gray-400 text-sm mt-1">ISO 9001, cláusula 4.4 — Enfoque basado en procesos</p>
           </div>
 
-          {profile?.logo_url && (
-            <div className="hidden sm:flex items-center justify-center bg-white/95 rounded-xl p-2.5 h-16 w-28 flex-shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={profile.logo_url} alt={profile.company_name || "Logo"} className="max-h-full max-w-full object-contain" />
-            </div>
-          )}
-
           <div className="flex items-center gap-4">
             <div className="text-center">
               <p className="text-white text-2xl font-extrabold">{procesos.length}</p>
@@ -157,8 +150,16 @@ export default function MapaProcesosResultadoPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6">
-          <div className="flex items-stretch gap-3 sm:gap-4">
+        <div className="relative bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 overflow-hidden">
+          {profile?.logo_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={profile.logo_url}
+              alt=""
+              className="absolute right-6 bottom-6 w-40 h-40 object-contain opacity-[0.05] pointer-events-none select-none"
+            />
+          )}
+          <div className="relative flex items-stretch gap-3 sm:gap-4">
             <BandaLateral icono={Users} texto="Requisitos del cliente y partes interesadas" variante="entrada" />
 
             <div className="flex-1 flex flex-col gap-2 min-w-0">
