@@ -260,7 +260,7 @@ export default function DashboardPage() {
           <div className="relative">
             <p className="text-[#F5A623] text-sm font-semibold mb-2">¿Listo para comenzar?</p>
             <h3 className="text-xl font-bold mb-3" style={{ color: tema.textPrimary }}>
-              Agenda tu diagnóstico gratuito
+              Realiza tu diagnóstico
             </h3>
             <p className="text-sm mb-5" style={{ color: tema.textMuted }}>
               Un experto ISO analizará tu empresa y te dirá exactamente qué necesitas para certificarte.
