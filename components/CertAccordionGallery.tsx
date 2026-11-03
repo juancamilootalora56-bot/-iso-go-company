@@ -9,8 +9,9 @@ export interface CertAccordionItem {
   name: string;
   title: string;
   tagline: string;
-  benefit: string;
+  benefit?: string;
   image: string;
+  href?: string;
 }
 
 export default function CertAccordionGallery({
@@ -20,7 +21,7 @@ export default function CertAccordionGallery({
   defaultActive = 0,
 }: {
   items: CertAccordionItem[];
-  hrefBase: string;
+  hrefBase?: string;
   heightClass?: string;
   defaultActive?: number;
 }) {
@@ -33,7 +34,7 @@ export default function CertAccordionGallery({
         return (
           <Link
             key={item.id}
-            href={`${hrefBase}#${item.id}`}
+            href={item.href ?? `${hrefBase}#${item.id}`}
             onMouseEnter={() => setActive(i)}
             onFocus={() => setActive(i)}
             className="group relative overflow-hidden rounded-2xl transition-[flex-grow] duration-700 ease-out"
@@ -64,9 +65,11 @@ export default function CertAccordionGallery({
             >
               <h3 className="text-xl font-bold mb-2 whitespace-nowrap">{item.title}</h3>
               <p className="text-sm text-gray-200 mb-3 leading-relaxed line-clamp-2 max-w-md">{item.tagline}</p>
-              <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-xs font-bold px-3 py-1.5 rounded-full whitespace-nowrap">
-                {item.benefit}
-              </span>
+              {item.benefit && (
+                <span className="inline-block bg-[#F5A623] text-[#1A1A1A] text-xs font-bold px-3 py-1.5 rounded-full whitespace-nowrap">
+                  {item.benefit}
+                </span>
+              )}
             </div>
           </Link>
         );

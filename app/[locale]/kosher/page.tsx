@@ -6,6 +6,7 @@ import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
 import { CheckCircle2, Calendar, BarChart3, FolderCheck, Target } from "lucide-react";
+import CertAccordionGallery from "@/components/CertAccordionGallery";
 
 export async function generateMetadata({
   params,
@@ -50,34 +51,46 @@ const processSteps = [
 
 const markets = [
   {
+    id: "america-norte",
     region: "América del Norte",
     detail: "EE.UU. y Canadá: mercado Kosher de USD 12.5 mil millones/año",
-    image: "https://flagcdn.com/w160/us.png",
+    benefit: "USD 12.5B/año",
+    image: "https://flagcdn.com/w640/us.png",
   },
   {
+    id: "israel-medio-oriente",
     region: "Israel y Medio Oriente",
     detail: "Exportación directa a mercados con 100% de demanda Kosher",
-    image: "https://flagcdn.com/w160/il.png",
+    benefit: "100% demanda Kosher",
+    image: "https://flagcdn.com/w640/il.png",
   },
   {
+    id: "europa",
     region: "Europa",
     detail: "Comunidades judías en UK, Francia, Alemania, Argentina-España",
-    image: "https://flagcdn.com/w160/eu.png",
+    benefit: "Múltiples mercados UE",
+    image: "https://flagcdn.com/w640/eu.png",
   },
   {
+    id: "latinoamerica",
     region: "Latinoamérica",
     detail: "Argentina, Brasil, México — comunidades grandes y en crecimiento",
-    image: "https://flagcdn.com/w160/br.png",
+    benefit: "Mercado en expansión",
+    image: "https://flagcdn.com/w640/br.png",
   },
   {
+    id: "retail-premium",
     region: "Retail premium",
     detail: "Cadenas como Whole Foods, Trader Joe's, Marks & Spencer",
-    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&h=200&fit=crop&crop=center&q=85",
+    benefit: "Cadenas premium",
+    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1400&h=900&fit=crop&q=85",
   },
   {
+    id: "food-service",
     region: "Food service",
     detail: "Hoteles, aerolíneas y catering internacional con requisito Kosher",
-    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=200&h=200&fit=crop&crop=center&q=85",
+    benefit: "Hospitality & catering",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&h=900&fit=crop&q=85",
   },
 ];
 
@@ -157,7 +170,37 @@ export default async function KosherPage() {
             <h2 className="text-3xl font-bold text-[#1A1A1A] mb-4">Mercados que se abren con la certificación Kosher</h2>
             <p className="text-gray-600 text-lg">No es solo cumplir una norma religiosa. Es acceder a mercados de alto valor con demanda insatisfecha.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Desktop: galería acordeón (paneles que se expanden al pasar el mouse) */}
+          <div className="hidden md:flex flex-col gap-4">
+            <CertAccordionGallery
+              items={markets.slice(0, 3).map((m) => ({
+                id: m.id,
+                name: m.region,
+                title: m.region,
+                tagline: m.detail,
+                benefit: m.benefit,
+                image: m.image,
+                href: `/${locale}/contacto`,
+              }))}
+              heightClass="h-[340px] lg:h-[400px]"
+            />
+            <CertAccordionGallery
+              items={markets.slice(3, 6).map((m) => ({
+                id: m.id,
+                name: m.region,
+                title: m.region,
+                tagline: m.detail,
+                benefit: m.benefit,
+                image: m.image,
+                href: `/${locale}/contacto`,
+              }))}
+              heightClass="h-[340px] lg:h-[400px]"
+              defaultActive={2}
+            />
+          </div>
+
+          {/* Mobile: grilla de tarjetas (el hover no aplica en touch) */}
+          <div className="grid grid-cols-1 md:hidden gap-6">
             {markets.map((m) => (
               <div key={m.region} className="bg-white rounded-xl p-6 shadow-sm">
                 <div className="flex items-center gap-4 mb-4">
