@@ -52,6 +52,8 @@ export default function AdminSolicitudesPage() {
   const [procesando, setProcesando] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [enlaceManual, setEnlaceManual] = useState<string | null>(null);
+  const [planesPorPerfil, setPlanesPorPerfil] = useState<Record<string, string | null>>({});
+  const [activando, setActivando] = useState<string | null>(null);
 
   async function cargar() {
     setLoading(true);
@@ -60,8 +62,44 @@ export default function AdminSolicitudesPage() {
       .from("solicitudes_inscripcion")
       .select("*")
       .order("fecha_solicitud", { ascending: false });
-    setSolicitudes((data as Solicitud[]) ?? []);
+    const lista = (data as Solicitud[]) ?? [];
+    setSolicitudes(lista);
     setLoading(false);
+
+    const ids = lista.map((s) => s.usuario_creado_id).filter((id): id is string => !!id);
+    if (ids.length > 0) {
+      const res = await fetch("/api/admin/perfiles/estado", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      const data2 = await res.json();
+      if (res.ok) setPlanesPorPerfil(data2.planes ?? {});
+    }
+  }
+
+  async function activarAccesoCompleto(s: Solicitud) {
+    if (!s.usuario_creado_id) return;
+    if (!confirm(`¿Activar el acceso completo para ${s.empresa}? Va a poder usar todos los módulos de gestión.`)) return;
+    setActivando(s.id);
+    try {
+      const res = await fetch("/api/admin/perfiles/activar-completo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profileId: s.usuario_creado_id }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMensaje(`✕ ${data.error || "No se pudo activar el acceso completo."}`);
+      } else {
+        setMensaje(`✓ Acceso completo activado para ${s.empresa}.`);
+        await cargar();
+      }
+    } catch {
+      setMensaje("✕ Error de conexión al activar el acceso.");
+    } finally {
+      setActivando(null);
+    }
   }
 
   useEffect(() => {
@@ -233,7 +271,28 @@ export default function AdminSolicitudesPage() {
                     </div>
 
                     {s.usuario_creado_id && (
-                      <p className="text-[11px] text-green-600 font-semibold">✓ Ya tiene una cuenta creada en la plataforma.</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-[11px] text-green-600 font-semibold">✓ Ya tiene una cuenta creada en la plataforma.</p>
+                        <span
+                          className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                            planesPorPerfil[s.usuario_creado_id] === "completo"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-[#F5A623]/15 text-[#C9790A]"
+                          }`}
+                        >
+                          {planesPorPerfil[s.usuario_creado_id] === "completo" ? "Acceso completo" : "🔍 Diagnóstico"}
+                        </span>
+                        {planesPorPerfil[s.usuario_creado_id] !== "completo" && (
+                          <button
+                            onClick={() => activarAccesoCompleto(s)}
+                            disabled={activando === s.id}
+                            className="text-[11px] font-bold px-3 py-1 rounded-lg text-white hover:opacity-90 disabled:opacity-50"
+                            style={{ backgroundColor: "#1A1A1A" }}
+                          >
+                            {activando === s.id ? "Activando..." : "🔓 Activar acceso completo"}
+                          </button>
+                        )}
+                      </div>
                     )}
 
                     <div className="flex items-center justify-between gap-2 flex-wrap pt-1">

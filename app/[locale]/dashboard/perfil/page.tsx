@@ -10,6 +10,7 @@ import { parsePersonal } from "@/lib/personal";
 import { actividadesVisibles, tieneAccesoModulo, conAccesosBaseColaborador, MODULOS_PERMISOS, type Colaborador, type PermisosColaborador } from "@/lib/colaboradoresCliente";
 import SelectorPermisosColaborador from "@/components/dashboard/SelectorPermisosColaborador";
 import { TEMAS_PANEL, type TemaPanelKey } from "@/lib/temaPanel";
+import { esPlanDiagnostico } from "@/lib/planCuenta";
 
 const MAX_LOGO_BYTES = 800_000; // ~800KB
 
@@ -346,7 +347,19 @@ export default function PerfilPage() {
         </button>
       </form>
 
-      {/* Colaboradores */}
+      {/* Colaboradores — oculto mientras la cuenta esté en período de
+          diagnóstico, para que no se pueda esquivar el bloqueo de módulos
+          dándole acceso a un colaborador. */}
+      {esPlanDiagnostico(profile?.plan) ? (
+        <div className="bg-white rounded-xl border border-gray-100 p-6 text-center">
+          <p className="text-2xl mb-2">🔒</p>
+          <h2 className="font-semibold text-[#1A1A1A] mb-1">Colaboradores</h2>
+          <p className="text-xs text-gray-500 max-w-sm mx-auto">
+            Esta función se habilita junto con el resto de los módulos cuando se activa el acceso completo de tu
+            cuenta.
+          </p>
+        </div>
+      ) : (
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
@@ -514,6 +527,7 @@ export default function PerfilPage() {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }

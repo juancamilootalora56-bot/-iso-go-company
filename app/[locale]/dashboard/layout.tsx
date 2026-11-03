@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/hooks/useUser";
 import { DashboardUserProvider } from "@/components/dashboard/DashboardUserContext";
 import { tieneAccesoModulo, type PermisosColaborador } from "@/lib/colaboradoresCliente";
+import { esPlanDiagnostico } from "@/lib/planCuenta";
 import {
   Home,
   Landmark,
@@ -21,6 +22,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Lock,
   type LucideIcon,
 } from "lucide-react";
 
@@ -105,6 +107,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       setResolviendoColaborador(false);
     })();
   }, [loading, rawUser]);
+
+  // Cuenta recién aprobada, todavía en período de diagnóstico (no se cerró
+  // el acuerdo comercial): el dueño solo puede ver Inicio y Mi Perfil — el
+  // resto de los módulos de gestión aparecen bloqueados en el sidebar y,
+  // si entra por URL directa, se lo redirige a /dashboard/bloqueado. Este
+  // efecto tiene que estar antes de los `return` tempranos de más abajo
+  // para no violar las reglas de hooks (el orden de hooks debe ser el
+  // mismo en todos los renders).
+  const esDiagnostico = !colaboradorInfo && esPlanDiagnostico((colaboradorInfo ? ownerProfile : rawProfile)?.plan);
+
+  useEffect(() => {
+    if (!esDiagnostico) return;
+    const moduloBloqueado = navItems.some((item) => item.modulo && pathname.startsWith(`/${locale}/dashboard${item.href}`));
+    if (moduloBloqueado) {
+      router.replace(`/${locale}/dashboard/bloqueado`);
+    }
+  }, [esDiagnostico, pathname, locale, router]);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -256,6 +275,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             const href = `/${locale}/dashboard${item.href}`;
             const isActive = pathname === href || (item.href === "" && pathname === `/${locale}/dashboard`);
             const Icon = item.icon;
+            const bloqueado = esDiagnostico && !!item.modulo;
+
+            if (bloqueado) {
+              return (
+                <Link
+                  key={item.href}
+                  href={`/${locale}/dashboard/bloqueado`}
+                  onClick={() => setSidebarOpen(false)}
+                  title={collapsed ? `${item.label} (requiere acceso completo)` : undefined}
+                  className={`flex items-center gap-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-50 hover:text-gray-400 transition-colors ${
+                    collapsed ? "px-0 justify-center" : "px-3"
+                  }`}
+                >
+                  <Icon size={18} strokeWidth={2} className="flex-shrink-0 opacity-40" style={{ color: item.color }} />
+                  {!collapsed && (
+                    <span className="flex-1 min-w-0 flex items-center justify-between gap-2">
+                      <span className="truncate">{item.label}</span>
+                      <Lock size={13} className="flex-shrink-0 text-gray-300" />
+                    </span>
+                  )}
+                </Link>
+              );
+            }
+
             return (
               <Link
                 key={item.href}

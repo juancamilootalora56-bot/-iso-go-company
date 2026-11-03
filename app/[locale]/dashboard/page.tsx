@@ -15,6 +15,7 @@ import CalendarioResumenWidget from "@/components/dashboard/CalendarioResumenWid
 import { temaPanelDe } from "@/lib/temaPanel";
 import { tieneAccesoReal } from "@/lib/colaboradoresCliente";
 import { parsePersonal } from "@/lib/personal";
+import { esPlanDiagnostico } from "@/lib/planCuenta";
 
 const NORM_SLUGS: Record<string, string> = {
   "ISO 9001": "iso-9001",
@@ -67,6 +68,7 @@ export default function DashboardPage() {
   const objetivosCount = parseObjetivos(docsGerencia["objetivos_calidad"] ?? "").length;
   const riesgosCount = contarRiesgos(docsGerencia);
   const tema = temaPanelDe(effectiveProfile?.tema_panel);
+  const esDiagnostico = esPlanDiagnostico(effectiveProfile?.plan);
 
   // Evita el "flash" de tema por defecto: todo colaborador recién creado
   // también tiene su propia fila en `profiles` (la crea un trigger de la
@@ -223,12 +225,18 @@ export default function DashboardPage() {
           <div className="mt-8">
             <p className="text-[11px] font-bold uppercase tracking-wide mb-3" style={{ color: tema.textMuted }}>Accesos rápidos</p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {[
-                { href: "/gestion-gerencia", icon: "🏛️", label: "Gestión de la Gerencia" },
-                { href: "/gestion-gerencia/objetivos_calidad", icon: "🎯", label: "Objetivos de Calidad" },
-                { href: "/gestion-gerencia/estructura_organizacional/resultado", icon: "🧩", label: "Organigrama" },
-                { href: "/perfil", icon: "👤", label: "Colaboradores" },
-              ].map((item) => (
+              {(esDiagnostico
+                ? [
+                    { href: "/perfil", icon: "👤", label: "Mi Perfil" },
+                    { href: "/mi-certificacion", icon: "🏆", label: "Mi Certificación" },
+                  ]
+                : [
+                    { href: "/gestion-gerencia", icon: "🏛️", label: "Gestión de la Gerencia" },
+                    { href: "/gestion-gerencia/objetivos_calidad", icon: "🎯", label: "Objetivos de Calidad" },
+                    { href: "/gestion-gerencia/estructura_organizacional/resultado", icon: "🧩", label: "Organigrama" },
+                    { href: "/perfil", icon: "👤", label: "Colaboradores" },
+                  ]
+              ).map((item) => (
                 <Link
                   key={item.href}
                   href={`/${locale}/dashboard${item.href}`}
@@ -239,10 +247,56 @@ export default function DashboardPage() {
                   <span className="truncate">{item.label}</span>
                 </Link>
               ))}
+              {esDiagnostico && (
+                <a
+                  href="https://wa.me/595982859051"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-bold transition-colors bg-[#F5A623] text-[#1A1A1A] hover:bg-[#e09410]"
+                >
+                  <span>💬</span>
+                  <span className="truncate">Hablar con un asesor</span>
+                </a>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Banner de período de diagnóstico */}
+      {esDiagnostico && (
+        <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden flex flex-col sm:flex-row items-center gap-5">
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
+          <div className="absolute -top-16 -right-16 w-56 h-56 bg-[#F5A623]/20 rounded-full blur-3xl" />
+          <div className="relative z-10 w-14 h-14 rounded-full bg-[#F5A623]/10 border border-[#F5A623]/30 flex items-center justify-center flex-shrink-0 text-2xl">
+            🔍
+          </div>
+          <div className="relative z-10 flex-1 text-center sm:text-left">
+            <p className="text-[#F5A623] text-[11px] font-bold uppercase tracking-wide">Período de diagnóstico</p>
+            <h2 className="text-white text-lg font-bold mt-0.5">Estás explorando el panel antes de activar tu sistema completo</h2>
+            <p className="text-gray-400 text-sm mt-1 max-w-xl">
+              Hacé tu diagnóstico con el botón de abajo y hablá con un asesor para activar Gerencia, Talento Humano,
+              Compras, Comercial, Operativa, Diseño y Desarrollo y Calidad — con tu sistema de gestión funcionando de
+              punta a punta.
+            </p>
+          </div>
+          <a
+            href="https://wa.me/595982859051"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative z-10 bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm flex-shrink-0 whitespace-nowrap"
+          >
+            Hablar con un asesor →
+          </a>
+        </div>
+      )}
 
       {/* Calendario de Colaboradores */}
       <CalendarioResumenWidget docs={docsTH} loading={loadingTH} />

@@ -98,7 +98,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: generateError?.message || "No se pudo generar el acceso" }, { status: 400 });
   }
 
-  const { error: profileError } = await admin.from("profiles").upsert({
+  // Nueva cuenta: arranca en período de diagnóstico (solo Inicio + Mi
+  // Perfil) hasta que se cierre el acuerdo comercial y se active el acceso
+  // completo desde este mismo panel. Si ya tenía un perfil con `plan`
+  // cargado (ej. ya es cliente activo y se le está regenerando el enlace
+  // de acceso), no lo tocamos — nunca se debe "bajar de categoría" a un
+  // cliente ya aprobado.
+  const { data: perfilExistente } = await admin.from("profiles").select("plan").eq("id", userId).maybeSingle();
+
+  const datosPerfil: Record<string, unknown> = {
     id: userId,
     full_name: solicitud.nombre,
     company_name: solicitud.empresa,
@@ -106,7 +114,12 @@ export async function POST(request: Request) {
     country: solicitud.pais,
     phone: solicitud.telefono,
     interested_norms: solicitud.normas_interes,
-  });
+  };
+  if (!perfilExistente?.plan) {
+    datosPerfil.plan = "diagnostico";
+  }
+
+  const { error: profileError } = await admin.from("profiles").upsert(datosPerfil);
 
   if (profileError) {
     return NextResponse.json({ error: profileError.message }, { status: 400 });
