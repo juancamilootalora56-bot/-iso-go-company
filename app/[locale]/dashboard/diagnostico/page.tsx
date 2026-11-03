@@ -282,6 +282,31 @@ export default function DiagnosticoPage() {
         </div>
       </div>
 
+      {/* Aviso de cláusulas incompletas */}
+      {esUltima && !completo && (
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
+          <p className="text-sm font-semibold text-red-700 mb-2">
+            Te faltan {TOTAL_ITEMS_DIAGNOSTICO - respondidas} criterios por responder para ver tu resultado:
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {CLAUSULAS_DIAGNOSTICO.map((c, i) => {
+              const items = c.subclausulas.flatMap((s) => s.items);
+              const faltan = items.filter((it) => !(it.id in respuestas)).length;
+              if (faltan === 0) return null;
+              return (
+                <button
+                  key={c.numero}
+                  onClick={() => setClausulaIdx(i)}
+                  className="text-xs font-semibold bg-white border border-red-200 text-red-600 px-3 py-1.5 rounded-full hover:bg-red-100 transition-colors"
+                >
+                  {c.numero}. {c.titulo} — faltan {faltan}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Navegación */}
       <div className="flex items-center justify-between gap-3 bg-white rounded-2xl border border-gray-100 p-4 sticky bottom-4">
         <button
