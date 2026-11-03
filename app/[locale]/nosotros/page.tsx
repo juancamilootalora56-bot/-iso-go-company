@@ -5,6 +5,7 @@ import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
+import { Target, Zap, Handshake, BarChart3 } from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -20,10 +21,10 @@ export async function generateMetadata({
 }
 
 const values = [
-  { icon: "🎯", title: "Resultados concretos", desc: "Medimos nuestro éxito en métricas de negocio, no en documentos entregados." },
-  { icon: "⚡", title: "Tecnología de por medio", desc: "Cada proyecto incluye automatización. El papel no cambia empresas, los sistemas sí." },
-  { icon: "🤝", title: "Acompañamiento real", desc: "No desaparecemos después del certificado. Somos tu socio de gestión a largo plazo." },
-  { icon: "📊", title: "Metodología probada", desc: "15 años perfeccionando un proceso que reduce el tiempo de certificación en un 40%." },
+  { icon: Target, title: "Resultados concretos", desc: "Medimos nuestro éxito en métricas de negocio, no en documentos entregados." },
+  { icon: Zap, title: "Tecnología de por medio", desc: "Cada proyecto incluye automatización. El papel no cambia empresas, los sistemas sí." },
+  { icon: Handshake, title: "Acompañamiento real", desc: "No desaparecemos después del certificado. Somos tu socio de gestión a largo plazo." },
+  { icon: BarChart3, title: "Metodología probada", desc: "15 años perfeccionando un proceso que reduce el tiempo de certificación en un 40%." },
 ];
 
 const team = [
@@ -148,8 +149,12 @@ export default async function NosotrosPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((v) => (
-              <div key={v.title} className="text-center p-6 rounded-xl border border-gray-100 hover:border-[#F5A623] hover:shadow-md transition-all">
-                <div className="text-4xl mb-4">{v.icon}</div>
+              <div key={v.title} className="text-center p-6 rounded-xl border border-gray-100 bg-gradient-to-b from-white to-gray-50/80 shadow-sm hover:border-[#F5A623] hover:shadow-md transition-all">
+                <div className="flex justify-center mb-4">
+                  <div className="w-14 h-14 bg-[#F5A623]/10 rounded-xl flex items-center justify-center">
+                    <v.icon className="w-7 h-7 text-[#F5A623]" strokeWidth={2} />
+                  </div>
+                </div>
                 <h3 className="text-lg font-bold text-[#1A1A1A] mb-2">{v.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{v.desc}</p>
               </div>

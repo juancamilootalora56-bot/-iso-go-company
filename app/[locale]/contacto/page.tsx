@@ -3,6 +3,7 @@ import ContactForm from "@/components/ContactForm";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
+import { Mail, MessageCircle, Globe } from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -18,9 +19,9 @@ export async function generateMetadata({
 }
 
 const contactInfo = [
-  { icon: "📧", label: "Email", value: "info@isogo.company", href: "mailto:info@isogo.company" },
-  { icon: "📱", label: "WhatsApp", value: "+595 982 859 051", href: "https://wa.me/595982859051" },
-  { icon: "🌐", label: "Web", value: "isogo.company", href: "https://www.isogo.company" },
+  { icon: Mail, label: "Email", value: "info@isogo.company", href: "mailto:info@isogo.company" },
+  { icon: MessageCircle, label: "WhatsApp", value: "+595 982 859 051", href: "https://wa.me/595982859051" },
+  { icon: Globe, label: "Web", value: "isogo.company", href: "https://www.isogo.company" },
 ];
 
 const faqs = [
@@ -85,9 +86,11 @@ export default async function ContactoPage() {
                   <a
                     key={info.label}
                     href={info.href}
-                    className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 hover:border-[#F5A623] hover:shadow-sm transition-all group"
+                    className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-gradient-to-b from-white to-gray-50/80 shadow-sm hover:border-[#F5A623] hover:shadow-md transition-all group"
                   >
-                    <span className="text-2xl">{info.icon}</span>
+                    <span className="w-10 h-10 rounded-lg bg-[#F5A623]/10 flex items-center justify-center flex-shrink-0">
+                      <info.icon className="w-5 h-5 text-[#F5A623]" strokeWidth={2} />
+                    </span>
                     <div>
                       <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">{info.label}</p>
                       <p className="text-[#1A1A1A] font-semibold group-hover:text-[#F5A623] transition-colors">{info.value}</p>

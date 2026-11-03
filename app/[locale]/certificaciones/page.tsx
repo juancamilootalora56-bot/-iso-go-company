@@ -5,6 +5,21 @@ import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
+import {
+  Award,
+  Leaf,
+  Shield,
+  Lock,
+  Utensils,
+  HeartPulse,
+  Zap,
+  RefreshCw,
+  EyeOff,
+  Brain,
+  FlaskConical,
+  ClipboardList,
+  type LucideIcon,
+} from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -37,18 +52,18 @@ async function getCertifications(locale: string): Promise<Certification[]> {
   return data.default;
 }
 
-const iconMap: Record<string, string> = {
-  award: "🏆",
-  leaf: "🌿",
-  shield: "🛡️",
-  lock: "🔐",
-  utensils: "🍽️",
-  "heart-pulse": "❤️",
-  zap: "⚡",
-  "refresh-cw": "🔄",
-  "eye-off": "👁️",
-  brain: "🧠",
-  flask: "🧪",
+const iconMap: Record<string, LucideIcon> = {
+  award: Award,
+  leaf: Leaf,
+  shield: Shield,
+  lock: Lock,
+  utensils: Utensils,
+  "heart-pulse": HeartPulse,
+  zap: Zap,
+  "refresh-cw": RefreshCw,
+  "eye-off": EyeOff,
+  brain: Brain,
+  flask: FlaskConical,
 };
 
 export default async function CertificacionesPage() {
@@ -122,7 +137,7 @@ export default async function CertificacionesPage() {
               <div
                 key={cert.id}
                 id={cert.id}
-                className={`rounded-2xl p-8 ${index % 2 === 0 ? "bg-[#F4F4F4]" : "bg-white border border-gray-100"}`}
+                className={`rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300 ${index % 2 === 0 ? "bg-gradient-to-br from-[#F4F4F4] to-[#ECECEC]" : "bg-gradient-to-b from-white to-gray-50/80 border border-gray-100"}`}
               >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                   <div className="lg:col-span-2">
@@ -134,12 +149,16 @@ export default async function CertificacionesPage() {
                             src={cert.image}
                             alt={cert.title}
                             fill
-                            className="object-cover"
+                            className="object-cover grayscale-[20%] saturate-75 contrast-110"
                           />
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A]/60 via-[#1A1A1A]/10 to-[#F5A623]/30 mix-blend-multiply" />
                         </div>
                       ) : (
-                        <div className="w-16 h-16 bg-[#1A1A1A] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-                          {iconMap[cert.icon] || "📋"}
+                        <div className="w-16 h-16 bg-[#1A1A1A] rounded-xl flex items-center justify-center flex-shrink-0">
+                          {(() => {
+                            const Icon = iconMap[cert.icon] || ClipboardList;
+                            return <Icon className="w-7 h-7 text-[#F5A623]" strokeWidth={2} />;
+                          })()}
                         </div>
                       )}
                       <div>
@@ -161,7 +180,7 @@ export default async function CertificacionesPage() {
                       <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">¿A quién aplica?</h4>
                       <p className="text-gray-700 text-sm leading-relaxed">{cert.who}</p>
                     </div>
-                    <div className="bg-[#1A1A1A] rounded-xl p-4">
+                    <div className="bg-gradient-to-br from-[#262626] to-[#1A1A1A] rounded-xl p-4 shadow-sm">
                       <h4 className="text-xs font-bold text-[#F5A623] uppercase tracking-wider mb-2">Impacto</h4>
                       <p className="text-gray-300 text-sm leading-relaxed">{cert.impact}</p>
                     </div>

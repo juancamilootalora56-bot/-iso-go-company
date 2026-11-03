@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
+import { Phone, Mail } from "lucide-react";
 
 const schema = z.object({
   name: z.string().min(2, "Nombre requerido"),
@@ -114,7 +115,9 @@ export default function ContactForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">📱 WhatsApp / Teléfono</label>
+          <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1">
+            <Phone className="w-3.5 h-3.5 text-[#F5A623]" strokeWidth={2.5} /> WhatsApp / Teléfono
+          </label>
           <input
             {...register("phone")}
             type="tel"
@@ -124,7 +127,9 @@ export default function ContactForm() {
           {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">✉️ Correo electrónico</label>
+          <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1">
+            <Mail className="w-3.5 h-3.5 text-[#F5A623]" strokeWidth={2.5} /> Correo electrónico
+          </label>
           <input
             {...register("email")}
             type="email"

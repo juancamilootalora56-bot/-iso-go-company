@@ -6,6 +6,7 @@ import HexagonDecor, { HexagonOutline } from "@/components/HexagonDecor";
 import HeroCarousel from "@/components/HeroCarousel";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
+import { Search, Settings, Monitor, ClipboardCheck, Trophy, RefreshCw, AlertTriangle } from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -32,37 +33,37 @@ const processSteps = [
   {
     num: "01",
     key: "diagnostico",
-    icon: "🔍",
+    icon: Search,
     desc: "Analizamos tu empresa para identificar brechas frente al estándar y diseñar el plan más eficiente.",
   },
   {
     num: "02",
     key: "implementacion",
-    icon: "⚙️",
+    icon: Settings,
     desc: "Documentamos procesos, capacitamos equipos e implementamos controles con nuestra metodología probada.",
   },
   {
     num: "03",
     key: "automatizacion",
-    icon: "💻",
+    icon: Monitor,
     desc: "Desplegamos el software de gestión a medida: dashboards, alertas, control documental y trazabilidad.",
   },
   {
     num: "04",
     key: "auditoria",
-    icon: "📋",
+    icon: ClipboardCheck,
     desc: "Preparamos a tu equipo y acompañamos la auditoría con el organismo certificador elegido.",
   },
   {
     num: "05",
     key: "certificado",
-    icon: "🏆",
+    icon: Trophy,
     desc: "Obtienes el certificado ISO con el respaldo de un sistema que opera, no un papel en la pared.",
   },
   {
     num: "06",
     key: "mantenimiento",
-    icon: "🔄",
+    icon: RefreshCw,
     desc: "Mantenemos tu sistema actualizado, gestionamos no conformidades y preparamos auditorías de seguimiento.",
   },
 ];
@@ -188,7 +189,7 @@ export default async function HomePage() {
               <Link
                 key={cert.id}
                 href={`/${locale}/certificaciones#${cert.id}`}
-                className={`bg-gradient-to-br ${cert.color} border ${cert.border} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 group hover:-translate-y-1`}
+                className={`bg-gradient-to-br ${cert.color} border ${cert.border} rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group hover:-translate-y-1`}
               >
                 {/* Image */}
                 <div className="relative h-44 overflow-hidden">
@@ -196,9 +197,11 @@ export default async function HomePage() {
                     src={cert.image}
                     alt={cert.title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover grayscale-[20%] saturate-75 contrast-110 group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  {/* Overlay de marca: unifica el tono de fotos de stock dispares en una sola paleta */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A]/75 via-[#1A1A1A]/25 to-[#F5A623]/30 mix-blend-multiply" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <span className="absolute top-3 left-3 text-xs font-bold text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full uppercase tracking-wider">
                     {cert.name}
                   </span>
@@ -239,8 +242,8 @@ export default async function HomePage() {
               <div key={step.num} className="relative">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0">
-                    <div className="w-14 h-14 bg-[#F5A623] rounded-xl flex items-center justify-center text-2xl">
-                      {step.icon}
+                    <div className="w-14 h-14 bg-[#F5A623] rounded-xl flex items-center justify-center">
+                      <step.icon className="w-7 h-7 text-[#1A1A1A]" strokeWidth={2} />
                     </div>
                   </div>
                   <div>
@@ -340,7 +343,10 @@ export default async function HomePage() {
                   ))}
                 </div>
                 <div className="bg-yellow-900/30 border border-yellow-700/50 rounded-lg p-3">
-                  <div className="text-yellow-400 text-xs font-bold mb-1">⚠ Alerta — Acción requerida</div>
+                  <div className="text-yellow-400 text-xs font-bold mb-1 flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2.5} />
+                    Alerta — Acción requerida
+                  </div>
                   <div className="text-gray-400 text-xs">No conformidad en proceso de compras — vence en 5 días</div>
                 </div>
               </div>

@@ -4,6 +4,7 @@ import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
+import { BarChart3, Users, FolderCog, AlertTriangle, Puzzle, TrendingUp } from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -20,32 +21,32 @@ export async function generateMetadata({
 
 const features = [
   {
-    icon: "📊",
+    icon: BarChart3,
     title: "Dashboards de gestión en tiempo real",
     desc: "Visualiza el cumplimiento de tu sistema ISO en tiempo real. Avance por módulo, objetivos de calidad y riesgos identificados en un solo panel. Sin reportes manuales, sin Excel, sin esperar el mes.",
   },
   {
-    icon: "👥",
+    icon: Users,
     title: "Permisos granulares por colaborador",
     desc: "Cada persona de tu equipo ve solo lo que necesita. Dale acceso a un módulo completo, a una actividad puntual, a una etapa de un proceso, o a un documento específico — vos elegís el nivel de detalle, sin compartir de más.",
   },
   {
-    icon: "📁",
+    icon: FolderCog,
     title: "Gestión documental con control de versiones",
     desc: "Procedimientos, instructivos y formatos organizados por proceso, cada uno con su versión, vigencia y estado (vigente, en revisión, obsoleto). Todo centralizado y trazable.",
   },
   {
-    icon: "⚠️",
+    icon: AlertTriangle,
     title: "No Conformidades con matriz y gráficos",
     desc: "Cada caso queda registrado con etapa de detección, severidad, causa raíz y costo de no calidad. Una matriz tipo Excel y gráficos automáticos te muestran dónde están los problemas reales.",
   },
   {
-    icon: "🧩",
+    icon: Puzzle,
     title: "Diseño y Desarrollo paso a paso",
     desc: "Seguí cada proyecto nuevo según la cláusula 8.3 de ISO 9001: planificación, entradas, salidas, revisión, verificación, validación y cierre, con el avance siempre visible.",
   },
   {
-    icon: "📈",
+    icon: TrendingUp,
     title: "Indicadores de desempeño por proceso",
     desc: "KPIs por módulo (Calidad, Compras, Diseño y Desarrollo), con tendencias históricas y análisis que te ayudan a priorizar dónde actuar primero.",
   },
@@ -180,7 +181,9 @@ export default async function SoftwarePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f) => (
               <div key={f.title} className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="text-3xl mb-4">{f.icon}</div>
+                <div className="w-12 h-12 bg-[#F5A623]/10 rounded-lg flex items-center justify-center mb-4">
+                  <f.icon className="w-6 h-6 text-[#F5A623]" strokeWidth={2} />
+                </div>
                 <h3 className="text-lg font-bold text-[#1A1A1A] mb-2">{f.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{f.desc}</p>
               </div>

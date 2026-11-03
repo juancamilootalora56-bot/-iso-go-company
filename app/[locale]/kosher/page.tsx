@@ -5,6 +5,7 @@ import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
+import { CheckCircle2, Calendar, BarChart3, FolderCheck, Target } from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -208,19 +209,22 @@ export default async function KosherPage() {
                 ))}
               </ul>
             </div>
-            <div className="bg-gray-800 rounded-2xl p-6">
+            <div className="bg-gradient-to-br from-gray-700 to-gray-800 rounded-2xl p-6 shadow-lg">
               <h3 className="text-[#F5A623] font-bold text-sm uppercase tracking-wider mb-4">Sistema integrado Kosher + ISO</h3>
               <div className="space-y-3">
                 {[
-                  { label: "Trazabilidad de lote", status: "Activo", icon: "✅" },
-                  { label: "Control de ingredientes Kosher", status: "Certificado", icon: "✅" },
-                  { label: "Inspección rabínica", status: "Próx: 15 Mar", icon: "📅" },
-                  { label: "Conformidad ISO 22000", status: "98%", icon: "📊" },
-                  { label: "Documentos vigentes", status: "47/47", icon: "📁" },
-                  { label: "No conformidades abiertas", status: "0", icon: "🎯" },
+                  { label: "Trazabilidad de lote", status: "Activo", icon: CheckCircle2 },
+                  { label: "Control de ingredientes Kosher", status: "Certificado", icon: CheckCircle2 },
+                  { label: "Inspección rabínica", status: "Próx: 15 Mar", icon: Calendar },
+                  { label: "Conformidad ISO 22000", status: "98%", icon: BarChart3 },
+                  { label: "Documentos vigentes", status: "47/47", icon: FolderCheck },
+                  { label: "No conformidades abiertas", status: "0", icon: Target },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center justify-between bg-gray-700 rounded-lg px-4 py-3">
-                    <span className="text-gray-300 text-sm">{item.icon} {item.label}</span>
+                    <span className="text-gray-300 text-sm flex items-center gap-2">
+                      <item.icon className="w-4 h-4 text-[#F5A623]" strokeWidth={2} />
+                      {item.label}
+                    </span>
                     <span className="text-[#F5A623] text-sm font-semibold">{item.status}</span>
                   </div>
                 ))}

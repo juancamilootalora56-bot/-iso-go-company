@@ -5,6 +5,17 @@ import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
+import {
+  Target,
+  ShieldAlert,
+  TrendingUp,
+  Settings,
+  Users,
+  Lightbulb,
+  Building2,
+  ClipboardList,
+  type LucideIcon,
+} from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -35,14 +46,14 @@ async function getSpecialties(locale: string): Promise<Specialty[]> {
   return data.default;
 }
 
-const iconMap: Record<string, string> = {
-  target: "🎯",
-  "shield-alert": "🛡️",
-  "trending-up": "📈",
-  settings: "⚙️",
-  users: "👥",
-  lightbulb: "💡",
-  building: "🏢",
+const iconMap: Record<string, LucideIcon> = {
+  target: Target,
+  "shield-alert": ShieldAlert,
+  "trending-up": TrendingUp,
+  settings: Settings,
+  users: Users,
+  lightbulb: Lightbulb,
+  building: Building2,
 };
 
 export default async function EspecialidadesPage() {
@@ -88,12 +99,16 @@ export default async function EspecialidadesPage() {
                           src={spec.image}
                           alt={spec.title}
                           fill
-                          className="object-cover"
+                          className="object-cover grayscale-[20%] saturate-75 contrast-110"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A]/60 via-[#1A1A1A]/10 to-[#F5A623]/30 mix-blend-multiply" />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 bg-[#F5A623] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-                        {iconMap[spec.icon] || "📋"}
+                      <div className="w-16 h-16 bg-[#F5A623] rounded-xl flex items-center justify-center flex-shrink-0">
+                        {(() => {
+                          const Icon = iconMap[spec.icon] || ClipboardList;
+                          return <Icon className="w-7 h-7 text-[#1A1A1A]" strokeWidth={2} />;
+                        })()}
                       </div>
                     )}
                     <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">
@@ -105,7 +120,7 @@ export default async function EspecialidadesPage() {
                   <p className="text-[#F5A623] font-semibold text-lg mb-4 italic">"{spec.tagline}"</p>
                   <p className="text-gray-700 leading-relaxed mb-6">{spec.description}</p>
 
-                  <div className="bg-[#1A1A1A] rounded-xl p-4 mb-6">
+                  <div className="bg-gradient-to-br from-[#262626] to-[#1A1A1A] rounded-xl p-4 mb-6 shadow-sm">
                     <h4 className="text-[#F5A623] text-xs font-bold uppercase tracking-wider mb-2">Resultado que obtienes</h4>
                     <p className="text-gray-300 text-sm leading-relaxed">{spec.result}</p>
                   </div>
@@ -118,7 +133,7 @@ export default async function EspecialidadesPage() {
                   </Link>
                 </div>
 
-                <div className={`${index % 2 === 1 ? "lg:order-1" : ""} bg-[#F4F4F4] rounded-2xl p-8`}>
+                <div className={`${index % 2 === 1 ? "lg:order-1" : ""} bg-gradient-to-br from-[#F4F4F4] to-[#ECECEC] rounded-2xl p-8 shadow-sm`}>
                   <h4 className="font-bold text-[#1A1A1A] mb-4">Lo que incluye</h4>
                   <ul className="space-y-3">
                     {spec.features.map((feature) => (
@@ -142,7 +157,9 @@ export default async function EspecialidadesPage() {
       {/* Family business highlight */}
       <section className="bg-[#F5A623] py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="text-4xl mb-4">🏢</div>
+          <div className="flex justify-center mb-4">
+            <Building2 className="w-10 h-10 text-[#1A1A1A]" strokeWidth={1.75} />
+          </div>
           <h2 className="text-3xl font-bold text-[#1A1A1A] mb-4">Especialistas en Empresas Familiares</h2>
           <p className="text-[#1A1A1A] text-lg mb-6 leading-relaxed">
             Las empresas familiares tienen retos únicos: confusión entre roles familiares y empresariales, dificultad para atraer talento externo, y desafíos de sucesión. Trabajamos con ellas para construir estructuras de gobierno corporativo que profesionalizan sin perder la esencia familiar.
