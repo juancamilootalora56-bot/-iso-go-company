@@ -78,7 +78,7 @@ const featuredCerts = [
     benefit: "↓ 15-25% costos operativos",
     color: "from-amber-50 to-amber-100",
     border: "border-amber-200",
-    image: "https://images.unsplash.com/photo-1664575602276-acd073f104c1?w=600&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1664575602276-acd073f104c1?w=1400&h=900&fit=crop&q=85",
   },
   {
     id: "iso-14001",
@@ -88,7 +88,7 @@ const featuredCerts = [
     benefit: "↓ 30% en residuos y multas",
     color: "from-green-50 to-green-100",
     border: "border-green-200",
-    image: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=600&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=1400&h=900&fit=crop&q=85",
   },
   {
     id: "iso-45001",
@@ -98,7 +98,7 @@ const featuredCerts = [
     benefit: "↓ 60% en accidentes laborales",
     color: "from-blue-50 to-blue-100",
     border: "border-blue-200",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1400&h=900&fit=crop&q=85",
   },
   {
     id: "iso-27001",
@@ -108,7 +108,7 @@ const featuredCerts = [
     benefit: "✓ Cumplimiento RGPD · LGPD · NIS2",
     color: "from-purple-50 to-purple-100",
     border: "border-purple-200",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1400&h=900&fit=crop&q=85",
   },
   {
     id: "iso-22000",
@@ -118,7 +118,7 @@ const featuredCerts = [
     benefit: "✓ Acceso UE · EE.UU. · Asia · Medio Oriente",
     color: "from-orange-50 to-orange-100",
     border: "border-orange-200",
-    image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=600&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=1400&h=900&fit=crop&q=85",
   },
   {
     id: "iso-50001",
@@ -128,7 +128,7 @@ const featuredCerts = [
     benefit: "↓ Hasta 30% en consumo energético",
     color: "from-yellow-50 to-yellow-100",
     border: "border-yellow-200",
-    image: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=600&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1400&h=900&fit=crop&q=85",
   },
 ];
 
