@@ -40,10 +40,10 @@ export default function MiCertificacionPage() {
           Realiza un diagnóstico y un asesor va a armar tu proceso de certificación.
         </p>
         <Link
-          href={`/${locale}/contacto`}
+          href={`/${locale}/dashboard/diagnostico`}
           className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm"
         >
-          Hablar con un asesor →
+          Realizar diagnóstico →
         </Link>
       </div>
     );

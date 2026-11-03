@@ -227,6 +227,7 @@ export default function DashboardPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {(esDiagnostico
                 ? [
+                    { href: "/diagnostico", icon: "🔍", label: "Realizar diagnóstico" },
                     { href: "/perfil", icon: "👤", label: "Mi Perfil" },
                     { href: "/mi-certificacion", icon: "🏆", label: "Mi Certificación" },
                   ]
@@ -317,13 +318,14 @@ export default function DashboardPage() {
               Realiza tu diagnóstico
             </h3>
             <p className="text-sm mb-5" style={{ color: tema.textMuted }}>
-              Un experto ISO analizará tu empresa y te dirá exactamente qué necesitas para certificarte.
+              Evaluá tu Sistema de Gestión de Calidad contra ISO 9001:2015 y recibí un resultado inmediato con tus
+              próximos pasos.
             </p>
             <Link
-              href={`/${locale}/contacto`}
+              href={`/${locale}/dashboard/diagnostico`}
               className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm"
             >
-              Agendar ahora →
+              Empezar diagnóstico →
             </Link>
           </div>
         </div>
