@@ -25,11 +25,16 @@ export default function RelacionActividadesPage() {
 
   // Un colaborador regular va directo a su propia planilla — nunca ve la
   // lista. Un jefe de proceso sí ve la lista, pero filtrada a su equipo.
+  // Hay que esperar a que `docs` termine de cargar antes de decidir: con
+  // loading=true, `personal` todavía está vacío y `esJefe` da falso
+  // aunque la persona sí sea jefa, lo que redirigía de más a su propia
+  // planilla antes de que el dato real llegara.
   useEffect(() => {
+    if (loading) return;
     if (colaborador?.empleadoId && !esJefe) {
       router.replace(`${basePath}/relacion_actividades/${colaborador.empleadoId}`);
     }
-  }, [colaborador, esJefe, basePath, router]);
+  }, [loading, colaborador, esJefe, basePath, router]);
 
   if (loading || (colaborador?.empleadoId && !esJefe)) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
