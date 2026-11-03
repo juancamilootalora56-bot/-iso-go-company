@@ -16,14 +16,16 @@ export interface CertAccordionItem {
 export default function CertAccordionGallery({
   items,
   hrefBase,
+  heightClass = "h-[480px] lg:h-[560px]",
 }: {
   items: CertAccordionItem[];
   hrefBase: string;
+  heightClass?: string;
 }) {
   const [active, setActive] = useState(0);
 
   return (
-    <div className="hidden md:flex h-[480px] lg:h-[560px] gap-2">
+    <div className={`hidden md:flex ${heightClass} gap-2`}>
       {items.map((item, i) => {
         const isActive = i === active;
         return (

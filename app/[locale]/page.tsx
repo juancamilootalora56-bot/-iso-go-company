@@ -185,8 +185,19 @@ export default async function HomePage() {
             </p>
           </div>
 
-          {/* Desktop: galería acordeón (paneles que se expanden al pasar el mouse) */}
-          <CertAccordionGallery items={featuredCerts} hrefBase={`/${locale}/certificaciones`} />
+          {/* Desktop: dos filas de galería acordeón (paneles que se expanden al pasar el mouse) */}
+          <div className="hidden md:flex flex-col gap-4">
+            <CertAccordionGallery
+              items={featuredCerts.slice(0, 3)}
+              hrefBase={`/${locale}/certificaciones`}
+              heightClass="h-[340px] lg:h-[400px]"
+            />
+            <CertAccordionGallery
+              items={featuredCerts.slice(3, 6)}
+              hrefBase={`/${locale}/certificaciones`}
+              heightClass="h-[340px] lg:h-[400px]"
+            />
+          </div>
 
           {/* Mobile: grilla de tarjetas (el hover no aplica en touch) */}
           <div className="grid grid-cols-1 md:hidden gap-6">
