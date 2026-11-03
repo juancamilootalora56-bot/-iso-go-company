@@ -4,6 +4,7 @@ import Image from "next/image";
 import CTABand from "@/components/CTABand";
 import HexagonDecor, { HexagonOutline } from "@/components/HexagonDecor";
 import HeroCarousel from "@/components/HeroCarousel";
+import CertAccordionGallery from "@/components/CertAccordionGallery";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
 import { Search, Settings, Monitor, ClipboardCheck, Trophy, RefreshCw, AlertTriangle } from "lucide-react";
@@ -184,7 +185,11 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Desktop: galería acordeón (paneles que se expanden al pasar el mouse) */}
+          <CertAccordionGallery items={featuredCerts} hrefBase={`/${locale}/certificaciones`} />
+
+          {/* Mobile: grilla de tarjetas (el hover no aplica en touch) */}
+          <div className="grid grid-cols-1 md:hidden gap-6">
             {featuredCerts.map((cert) => (
               <Link
                 key={cert.id}
