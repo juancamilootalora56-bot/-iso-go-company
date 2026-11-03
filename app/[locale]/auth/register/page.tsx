@@ -108,6 +108,14 @@ export default function RegisterPage() {
         return;
       }
 
+      // El email de bienvenida no es parte crítica del flujo: si falla, no
+      // le mostramos error al usuario — la solicitud ya quedó guardada.
+      fetch("/api/auth/notificar-solicitud", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre: step1Data.full_name, email: step1Data.email }),
+      }).catch(() => {});
+
       setEnviado(true);
     } catch {
       setError("Error al enviar la solicitud. Intenta de nuevo.");
