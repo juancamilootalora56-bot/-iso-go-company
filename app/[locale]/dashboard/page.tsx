@@ -301,8 +301,6 @@ export default function DashboardPage() {
       )}
 
       {/* Calendario de Colaboradores */}
-      <DiagnosticoResumenWidget />
-
       <CalendarioResumenWidget docs={docsTH} loading={loadingTH} />
 
       <div className="grid lg:grid-cols-2 gap-6">
@@ -333,6 +331,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Diagnóstico ISO 9001 — indicadores por cláusula */}
+      <DiagnosticoResumenWidget />
 
       {/* Demos section */}
       {interestedNorms.length > 0 && (
