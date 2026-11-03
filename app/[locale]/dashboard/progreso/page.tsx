@@ -125,13 +125,13 @@ export default function ProgresoPage() {
       <div className="mt-8 bg-[#1A1A1A] rounded-xl p-6 text-center">
         <p className="text-[#F5A623] font-semibold mb-2">¿Listo para comenzar?</p>
         <p className="text-gray-400 text-sm mb-4">
-          Agenda tu diagnóstico inicial gratuito y da el primer paso hacia tu certificación ISO.
+          Realiza tu diagnóstico inicial y da el primer paso hacia tu certificación ISO.
         </p>
         <a
           href="/es/contacto"
           className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm"
         >
-          Agendar diagnóstico gratuito
+          Realizar diagnóstico
         </a>
       </div>
     </div>

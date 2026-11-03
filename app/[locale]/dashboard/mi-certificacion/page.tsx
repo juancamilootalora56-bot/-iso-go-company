@@ -37,7 +37,7 @@ export default function MiCertificacionPage() {
         <p className="text-2xl mb-3">📋</p>
         <h1 className="text-xl font-bold text-[#1A1A1A] mb-2">Todavía no tenés un proceso iniciado</h1>
         <p className="text-gray-500 text-sm mb-6">
-          Agenda un diagnóstico gratuito y un asesor va a armar tu proceso de certificación.
+          Realiza un diagnóstico y un asesor va a armar tu proceso de certificación.
         </p>
         <Link
           href={`/${locale}/contacto`}
