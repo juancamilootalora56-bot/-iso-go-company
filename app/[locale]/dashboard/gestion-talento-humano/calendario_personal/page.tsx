@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
-import { parsePersonal, type Empleado } from "@/lib/personal";
+import { parsePersonal, personasVisiblesEquipo, type Empleado } from "@/lib/personal";
 import {
   type EventoCalendario,
   TIPOS_EVENTO,
@@ -19,7 +19,6 @@ import {
   mesSiguiente,
   diasGrilla,
   DIAS_SEMANA,
-  personasVisiblesCalendario,
 } from "@/lib/calendarioPersonal";
 
 const ITEM_KEY_PERSONAL = "personal_lista";
@@ -53,7 +52,7 @@ export default function CalendarioPersonalPage() {
   const empleadoPropioId = colaborador?.empleadoId ?? null;
   const propio = empleadoPropioId ? personal.find((p) => p.id === empleadoPropioId) ?? null : null;
   const esJefe = !esOwner && !!propio?.esJefeProceso && !!propio?.proceso;
-  const personasVisibles = personasVisiblesCalendario(personal, empleadoPropioId, esOwner);
+  const personasVisibles = personasVisiblesEquipo(personal, empleadoPropioId, esOwner);
 
   const idsEditables = new Set(esOwner ? personasVisibles.map((p) => p.id) : propio ? [propio.id] : []);
 

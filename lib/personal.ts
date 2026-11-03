@@ -94,3 +94,20 @@ export function parsePersonal(contenido: string): Empleado[] {
     return [];
   }
 }
+
+// Regla de alcance compartida por el Calendario de Colaboradores y la
+// Relación de Actividades: el dueño ve a todos, un jefe de proceso ve a su
+// equipo (todos los que comparten su mismo proceso) + a sí mismo, y un
+// colaborador regular solo se ve a sí mismo.
+export function personasVisiblesEquipo(
+  personal: Empleado[],
+  empleadoPropioId: string | null,
+  esOwner: boolean
+): Empleado[] {
+  if (esOwner) return personal;
+  const propio = empleadoPropioId ? personal.find((p) => p.id === empleadoPropioId) ?? null : null;
+  const esJefe = !!propio?.esJefeProceso && !!propio?.proceso;
+  if (esJefe) return personal.filter((p) => p.proceso === propio!.proceso || p.id === propio!.id);
+  if (propio) return [propio];
+  return [];
+}

@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
-import { parsePersonal } from "@/lib/personal";
+import { parsePersonal, personasVisiblesEquipo } from "@/lib/personal";
 
 const NARANJA = "#F5A623";
 
@@ -18,19 +18,24 @@ export default function RelacionActividadesPage() {
 
   const { docs, loading } = useGestionDocumentos("talento_humano", user?.id ?? null);
 
-  // Un colaborador siempre va directo a su propia planilla — nunca ve la
-  // lista completa del equipo.
+  const personal = parsePersonal(docs["personal_lista"] ?? "");
+  const empleadoPropioId = colaborador?.empleadoId ?? null;
+  const propio = empleadoPropioId ? personal.find((p) => p.id === empleadoPropioId) ?? null : null;
+  const esJefe = !!propio?.esJefeProceso && !!propio?.proceso;
+
+  // Un colaborador regular va directo a su propia planilla — nunca ve la
+  // lista. Un jefe de proceso sí ve la lista, pero filtrada a su equipo.
   useEffect(() => {
-    if (colaborador?.empleadoId) {
+    if (colaborador?.empleadoId && !esJefe) {
       router.replace(`${basePath}/relacion_actividades/${colaborador.empleadoId}`);
     }
-  }, [colaborador, basePath, router]);
+  }, [colaborador, esJefe, basePath, router]);
 
-  if (loading || colaborador?.empleadoId) {
+  if (loading || (colaborador?.empleadoId && !esJefe)) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
   }
 
-  const personal = parsePersonal(docs["personal_lista"] ?? "");
+  const personasVisibles = personasVisiblesEquipo(personal, empleadoPropioId, !colaborador);
 
   return (
     <div className="max-w-4xl mx-auto space-y-4 pb-10">
@@ -41,12 +46,13 @@ export default function RelacionActividadesPage() {
       <div>
         <h1 className="text-2xl font-bold text-[#1A1A1A]">Relación de Actividades</h1>
         <p className="text-gray-500 text-sm mt-1 max-w-2xl">
-          Bitácora diaria de cada colaborador, por franjas horarias, acumulada mes a mes. Elegí un colaborador para
-          ver o registrar su jornada.
+          {esJefe
+            ? `Bitácora diaria de tu equipo de ${propio!.proceso}, por franjas horarias, acumulada mes a mes. Elegí un colaborador para ver o editar su jornada.`
+            : "Bitácora diaria de cada colaborador, por franjas horarias, acumulada mes a mes. Elegí un colaborador para ver o registrar su jornada."}
         </p>
       </div>
 
-      {personal.length === 0 ? (
+      {personasVisibles.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
           <p className="text-gray-500 text-sm mb-2">
             Todavía no hay colaboradores registrados en <strong>Gestión del Talento Humano</strong>.
@@ -57,7 +63,7 @@ export default function RelacionActividadesPage() {
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {personal.map((p) => (
+          {personasVisibles.map((p) => (
             <Link
               key={p.id}
               href={`${basePath}/relacion_actividades/${p.id}`}

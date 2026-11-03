@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
-import { parsePersonal } from "@/lib/personal";
+import { parsePersonal, personasVisiblesEquipo } from "@/lib/personal";
 import {
   parseEventos,
   itemKeyCalendario,
   colorTipoEvento,
-  personasVisiblesCalendario,
   mesActual,
   mesSiguiente,
   type EventoCalendario,
@@ -47,7 +46,7 @@ export default function CalendarioResumenWidget({ docs, loading }: Props) {
   const personal = parsePersonal(docs["personal_lista"] ?? "");
   const esOwner = !colaborador;
   const empleadoPropioId = colaborador?.empleadoId ?? null;
-  const personasVisibles = personasVisiblesCalendario(personal, empleadoPropioId, esOwner);
+  const personasVisibles = personasVisiblesEquipo(personal, empleadoPropioId, esOwner);
   const mostrarPersona = personasVisibles.length > 1;
 
   const colorPorPersona: Record<string, string> = {};

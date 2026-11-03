@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import EncabezadoDocumento from "@/components/dashboard/EncabezadoDocumento";
-import { parsePersonal } from "@/lib/personal";
+import { parsePersonal, personasVisiblesEquipo } from "@/lib/personal";
 import { parseLista } from "@/lib/mapaProcesos";
 import {
   parseActividades,
@@ -95,16 +95,21 @@ export default function RelacionActividadesColaboradorPage() {
     );
   }
 
-  // Un colaborador solo puede ver/registrar su propia planilla, nunca la de otro.
-  if (colaboradorSesion && colaboradorSesion.empleadoId !== colaboradorId) {
-    return (
-      <div className="max-w-3xl mx-auto space-y-3">
-        <Link href={`${basePath}/relacion_actividades`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
-          ← Relación de Actividades
-        </Link>
-        <p className="text-gray-500 text-sm">No tenés acceso a la planilla de otro colaborador.</p>
-      </div>
-    );
+  // Un colaborador solo puede ver/registrar su propia planilla, salvo que
+  // sea jefe del proceso de esta persona — en ese caso ve (y edita) la de
+  // todo su equipo, misma regla que el Calendario de Colaboradores.
+  if (colaboradorSesion) {
+    const personasVisibles = personasVisiblesEquipo(personal, colaboradorSesion.empleadoId, false);
+    if (!personasVisibles.some((p) => p.id === colaboradorId)) {
+      return (
+        <div className="max-w-3xl mx-auto space-y-3">
+          <Link href={`${basePath}/relacion_actividades`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
+            ← Relación de Actividades
+          </Link>
+          <p className="text-gray-500 text-sm">No tenés acceso a la planilla de otro colaborador.</p>
+        </div>
+      );
+    }
   }
 
   const ordenadas = [...actuales].sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
