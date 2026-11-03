@@ -12,6 +12,7 @@ import { estaCompletoActividad, contarRiesgos } from "@/lib/gestionGerenciaCompl
 import { parseObjetivos } from "@/lib/objetivosCalidad";
 import AvanceModulosChart from "@/components/dashboard/AvanceModulosChart";
 import CalendarioResumenWidget from "@/components/dashboard/CalendarioResumenWidget";
+import DiagnosticoResumenWidget from "@/components/dashboard/DiagnosticoResumenWidget";
 import { temaPanelDe } from "@/lib/temaPanel";
 import { tieneAccesoReal } from "@/lib/colaboradoresCliente";
 import { parsePersonal } from "@/lib/personal";
@@ -300,6 +301,8 @@ export default function DashboardPage() {
       )}
 
       {/* Calendario de Colaboradores */}
+      <DiagnosticoResumenWidget />
+
       <CalendarioResumenWidget docs={docsTH} loading={loadingTH} />
 
       <div className="grid lg:grid-cols-2 gap-6">

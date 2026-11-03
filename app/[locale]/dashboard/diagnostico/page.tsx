@@ -13,18 +13,19 @@ import {
   cantidadRespondidas,
   colorAccion,
   colorCalificacionGlobal,
+  parseRespuestasDiagnostico,
+  parseHistorialDiagnostico,
 } from "@/lib/diagnosticoISO9001";
 
 const MODULO = "diagnostico";
 const ITEM_KEY_RESPUESTAS = "respuestas_iso9001";
+const ITEM_KEY_HISTORIAL = "historial_iso9001";
 
-function parseRespuestas(contenido: string): Record<string, number> {
-  if (!contenido) return {};
+function fechaLegible(iso: string) {
   try {
-    const parsed = JSON.parse(contenido);
-    return typeof parsed === "object" && parsed !== null ? parsed : {};
+    return new Date(iso).toLocaleDateString("es", { day: "2-digit", month: "long", year: "numeric" });
   } catch {
-    return {};
+    return iso;
   }
 }
 
@@ -38,12 +39,15 @@ export default function DiagnosticoPage() {
 
   const [clausulaIdx, setClausulaIdx] = useState(0);
   const [verResultados, setVerResultados] = useState<boolean | null>(null);
+  const [verHistorial, setVerHistorial] = useState(false);
+  const [reiniciando, setReiniciando] = useState(false);
 
   if (loading) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
   }
 
-  const respuestas = parseRespuestas(docs[ITEM_KEY_RESPUESTAS] ?? "");
+  const respuestas = parseRespuestasDiagnostico(docs[ITEM_KEY_RESPUESTAS] ?? "");
+  const historial = parseHistorialDiagnostico(docs[ITEM_KEY_HISTORIAL] ?? "");
   const respondidas = cantidadRespondidas(respuestas);
   const completo = respondidas === TOTAL_ITEMS_DIAGNOSTICO;
   const mostrandoResultados = verResultados ?? completo;
@@ -51,6 +55,21 @@ export default function DiagnosticoPage() {
   async function responder(itemId: string, valor: number) {
     const actualizadas = { ...respuestas, [itemId]: valor };
     await save(ITEM_KEY_RESPUESTAS, JSON.stringify(actualizadas));
+  }
+
+  // Archiva el resultado actual en el historial (para que sirva de
+  // auditoría / mejora continua a lo largo del tiempo) y arranca un
+  // diagnóstico nuevo desde cero.
+  async function nuevoDiagnostico() {
+    if (!confirm("Esto guarda tu diagnóstico actual en el historial y empieza uno nuevo en blanco. ¿Continuar?")) return;
+    setReiniciando(true);
+    const resultadoActual = calcularResultados(respuestas);
+    const nuevaEntrada = { fecha: new Date().toISOString(), resultado: resultadoActual };
+    await save(ITEM_KEY_HISTORIAL, JSON.stringify([nuevaEntrada, ...historial]));
+    await save(ITEM_KEY_RESPUESTAS, JSON.stringify({}));
+    setClausulaIdx(0);
+    setVerResultados(false);
+    setReiniciando(false);
   }
 
   const clausula = CLAUSULAS_DIAGNOSTICO[clausulaIdx];
@@ -166,11 +185,48 @@ export default function DiagnosticoPage() {
           </a>
         </div>
 
-        <div className="text-center">
+        <div className="flex items-center justify-center gap-5 flex-wrap">
           <button onClick={() => setVerResultados(false)} className="text-sm text-gray-400 hover:text-[#1A1A1A] font-semibold">
             ✎ Revisar mis respuestas
           </button>
+          <button
+            onClick={nuevoDiagnostico}
+            disabled={reiniciando}
+            className="text-sm text-gray-400 hover:text-[#1A1A1A] font-semibold disabled:opacity-50"
+          >
+            🔄 Hacer un nuevo diagnóstico
+          </button>
+          {historial.length > 0 && (
+            <button onClick={() => setVerHistorial((v) => !v)} className="text-sm text-gray-400 hover:text-[#1A1A1A] font-semibold">
+              📋 Historial ({historial.length})
+            </button>
+          )}
         </div>
+
+        {verHistorial && historial.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-6">
+            <h2 className="font-bold text-[#1A1A1A] mb-4">Diagnósticos anteriores</h2>
+            <div className="space-y-3">
+              {historial.map((h, i) => (
+                <div key={i} className="flex items-center justify-between gap-3 bg-[#FAFAFA] rounded-xl p-3">
+                  <div>
+                    <p className="text-sm font-semibold text-[#1A1A1A] capitalize">{fechaLegible(h.fecha)}</p>
+                    <p className="text-xs text-gray-500">{h.resultado.puntajeObtenido} / {h.resultado.puntajeMaximo} puntos</p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className="text-sm font-bold text-gray-500">{h.resultado.porcentajeGlobal}%</span>
+                    <span
+                      className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full text-white"
+                      style={{ backgroundColor: colorCalificacionGlobal(h.resultado.calificacion) }}
+                    >
+                      {h.resultado.calificacion}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }

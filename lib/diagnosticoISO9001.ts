@@ -627,6 +627,31 @@ export function calcularResultados(respuestas: Record<string, number>): Resultad
   };
 }
 
+export function parseRespuestasDiagnostico(contenido: string): Record<string, number> {
+  if (!contenido) return {};
+  try {
+    const parsed = JSON.parse(contenido);
+    return typeof parsed === "object" && parsed !== null ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+export type HistorialDiagnosticoEntry = {
+  fecha: string; // ISO
+  resultado: ResultadoDiagnostico;
+};
+
+export function parseHistorialDiagnostico(contenido: string): HistorialDiagnosticoEntry[] {
+  if (!contenido) return [];
+  try {
+    const parsed = JSON.parse(contenido);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 export function cantidadRespondidas(respuestas: Record<string, number>): number {
   return CLAUSULAS_DIAGNOSTICO.reduce(
     (acc, c) => acc + c.subclausulas.reduce((a2, s) => a2 + s.items.filter((i) => i.id in respuestas).length, 0),
