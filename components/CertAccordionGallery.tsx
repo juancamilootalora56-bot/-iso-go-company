@@ -17,12 +17,14 @@ export default function CertAccordionGallery({
   items,
   hrefBase,
   heightClass = "h-[480px] lg:h-[560px]",
+  defaultActive = 0,
 }: {
   items: CertAccordionItem[];
   hrefBase: string;
   heightClass?: string;
+  defaultActive?: number;
 }) {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(defaultActive);
 
   return (
     <div className={`hidden md:flex ${heightClass} gap-2`}>

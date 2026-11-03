@@ -196,6 +196,7 @@ export default async function HomePage() {
               items={featuredCerts.slice(3, 6)}
               hrefBase={`/${locale}/certificaciones`}
               heightClass="h-[340px] lg:h-[400px]"
+              defaultActive={2}
             />
           </div>
 
