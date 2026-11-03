@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import CTABand from "@/components/CTABand";
 import HexagonDecor from "@/components/HexagonDecor";
+import Reveal from "@/components/ui/Reveal";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
 import {
@@ -134,8 +135,8 @@ export default async function CertificacionesPage() {
           <h2 className="text-3xl font-bold text-[#1A1A1A] mb-12">Todas las certificaciones</h2>
           <div className="space-y-8">
             {rest.map((cert, index) => (
+              <Reveal key={cert.id} delay={(index % 3) * 120}>
               <div
-                key={cert.id}
                 id={cert.id}
                 className={`rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300 ${index % 2 === 0 ? "bg-gradient-to-br from-[#F4F4F4] to-[#ECECEC]" : "bg-gradient-to-b from-white to-gray-50/80 border border-gray-100"}`}
               >
@@ -187,6 +188,7 @@ export default async function CertificacionesPage() {
                   </div>
                 </div>
               </div>
+              </Reveal>
             ))}
           </div>
         </div>
