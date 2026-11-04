@@ -6,7 +6,7 @@ import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
 import { CheckCircle2, Calendar, BarChart3, FolderCheck, Target } from "lucide-react";
-import CertAccordionGallery from "@/components/CertAccordionGallery";
+import Reveal from "@/components/ui/Reveal";
 
 export async function generateMetadata({
   params,
@@ -54,42 +54,48 @@ const markets = [
     id: "america-norte",
     region: "América del Norte",
     detail: "EE.UU. y Canadá: mercado Kosher de USD 12.5 mil millones/año",
-    benefit: "USD 12.5B/año",
+    who: "Empresas que exportan alimentos, bebidas o productos de consumo a Estados Unidos y Canadá.",
+    impact: "Acceso al mercado Kosher más grande del mundo: USD 12.5 mil millones al año.",
     image: "https://flagcdn.com/w640/us.png",
   },
   {
     id: "israel-medio-oriente",
     region: "Israel y Medio Oriente",
     detail: "Exportación directa a mercados con 100% de demanda Kosher",
-    benefit: "100% demanda Kosher",
+    who: "Empresas que buscan exportar directo a mercados donde la certificación Kosher es un requisito total.",
+    impact: "Demanda del 100% en alimentos: sin certificado, no hay acceso al mercado.",
     image: "https://flagcdn.com/w640/il.png",
   },
   {
     id: "europa",
     region: "Europa",
     detail: "Comunidades judías en UK, Francia, Alemania, Argentina-España",
-    benefit: "Múltiples mercados UE",
+    who: "Marcas que buscan distribución en comunidades judías de Reino Unido, Francia, Alemania y España.",
+    impact: "Acceso a múltiples mercados europeos con un solo certificado.",
     image: "https://flagcdn.com/w640/eu.png",
   },
   {
     id: "latinoamerica",
     region: "Latinoamérica",
     detail: "Argentina, Brasil, México — comunidades grandes y en crecimiento",
-    benefit: "Mercado en expansión",
+    who: "Empresas de Argentina, Brasil y México que venden a comunidades judías en expansión.",
+    impact: "Mercado regional en crecimiento sostenido, con baja competencia certificada.",
     image: "https://flagcdn.com/w640/br.png",
   },
   {
     id: "retail-premium",
     region: "Retail premium",
     detail: "Cadenas como Whole Foods, Trader Joe's, Marks & Spencer",
-    benefit: "Cadenas premium",
+    who: "Proveedores que buscan entrar a cadenas como Whole Foods, Trader Joe's y Marks & Spencer.",
+    impact: "La certificación Kosher es requisito de entrada en estas cadenas premium.",
     image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1400&h=900&fit=crop&q=85",
   },
   {
     id: "food-service",
     region: "Food service",
     detail: "Hoteles, aerolíneas y catering internacional con requisito Kosher",
-    benefit: "Hospitality & catering",
+    who: "Hoteles, aerolíneas y empresas de catering que atienden clientes internacionales.",
+    impact: "Diferenciación en contratos de hospitality y catering a nivel internacional.",
     image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&h=900&fit=crop&q=85",
   },
 ];
@@ -170,52 +176,54 @@ export default async function KosherPage() {
             <h2 className="text-3xl font-bold text-[#1A1A1A] mb-4">Mercados que se abren con la certificación Kosher</h2>
             <p className="text-gray-600 text-lg">No es solo cumplir una norma religiosa. Es acceder a mercados de alto valor con demanda insatisfecha.</p>
           </div>
-          {/* Desktop: galería acordeón (paneles que se expanden al pasar el mouse) */}
-          <div className="hidden md:flex flex-col gap-4">
-            <CertAccordionGallery
-              items={markets.slice(0, 3).map((m) => ({
-                id: m.id,
-                name: m.region,
-                title: m.region,
-                tagline: m.detail,
-                benefit: m.benefit,
-                image: m.image,
-                href: `/${locale}/contacto`,
-              }))}
-              heightClass="h-[340px] lg:h-[400px]"
-            />
-            <CertAccordionGallery
-              items={markets.slice(3, 6).map((m) => ({
-                id: m.id,
-                name: m.region,
-                title: m.region,
-                tagline: m.detail,
-                benefit: m.benefit,
-                image: m.image,
-                href: `/${locale}/contacto`,
-              }))}
-              heightClass="h-[340px] lg:h-[400px]"
-              defaultActive={2}
-            />
-          </div>
-
-          {/* Mobile: grilla de tarjetas (el hover no aplica en touch) */}
-          <div className="grid grid-cols-1 md:hidden gap-6">
-            {markets.map((m) => (
-              <div key={m.region} className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
-                    <Image
-                      src={m.image}
-                      alt={m.region}
-                      fill
-                      className="object-cover"
-                    />
+          <div className="space-y-8">
+            {markets.map((m, index) => (
+              <Reveal key={m.id} delay={(index % 3) * 120}>
+                <div
+                  id={m.id}
+                  className={`rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300 ${
+                    index % 2 === 0
+                      ? "bg-gradient-to-br from-[#F4F4F4] to-[#ECECEC]"
+                      : "bg-gradient-to-b from-white to-gray-50/80 border border-gray-100"
+                  }`}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                    <div className="lg:col-span-2">
+                      <div className="flex items-start gap-4 mb-5">
+                        <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
+                          <Image
+                            src={m.image}
+                            alt={m.region}
+                            fill
+                            className="object-cover grayscale-[20%] saturate-75 contrast-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A]/60 via-[#1A1A1A]/10 to-[#F5A623]/30 mix-blend-multiply" />
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-bold text-[#1A1A1A]">{m.region}</h3>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 leading-relaxed mb-4">{m.detail}</p>
+                      <Link
+                        href={`/${locale}/contacto`}
+                        className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-6 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors inline-block"
+                      >
+                        Cotiza tu certificación Kosher →
+                      </Link>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="bg-white rounded-xl p-4 shadow-sm">
+                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">¿A quién aplica?</h4>
+                        <p className="text-gray-700 text-sm leading-relaxed">{m.who}</p>
+                      </div>
+                      <div className="bg-gradient-to-br from-[#262626] to-[#1A1A1A] rounded-xl p-4 shadow-sm">
+                        <h4 className="text-xs font-bold text-[#F5A623] uppercase tracking-wider mb-2">Impacto</h4>
+                        <p className="text-gray-300 text-sm leading-relaxed">{m.impact}</p>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="font-bold text-[#1A1A1A] leading-snug">{m.region}</h3>
                 </div>
-                <p className="text-gray-600 text-sm">{m.detail}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
