@@ -5,7 +5,7 @@ import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
 import { Building2 } from "lucide-react";
-import SpecialtyAccordion from "@/components/SpecialtyAccordion";
+import SpecialtyLateralAccordion from "@/components/SpecialtyLateralAccordion";
 
 export async function generateMetadata({
   params,
@@ -73,8 +73,8 @@ export default async function EspecialidadesPage() {
 
       {/* Specialties */}
       <section className="bg-white py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SpecialtyAccordion items={accordionItems} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SpecialtyLateralAccordion items={accordionItems} />
         </div>
       </section>
 
