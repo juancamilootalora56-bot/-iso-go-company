@@ -85,39 +85,62 @@ export default function HeroCarousel({ locale }: { locale: string }) {
     },
     {
       id: 1,
-      bg: "bg-[#F5A623]",
+      bg: "bg-[#1A1A1A]",
       content: (
         <div className="relative overflow-hidden min-h-[82vh] flex items-center w-full">
+          <div className="absolute inset-0 pointer-events-none">
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(ellipse 60% 70% at 78% 45%, rgba(245,166,35,0.22) 0%, transparent 65%)",
+              }}
+            />
+            <div
+              className="absolute -left-16 top-0 bottom-0 w-48 opacity-20"
+              style={{ background: "#F5A623", transform: "skewX(-8deg)" }}
+            />
+            <HexagonOutline size={300} color="#F5A623" className="absolute -right-16 -bottom-16 opacity-10" />
+          </div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
-                <span className="inline-block bg-[#1A1A1A] text-[#F5A623] text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-4 md:mb-6">
+                <span className="inline-block border border-[#F5A623]/50 bg-[#F5A623]/10 text-[#F5A623] text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-4 md:mb-6">
                   Norma Estrella
                 </span>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-[#1A1A1A] mb-2">ISO 9001</h2>
-                <h3 className="text-lg md:text-2xl font-bold text-[#1A1A1A] mb-3 md:mb-4">Gestión de Calidad</h3>
-                <p className="text-base md:text-lg text-[#1A1A1A] font-semibold mb-3 md:mb-4 italic">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-2">ISO 9001</h2>
+                <h3 className="text-lg md:text-2xl font-bold text-[#F5A623] mb-3 md:mb-4">Gestión de Calidad</h3>
+                <p className="text-base md:text-lg text-gray-200 font-semibold mb-3 md:mb-4 italic">
                   "La norma que convierte tu empresa en una máquina de resultados rentables y escalables"
                 </p>
-                <p className="text-[#1A1A1A] leading-relaxed mb-4 md:mb-6 text-sm md:text-base">
+                <p className="text-gray-300 leading-relaxed mb-4 md:mb-6 text-sm md:text-base">
                   ISO 9001 estandariza tus procesos para que tu empresa funcione igual de bien sin depender de ti. Escala sin perder calidad, reduce costos operativos hasta un 25% y accede a contratos corporativos que antes estaban fuera de tu alcance.
                 </p>
                 <div className="flex flex-wrap gap-2 mb-5 md:mb-7">
                   {["↓ 25% costos operativos", "↑ 40% retención de clientes", "✓ Acceso a licitaciones"].map((badge) => (
-                    <span key={badge} className="text-xs font-bold bg-[#1A1A1A] text-[#F5A623] px-3 py-1.5 rounded-full">{badge}</span>
+                    <span
+                      key={badge}
+                      className="text-xs font-bold text-[#F5A623] bg-white/5 backdrop-blur-sm border border-[#F5A623]/30 px-3 py-1.5 rounded-full"
+                    >
+                      {badge}
+                    </span>
                   ))}
                 </div>
-                <Link href={`/${locale}/contacto`} className="inline-block bg-[#1A1A1A] text-white font-bold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:bg-[#333] transition-colors text-base md:text-lg">
+                <Link href={`/${locale}/contacto`} className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:bg-[#e09410] transition-colors text-base md:text-lg">
                   Quiero esta certificación →
                 </Link>
               </div>
-              <div className="hidden md:block">
+              <div className="hidden md:block relative">
+                <div
+                  className="absolute -inset-4 rounded-2xl opacity-60 blur-2xl"
+                  style={{ background: "radial-gradient(ellipse at center, rgba(245,166,35,0.35) 0%, transparent 70%)" }}
+                />
                 <Image
                   src="/certificacion-9001.jpg"
                   alt="Certificación ISO 9001"
                   width={700}
                   height={500}
-                  className="rounded-2xl shadow-2xl w-full object-cover"
+                  className="relative rounded-2xl shadow-2xl w-full object-cover ring-1 ring-[#F5A623]/30"
                 />
               </div>
             </div>
