@@ -45,16 +45,67 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return out;
 }
 
+function DetailPanel({ item }: { item: SpecialtyItem }) {
+  return (
+    <div
+      key={item.id}
+      className="bg-white rounded-2xl border border-[#F5A623]/30 shadow-md p-8 md:p-10 mb-2"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <div>
+          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+            Especialidad {item.number}
+          </span>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1A1A1A] mb-3 mt-1">{item.title}</h2>
+          <p className="text-[#F5A623] font-semibold text-lg mb-4 italic">"{item.tagline}"</p>
+          <p className="text-gray-700 leading-relaxed mb-6">{item.description}</p>
+
+          <div className="bg-gradient-to-br from-[#262626] to-[#1A1A1A] rounded-xl p-4 mb-6 shadow-sm">
+            <h4 className="text-[#F5A623] text-xs font-bold uppercase tracking-wider mb-2">
+              Resultado que obtienes
+            </h4>
+            <p className="text-gray-300 text-sm leading-relaxed">{item.result}</p>
+          </div>
+
+          <Link
+            href={item.href}
+            className="bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-3 rounded-lg hover:bg-[#e09410] transition-colors inline-block"
+          >
+            {item.ctaLabel}
+          </Link>
+        </div>
+
+        <div className="bg-gradient-to-br from-[#F4F4F4] to-[#ECECEC] rounded-2xl p-6 md:p-8 shadow-sm">
+          <h4 className="font-bold text-[#1A1A1A] mb-4">Lo que incluye</h4>
+          <ul className="space-y-3">
+            {item.features.map((feature) => (
+              <li key={feature} className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#F5A623] rounded-full flex items-center justify-center mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </span>
+                <span className="text-gray-700 text-sm">{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SpecialtyLateralAccordion({ items }: { items: SpecialtyItem[] }) {
   const [active, setActive] = useState(0);
   const rows = chunk(items, 3);
   const activeItem = items[active];
+  const activeRowIndex = Math.floor(active / 3);
 
   return (
-    <div>
-      <div className="space-y-2 mb-3">
-        {rows.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex h-[280px] md:h-[320px] gap-2">
+    <div className="space-y-2">
+      {rows.map((row, rowIndex) => (
+        <div key={rowIndex}>
+          <div className="flex h-[280px] md:h-[320px] gap-2">
             {row.map((item) => {
               const globalIndex = items.indexOf(item);
               const isActive = globalIndex === active;
@@ -108,56 +159,19 @@ export default function SpecialtyLateralAccordion({ items }: { items: SpecialtyI
                       <p className="text-sm text-gray-200 italic line-clamp-2 hidden md:block">"{item.tagline}"</p>
                     )}
                   </div>
+
+                  {isActive && (
+                    <span className="absolute left-1/2 -bottom-2 -translate-x-1/2 w-4 h-4 bg-white border-r border-b border-[#F5A623]/30 rotate-45 z-10" />
+                  )}
                 </button>
               );
             })}
           </div>
-        ))}
-      </div>
 
-      {/* Panel de detalle: contenido completo de la especialidad activa, sin recortes */}
-      <div key={activeItem.id} className="bg-white rounded-2xl border border-gray-100 shadow-md p-8 md:p-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          <div>
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-              Especialidad {activeItem.number}
-            </span>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#1A1A1A] mb-3 mt-1">{activeItem.title}</h2>
-            <p className="text-[#F5A623] font-semibold text-lg mb-4 italic">"{activeItem.tagline}"</p>
-            <p className="text-gray-700 leading-relaxed mb-6">{activeItem.description}</p>
-
-            <div className="bg-gradient-to-br from-[#262626] to-[#1A1A1A] rounded-xl p-4 mb-6 shadow-sm">
-              <h4 className="text-[#F5A623] text-xs font-bold uppercase tracking-wider mb-2">
-                Resultado que obtienes
-              </h4>
-              <p className="text-gray-300 text-sm leading-relaxed">{activeItem.result}</p>
-            </div>
-
-            <Link
-              href={activeItem.href}
-              className="bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-3 rounded-lg hover:bg-[#e09410] transition-colors inline-block"
-            >
-              {activeItem.ctaLabel}
-            </Link>
-          </div>
-
-          <div className="bg-gradient-to-br from-[#F4F4F4] to-[#ECECEC] rounded-2xl p-6 md:p-8 shadow-sm">
-            <h4 className="font-bold text-[#1A1A1A] mb-4">Lo que incluye</h4>
-            <ul className="space-y-3">
-              {activeItem.features.map((feature) => (
-                <li key={feature} className="flex items-start gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-[#F5A623] rounded-full flex items-center justify-center mt-0.5">
-                    <svg className="w-3.5 h-3.5 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </span>
-                  <span className="text-gray-700 text-sm">{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Panel de detalle: aparece justo debajo de la fila seleccionada, sin recortar contenido */}
+          {rowIndex === activeRowIndex && <DetailPanel item={activeItem} />}
         </div>
-      </div>
+      ))}
     </div>
   );
 }
