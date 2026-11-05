@@ -103,7 +103,7 @@ function emailBienvenida(nombre: string) {
       <div style="background: ${NEGRO}; padding: 26px 40px; border-radius: 0 0 14px 14px; text-align: center;">
         <p style="color: #ccc; font-size: 12px; margin: 0 0 8px;">
           ¿Consulta urgente? Escribinos por WhatsApp
-          <a href="https://wa.me/595982859051" style="color: ${NARANJA}; font-weight: 700; text-decoration: none;">+595 982 859 051</a>
+          <a href="https://wa.me/595992442381" style="color: ${NARANJA}; font-weight: 700; text-decoration: none;">+595 992 442381</a>
         </p>
         <p style="color: #777; font-size: 11px; margin: 0;">
           © ${new Date().getFullYear()} Iso Go Company · Este correo se envió porque solicitaste información en isogo.company

@@ -7,10 +7,10 @@ export default function StructuredData() {
     logo: "https://www.isogo.company/logo.jpg",
     description: "Consultora líder en certificaciones ISO y Kosher. Implementamos tu sistema de gestión y te acompañamos hasta el certificado.",
     email: "info@isogo.company",
-    telephone: "+595982859051",
+    telephone: "+595992442381",
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+595982859051",
+      telephone: "+595992442381",
       contactType: "customer service",
       availableLanguage: ["Spanish", "English", "Portuguese"],
     },

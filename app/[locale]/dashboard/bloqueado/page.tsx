@@ -38,7 +38,7 @@ export default function ModuloBloqueadoPage() {
 
           <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
             <a
-              href="https://wa.me/595982859051"
+              href="https://wa.me/595992442381"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm"

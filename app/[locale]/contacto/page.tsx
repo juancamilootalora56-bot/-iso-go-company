@@ -20,7 +20,7 @@ export async function generateMetadata({
 
 const contactInfo = [
   { icon: Mail, label: "Email", value: "info@isogo.company", href: "mailto:info@isogo.company" },
-  { icon: MessageCircle, label: "WhatsApp", value: "+595 982 859 051", href: "https://wa.me/595982859051" },
+  { icon: MessageCircle, label: "WhatsApp", value: "+595 992 442381", href: "https://wa.me/595992442381" },
   { icon: Globe, label: "Web", value: "isogo.company", href: "https://www.isogo.company" },
 ];
 

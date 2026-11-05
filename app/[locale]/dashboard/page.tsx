@@ -251,7 +251,7 @@ export default function DashboardPage() {
               ))}
               {esDiagnostico && (
                 <a
-                  href="https://wa.me/595982859051"
+                  href="https://wa.me/595992442381"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-bold transition-colors bg-[#F5A623] text-[#1A1A1A] hover:bg-[#e09410]"
@@ -290,7 +290,7 @@ export default function DashboardPage() {
             </p>
           </div>
           <a
-            href="https://wa.me/595982859051"
+            href="https://wa.me/595992442381"
             target="_blank"
             rel="noopener noreferrer"
             className="relative z-10 bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm flex-shrink-0 whitespace-nowrap"

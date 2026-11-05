@@ -176,7 +176,7 @@ export default function DiagnosticoPage() {
             </p>
           </div>
           <a
-            href="https://wa.me/595982859051"
+            href="https://wa.me/595992442381"
             target="_blank"
             rel="noopener noreferrer"
             className="relative z-10 bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm flex-shrink-0 whitespace-nowrap"
