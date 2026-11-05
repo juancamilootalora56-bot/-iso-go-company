@@ -5,6 +5,7 @@ import HexagonDecor from "@/components/HexagonDecor";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
 import { BarChart3, Users, FolderCog, AlertTriangle, Puzzle, TrendingUp } from "lucide-react";
+import SoftwareWorkflowAnimation from "@/components/SoftwareWorkflowAnimation";
 
 export async function generateMetadata({
   params,
@@ -111,63 +112,8 @@ export default async function SoftwarePage() {
                 ))}
               </div>
             </div>
-            {/* Mock UI — réplica del panel de inicio real de la plataforma */}
-            <div className="bg-[#1A1A1A] rounded-2xl overflow-hidden shadow-2xl">
-              <div className="bg-[#242424] px-4 py-3 flex items-center gap-2 border-b border-white/5">
-                <div className="w-3 h-3 rounded-full bg-red-400" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                <div className="w-3 h-3 rounded-full bg-green-400" />
-                <span className="text-gray-400 text-xs ml-2">Panel de Gestión de Calidad</span>
-              </div>
-              <div className="p-6 space-y-4">
-                <div className="grid grid-cols-4 gap-3">
-                  {[
-                    { label: "Actividades", val: "13/14" },
-                    { label: "Objetivos de Calidad", val: "32" },
-                    { label: "Riesgos identificados", val: "15" },
-                    { label: "Colaboradores", val: "4" },
-                  ].map((s) => (
-                    <div key={s.label} className="bg-white/5 rounded-lg p-2.5 text-center">
-                      <div className="font-bold text-[#F5A623]">{s.val}</div>
-                      <div className="text-gray-400 text-[10px] mt-0.5">{s.label}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Avance por módulo</span>
-                    <span className="text-[#F5A623] text-xs font-bold">79% promedio</span>
-                  </div>
-                  <div className="space-y-2">
-                    {[
-                      { label: "Gerencia", pct: 93 },
-                      { label: "Operativa", pct: 100 },
-                      { label: "Diseño y Desarrollo", pct: 67 },
-                      { label: "Calidad", pct: 75 },
-                    ].map((m) => (
-                      <div key={m.label}>
-                        <div className="flex justify-between text-[11px] text-gray-400 mb-1">
-                          <span>{m.label}</span><span>{m.pct}%</span>
-                        </div>
-                        <div className="h-1.5 bg-white/10 rounded-full">
-                          <div className="h-1.5 bg-[#F5A623] rounded-full" style={{ width: `${m.pct}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="bg-white/5 rounded-lg p-4">
-                  <div className="text-gray-400 text-xs mb-3 font-semibold uppercase tracking-wide">Accesos rápidos</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {["Gestión de la Gerencia", "Objetivos de Calidad", "Organigrama", "Colaboradores"].map((item) => (
-                      <div key={item} className="text-[11px] text-gray-300 bg-white/5 rounded-md px-2.5 py-2 border border-white/5">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Mapa animado: un avatar recorriendo los módulos reales de la plataforma */}
+            <SoftwareWorkflowAnimation />
           </div>
         </div>
       </section>
