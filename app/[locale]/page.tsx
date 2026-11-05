@@ -5,9 +5,10 @@ import CTABand from "@/components/CTABand";
 import HexagonDecor, { HexagonOutline } from "@/components/HexagonDecor";
 import HeroCarousel from "@/components/HeroCarousel";
 import CertAccordionGallery from "@/components/CertAccordionGallery";
+import HomeProcessOrbit from "@/components/HomeProcessOrbit";
 import type { Metadata } from "next";
 import { buildAlternates } from "@/lib/seo";
-import { Search, Settings, Monitor, ClipboardCheck, Trophy, RefreshCw, AlertTriangle } from "lucide-react";
+import { Search, Settings, Monitor, ClipboardCheck, Trophy, RefreshCw } from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -317,57 +318,7 @@ export default async function HomePage() {
                 Conoce la plataforma →
               </Link>
             </div>
-            <div className="relative">
-              <div className="bg-gray-800 rounded-2xl p-6 shadow-2xl">
-                {/* Mock dashboard */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-3 h-3 rounded-full bg-red-400" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                  <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <span className="text-gray-500 text-xs ml-2">Dashboard ISO Go — Gestión de Calidad</span>
-                </div>
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  {[
-                    { label: "Cumplimiento", value: "96%", color: "text-green-400" },
-                    { label: "No Conformidades", value: "3", color: "text-yellow-400" },
-                    { label: "Auditoría", value: "62 días", color: "text-blue-400" },
-                  ].map((stat) => (
-                    <div key={stat.label} className="bg-gray-700 rounded-lg p-3">
-                      <div className={`text-xl font-bold ${stat.color}`}>{stat.value}</div>
-                      <div className="text-gray-400 text-xs mt-1">{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className="bg-gray-700 rounded-lg p-3 mb-3">
-                  <div className="text-gray-400 text-xs mb-2">Indicadores del mes</div>
-                  {[
-                    { label: "Satisfacción cliente", pct: 94 },
-                    { label: "Eficiencia proceso", pct: 87 },
-                    { label: "Documentación al día", pct: 100 },
-                  ].map((ind) => (
-                    <div key={ind.label} className="mb-2">
-                      <div className="flex justify-between text-xs text-gray-400 mb-1">
-                        <span>{ind.label}</span>
-                        <span>{ind.pct}%</span>
-                      </div>
-                      <div className="h-1.5 bg-gray-600 rounded-full">
-                        <div
-                          className="h-1.5 bg-[#F5A623] rounded-full"
-                          style={{ width: `${ind.pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="bg-yellow-900/30 border border-yellow-700/50 rounded-lg p-3">
-                  <div className="text-yellow-400 text-xs font-bold mb-1 flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2.5} />
-                    Alerta — Acción requerida
-                  </div>
-                  <div className="text-gray-400 text-xs">No conformidad en proceso de compras — vence en 5 días</div>
-                </div>
-              </div>
-            </div>
+            <HomeProcessOrbit />
           </div>
         </div>
       </section>
