@@ -97,31 +97,49 @@ export default async function CertificacionesPage() {
 
       {/* Featured: ISO 9001 */}
       {featured.map((cert) => (
-        <section key={cert.id} id={cert.id} className="bg-[#F5A623] py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section
+          key={cert.id}
+          id={cert.id}
+          className="relative overflow-hidden py-20"
+          style={{ background: "linear-gradient(160deg, #1A1A1A 0%, #2b2008 48%, #1A1A1A 100%)" }}
+        >
+          <div className="absolute inset-0 pointer-events-none">
+            <div
+              className="absolute inset-0"
+              style={{
+                background: "radial-gradient(ellipse 55% 65% at 75% 50%, rgba(245,166,35,0.25) 0%, transparent 65%)",
+              }}
+            />
+            <HexagonDecor size={280} color="#F5A623" className="absolute -left-16 -top-16 opacity-5" />
+          </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
               <div>
-                <span className="inline-block bg-[#1A1A1A] text-[#F5A623] text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
+                <span className="inline-block border border-[#F5A623]/50 bg-[#F5A623]/10 text-[#F5A623] text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
                   Norma estrella
                 </span>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A1A1A] mb-2">{cert.name}</h2>
-                <h3 className="text-xl md:text-2xl font-semibold text-[#1A1A1A] mb-4">{cert.title}</h3>
-                <p className="text-base md:text-xl text-[#1A1A1A] font-medium mb-6 italic">"{cert.tagline}"</p>
-                <p className="text-[#1A1A1A] leading-relaxed mb-6">{cert.description}</p>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">{cert.name}</h2>
+                <h3 className="text-xl md:text-2xl font-semibold text-[#F5A623] mb-4">{cert.title}</h3>
+                <p className="text-base md:text-xl text-gray-200 font-medium mb-6 italic">"{cert.tagline}"</p>
+                <p className="text-gray-300 leading-relaxed mb-6">{cert.description}</p>
                 <Link
                   href={`/${locale}/contacto`}
-                  className="bg-[#1A1A1A] text-white font-bold px-8 py-4 rounded-lg hover:bg-[#333] transition-colors inline-block"
+                  className="bg-[#F5A623] text-[#1A1A1A] font-bold px-8 py-4 rounded-lg hover:bg-[#e09410] transition-colors inline-block"
                 >
                   {t("cta")} →
                 </Link>
               </div>
-              <div>
+              <div className="relative">
+                <div
+                  className="absolute -inset-4 rounded-2xl opacity-60 blur-2xl"
+                  style={{ background: "radial-gradient(ellipse at center, rgba(245,166,35,0.35) 0%, transparent 70%)" }}
+                />
                 <Image
                   src="/certificacion-9001.jpg"
                   alt="Certificación ISO 9001 - Iso Go Company"
                   width={700}
                   height={500}
-                  className="rounded-2xl shadow-xl w-full object-cover"
+                  className="relative rounded-2xl shadow-2xl w-full object-cover ring-1 ring-[#F5A623]/30"
                 />
               </div>
             </div>
