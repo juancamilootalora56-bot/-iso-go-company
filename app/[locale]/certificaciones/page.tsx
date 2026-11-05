@@ -78,19 +78,19 @@ export default async function CertificacionesPage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-[#1A1A1A] text-white py-20 relative overflow-hidden">
+      <section className="bg-[#F4F4F4] text-[#1A1A1A] py-20 relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
-            className="absolute -left-10 top-0 bottom-0 w-40 opacity-20"
+            className="absolute -left-10 top-0 bottom-0 w-40 opacity-10"
             style={{ background: "#F5A623", transform: "skewX(-8deg)" }}
           />
-          <HexagonDecor size={300} color="#F5A623" className="absolute -right-16 -bottom-16 opacity-5" />
+          <HexagonDecor size={300} color="#F5A623" className="absolute -right-16 -bottom-16 opacity-10" />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl">
-            <span className="text-[#F5A623] text-sm font-bold uppercase tracking-widest">Nuestros servicios</span>
-            <h1 className="text-4xl md:text-5xl font-bold mt-3 mb-6">{t("title")}</h1>
-            <p className="text-xl text-gray-300">{t("sub")}</p>
+            <span className="text-[#c9821a] text-sm font-bold uppercase tracking-widest">Nuestros servicios</span>
+            <h1 className="text-4xl md:text-5xl font-bold mt-3 mb-6 text-[#1A1A1A]">{t("title")}</h1>
+            <p className="text-xl text-gray-600">{t("sub")}</p>
           </div>
         </div>
       </section>
