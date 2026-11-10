@@ -49,26 +49,26 @@ const modules = [
 
 export default function ComplianceInstrument() {
   return (
-    <div className="relative w-full max-w-[500px] mx-auto aspect-square">
+    <div className="relative w-full max-w-[360px] mx-auto aspect-square">
       <div
         className="absolute inset-0 rounded-full opacity-60 blur-3xl"
         style={{ background: "radial-gradient(circle at center, rgba(245,166,35,0.22) 0%, transparent 65%)" }}
       />
       <svg viewBox="0 0 500 500" className="relative w-full h-full iso-fade-in-soft">
         {/* Anillos decorativos exteriores */}
-        <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke="#F5A623" strokeOpacity={0.08} strokeWidth={1} />
-        <circle cx={CX} cy={CY} r={R_OUTER + 18} fill="none" stroke="#F5A623" strokeOpacity={0.04} strokeWidth={1} />
+        <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke="#F5A623" strokeOpacity={0.1} strokeWidth={1.5} />
+        <circle cx={CX} cy={CY} r={R_OUTER + 18} fill="none" stroke="#F5A623" strokeOpacity={0.06} strokeWidth={1.5} />
 
         {/* Marcas tipo instrumento de precisión */}
-        <g stroke="#F5A623" strokeOpacity={0.3}>
+        <g stroke="#F5A623" strokeOpacity={0.35}>
           {ticks.map((t, i) => (
-            <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} strokeWidth={t.major ? 1.5 : 0.75} />
+            <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} strokeWidth={t.major ? 2.25 : 1.25} />
           ))}
         </g>
 
         {/* Barrido tipo radar */}
         <g className="iso-radar-sweep" style={{ transformOrigin: `${CX}px ${CY}px` }}>
-          <line x1={CX} y1={CY} x2={CX} y2={CY - R_TICKS} stroke="url(#sweepGradient)" strokeWidth={2} />
+          <line x1={CX} y1={CY} x2={CX} y2={CY - R_TICKS} stroke="url(#sweepGradient)" strokeWidth={3} />
         </g>
         <defs>
           <linearGradient id="sweepGradient" x1="0" y1="1" x2="0" y2="0">
@@ -85,7 +85,7 @@ export default function ComplianceInstrument() {
           fill="none"
           stroke="#F5A623"
           strokeOpacity={0.15}
-          strokeWidth={3}
+          strokeWidth={4.5}
         />
         <circle
           cx={CX}
@@ -93,7 +93,7 @@ export default function ComplianceInstrument() {
           r={R_RING}
           fill="none"
           stroke="#F5A623"
-          strokeWidth={3}
+          strokeWidth={4.5}
           strokeLinecap="round"
           strokeDasharray={RING_CIRC}
           strokeDashoffset={RING_OFFSET}
@@ -118,11 +118,11 @@ export default function ComplianceInstrument() {
               x2={m.x}
               y2={m.y}
               stroke="#F5A623"
-              strokeOpacity={0.15}
-              strokeWidth={1}
+              strokeOpacity={0.18}
+              strokeWidth={1.5}
             />
-            <circle cx={m.x} cy={m.y} r={5} fill="#F5A623" className="iso-orbit-pulse" style={{ animationDelay: `${m.i * 0.4}s` }} />
-            <circle cx={m.x} cy={m.y} r={10} fill="none" stroke="#F5A623" strokeOpacity={0.3} strokeWidth={1} />
+            <circle cx={m.x} cy={m.y} r={6} fill="#F5A623" className="iso-orbit-pulse" style={{ animationDelay: `${m.i * 0.4}s` }} />
+            <circle cx={m.x} cy={m.y} r={11} fill="none" stroke="#F5A623" strokeOpacity={0.35} strokeWidth={1.5} />
             <text
               x={m.labelX}
               y={m.labelY}
