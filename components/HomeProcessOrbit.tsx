@@ -6,6 +6,10 @@ const R = 150;
 const HUB_R = 42;
 const NODE_R = 28;
 
+// Redondeamos a 2 decimales: Node y el navegador pueden serializar el mismo
+// float con distinta cantidad de dígitos, lo que rompe la hidratación de React.
+const round = (n: number) => Math.round(n * 100) / 100;
+
 const nodes = [
   { id: "calidad", label: "Calidad", angle: -90, Icon: ClipboardCheck },
   { id: "comercial", label: "Comercial", angle: -30, Icon: TrendingUp },
@@ -20,10 +24,10 @@ const nodes = [
   const ratio = (R - HUB_R) / R;
   return {
     ...n,
-    x,
-    y,
-    spokeX: CX + R * ratio * Math.cos(rad),
-    spokeY: CY + R * ratio * Math.sin(rad),
+    x: round(x),
+    y: round(y),
+    spokeX: round(CX + R * ratio * Math.cos(rad)),
+    spokeY: round(CY + R * ratio * Math.sin(rad)),
   };
 });
 

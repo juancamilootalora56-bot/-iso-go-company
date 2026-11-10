@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { HexagonOutline } from "@/components/HexagonDecor";
 import GlobalConnectivityGlobe from "@/components/GlobalConnectivityGlobe";
-import LiveDashboardPreview from "@/components/LiveDashboardPreview";
+import ComplianceInstrument from "@/components/ComplianceInstrument";
 
 interface Slide {
   id: number;
@@ -280,7 +280,7 @@ export default function HeroCarousel({ locale }: { locale: string }) {
                 </Link>
               </div>
               <div className="hidden lg:block">
-                <LiveDashboardPreview />
+                <ComplianceInstrument />
               </div>
             </div>
           </div>

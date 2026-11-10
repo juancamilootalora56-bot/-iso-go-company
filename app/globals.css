@@ -63,56 +63,39 @@ h1, h2, h3, h4, h5 {
   transform-origin: center;
 }
 
-/* Dashboard animado en vivo (slide "Plataforma de Gestión ISO Go") */
-@keyframes iso-bar-breathe {
-  0%, 100% { transform: scaleY(0.82); }
-  50% { transform: scaleY(1); }
+/* Medidor de cumplimiento (slide "Plataforma de Gestión ISO Go") */
+@keyframes iso-radar-sweep {
+  to { transform: rotate(360deg); }
 }
 
-@keyframes iso-kpi-pop {
-  0%, 100% { transform: scale(1); opacity: 0.92; }
-  50% { transform: scale(1.04); opacity: 1; }
+@keyframes iso-ring-breathe {
+  0%, 100% { stroke-opacity: 0.85; filter: drop-shadow(0 0 2px rgba(245,166,35,0.5)); }
+  50% { stroke-opacity: 1; filter: drop-shadow(0 0 7px rgba(245,166,35,0.85)); }
 }
 
-@keyframes iso-toast-cycle {
-  0%, 8% { opacity: 0; transform: translateX(24px); }
-  14%, 78% { opacity: 1; transform: translateX(0); }
-  86%, 100% { opacity: 0; transform: translateX(24px); }
+@keyframes iso-orbit-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
 }
 
-@keyframes iso-cursor-move {
-  0%, 6% { transform: translate(0px, 0px); opacity: 0; }
-  12% { opacity: 1; }
-  28%, 36% { transform: translate(168px, 10px); }
-  55%, 63% { transform: translate(40px, 92px); }
-  82%, 90% { transform: translate(200px, 130px); }
-  97%, 100% { transform: translate(0px, 0px); opacity: 0; }
+@keyframes iso-fade-in-soft {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
-@keyframes iso-click-ring {
-  0%, 26% { opacity: 0; transform: scale(0.4); }
-  30% { opacity: 0.8; transform: scale(0.6); }
-  40% { opacity: 0; transform: scale(1.4); }
-  100% { opacity: 0; transform: scale(1.4); }
+.iso-radar-sweep {
+  transform-origin: center;
+  animation: iso-radar-sweep 7s linear infinite;
 }
 
-.iso-bar-breathe {
-  transform-origin: bottom;
-  animation: iso-bar-breathe 2.6s ease-in-out infinite;
+.iso-ring-breathe {
+  animation: iso-ring-breathe 4s ease-in-out infinite;
 }
 
-.iso-kpi-pop {
-  animation: iso-kpi-pop 3.2s ease-in-out infinite;
+.iso-orbit-pulse {
+  animation: iso-orbit-pulse 2.8s ease-in-out infinite;
 }
 
-.iso-toast {
-  animation: iso-toast-cycle 9s ease-in-out infinite;
-}
-
-.iso-cursor {
-  animation: iso-cursor-move 9s ease-in-out infinite;
-}
-
-.iso-click-ring {
-  animation: iso-click-ring 9s ease-in-out infinite;
+.iso-fade-in-soft {
+  animation: iso-fade-in-soft 1.4s ease-out both;
 }

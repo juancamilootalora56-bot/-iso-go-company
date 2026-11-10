@@ -4,6 +4,10 @@ const CX = 260;
 const CY = 210;
 const R = 140;
 
+// Redondeamos a 2 decimales: Node y el navegador pueden serializar el mismo
+// float con distinta cantidad de dígitos, lo que rompe la hidratación de React.
+const round = (n: number) => Math.round(n * 100) / 100;
+
 const nodes = [
   { id: "calidad", label: "Calidad", angle: -90, Icon: ClipboardCheck },
   { id: "comercial", label: "Comercial", angle: -30, Icon: TrendingUp },
@@ -13,7 +17,7 @@ const nodes = [
   { id: "diseno", label: "Diseño y Desarrollo", angle: 210, Icon: Puzzle },
 ].map((n) => {
   const rad = (n.angle * Math.PI) / 180;
-  return { ...n, x: CX + R * Math.cos(rad), y: CY + R * Math.sin(rad) };
+  return { ...n, x: round(CX + R * Math.cos(rad)), y: round(CY + R * Math.sin(rad)) };
 });
 
 const path = `M ${nodes.map((n) => `${n.x} ${n.y}`).join(" L ")} Z`;
