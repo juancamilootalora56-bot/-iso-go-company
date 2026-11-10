@@ -13,6 +13,7 @@ import { parseObjetivos } from "@/lib/objetivosCalidad";
 import AvanceModulosChart from "@/components/dashboard/AvanceModulosChart";
 import CalendarioResumenWidget from "@/components/dashboard/CalendarioResumenWidget";
 import DiagnosticoResumenWidget from "@/components/dashboard/DiagnosticoResumenWidget";
+import MapaProcesosOrbitWidget from "@/components/dashboard/MapaProcesosOrbitWidget";
 import { temaPanelDe } from "@/lib/temaPanel";
 import { tieneAccesoReal } from "@/lib/colaboradoresCliente";
 import { parsePersonal } from "@/lib/personal";
@@ -299,6 +300,9 @@ export default function DashboardPage() {
           </a>
         </div>
       )}
+
+      {/* Mapa de Procesos — vista interactiva con la empresa en el centro */}
+      {!esDiagnostico && <MapaProcesosOrbitWidget docs={docsGerencia} loading={loadingGerencia} />}
 
       {/* Calendario de Colaboradores */}
       <CalendarioResumenWidget docs={docsTH} loading={loadingTH} />
