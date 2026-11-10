@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { HexagonOutline } from "@/components/HexagonDecor";
 import GlobalConnectivityGlobe from "@/components/GlobalConnectivityGlobe";
+import LiveDashboardPreview from "@/components/LiveDashboardPreview";
 
 interface Slide {
   id: number;
@@ -250,32 +251,37 @@ export default function HeroCarousel({ locale }: { locale: string }) {
             <HexagonOutline size={350} color="#F5A623" className="absolute -right-20 bottom-0 opacity-5" />
           </div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
-            <div className="max-w-2xl">
-              <span className="text-[#F5A623] text-sm font-bold uppercase tracking-widest">Tecnología propia</span>
-              <h2 className="text-4xl md:text-5xl font-bold mt-3 mb-6 text-white">Plataforma de Gestión ISO Go</h2>
-              <p className="text-xl text-gray-300 leading-relaxed mb-10">
-                El software que hace que tu certificación trabaje todos los días del año. Dashboards, alertas automáticas, control documental y trazabilidad en tiempo real.
-              </p>
-              <div className="grid grid-cols-2 gap-4 mb-10">
-                {[
-                  "Control documental automatizado",
-                  "Alertas de vencimiento",
-                  "Trazabilidad de procesos",
-                  "Preparación para auditorías",
-                ].map((feat) => (
-                  <div key={feat} className="flex items-center gap-2">
-                    <span className="w-5 h-5 bg-[#F5A623] rounded-full flex items-center justify-center flex-shrink-0">
-                      <svg className="w-3 h-3 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </span>
-                    <span className="text-gray-300 text-sm">{feat}</span>
-                  </div>
-                ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+              <div className="max-w-2xl">
+                <span className="text-[#F5A623] text-sm font-bold uppercase tracking-widest">Tecnología propia</span>
+                <h2 className="text-4xl md:text-5xl font-bold mt-3 mb-6 text-white">Plataforma de Gestión ISO Go</h2>
+                <p className="text-xl text-gray-300 leading-relaxed mb-10">
+                  El software que hace que tu certificación trabaje todos los días del año. Dashboards, alertas automáticas, control documental y trazabilidad en tiempo real.
+                </p>
+                <div className="grid grid-cols-2 gap-4 mb-10">
+                  {[
+                    "Control documental automatizado",
+                    "Alertas de vencimiento",
+                    "Trazabilidad de procesos",
+                    "Preparación para auditorías",
+                  ].map((feat) => (
+                    <div key={feat} className="flex items-center gap-2">
+                      <span className="w-5 h-5 bg-[#F5A623] rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg className="w-3 h-3 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </span>
+                      <span className="text-gray-300 text-sm">{feat}</span>
+                    </div>
+                  ))}
+                </div>
+                <Link href={`/${locale}/software`} className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-8 py-4 rounded-lg hover:bg-[#e09410] transition-colors text-lg">
+                  Solicita una demo →
+                </Link>
               </div>
-              <Link href={`/${locale}/software`} className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-8 py-4 rounded-lg hover:bg-[#e09410] transition-colors text-lg">
-                Solicita una demo →
-              </Link>
+              <div className="hidden lg:block">
+                <LiveDashboardPreview />
+              </div>
             </div>
           </div>
         </div>
