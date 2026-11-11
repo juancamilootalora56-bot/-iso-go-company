@@ -3,6 +3,28 @@
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { ITEMS_GERENCIA } from "@/lib/gestionGerenciaItems";
 import { estaCompletoActividad } from "@/lib/gestionGerenciaCompletitud";
+import { calcularNivelRiesgo, parseFilasRiesgo } from "@/lib/riesgos";
+
+// Mismo orden/colores que la matriz de riesgos real (gestion-gerencia/matriz_gestion_riesgos).
+const NIVELES_RIESGO = [
+  { label: "Riesgo Extremo", color: "#EF4444" },
+  { label: "Alto Riesgo", color: "#F97316" },
+  { label: "Riesgo Moderado", color: "#F2CB4E" },
+  { label: "Riesgo Inferior", color: "#3B82F6" },
+];
+
+function contarRiesgosPorNivel(docsGerencia: Record<string, string>) {
+  const conteo: Record<string, number> = {};
+  Object.keys(docsGerencia).forEach((k) => {
+    if (!k.startsWith("riesgos_matriz_")) return;
+    parseFilasRiesgo(docsGerencia[k]).forEach((fila) => {
+      const { label } = calcularNivelRiesgo(fila.impacto, fila.probabilidad);
+      if (!label) return;
+      conteo[label] = (conteo[label] ?? 0) + 1;
+    });
+  });
+  return conteo;
+}
 
 const MODULOS = [
   { label: "Gerencia", corto: "GER" },
@@ -145,6 +167,10 @@ export default function AvanceModulosChart({
 
   const promedio = Math.round(porcentajes.reduce((a, b) => a + b, 0) / porcentajes.length);
 
+  const riesgosPorNivel = contarRiesgosPorNivel(docsGerencia);
+  const totalRiesgos = Object.values(riesgosPorNivel).reduce((a, b) => a + b, 0);
+  const maxRiesgos = Math.max(1, ...NIVELES_RIESGO.map((n) => riesgosPorNivel[n.label] ?? 0));
+
   return (
     <div className="bg-white rounded-xl p-6 border border-gray-100">
       <div className="flex items-center justify-between mb-1">
@@ -195,6 +221,38 @@ export default function AvanceModulosChart({
             </g>
           ))}
         </svg>
+      )}
+
+      {!loading && (
+        <div className="mt-5 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-[#1A1A1A]">Riesgos por nivel</h3>
+            <span className="text-xs text-gray-400">{totalRiesgos} en total</span>
+          </div>
+
+          {totalRiesgos === 0 ? (
+            <p className="text-xs text-gray-400">Todavía no cargaste riesgos en la matriz de gestión de riesgos.</p>
+          ) : (
+            <div className="space-y-2.5">
+              {NIVELES_RIESGO.map((nivel) => {
+                const cantidad = riesgosPorNivel[nivel.label] ?? 0;
+                const ancho = Math.round((cantidad / maxRiesgos) * 100);
+                return (
+                  <div key={nivel.label} className="flex items-center gap-3">
+                    <span className="text-xs text-gray-500 w-28 flex-shrink-0">{nivel.label}</span>
+                    <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{ width: `${ancho}%`, backgroundColor: nivel.color }}
+                      />
+                    </div>
+                    <span className="text-xs font-bold text-[#1A1A1A] w-5 text-right flex-shrink-0">{cantidad}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

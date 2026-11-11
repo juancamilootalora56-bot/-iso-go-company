@@ -27,9 +27,11 @@ const round = (n: number) => Math.round(n * 100) / 100;
 export default function MapaProcesosOrbitWidget({
   docs,
   loading,
+  compact = false,
 }: {
   docs: Record<string, string>;
   loading: boolean;
+  compact?: boolean;
 }) {
   const params = useParams();
   const locale = params.locale as string;
@@ -87,7 +89,11 @@ export default function MapaProcesosOrbitWidget({
     .join("");
 
   return (
-    <div className="bg-gradient-to-br from-gray-800 to-[#1A1A1A] rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
+    <div
+      className={`bg-gradient-to-br from-gray-800 to-[#1A1A1A] rounded-2xl shadow-2xl relative overflow-hidden ${
+        compact ? "p-5" : "p-6 md:p-8"
+      }`}
+    >
       <div className="absolute inset-0 pointer-events-none opacity-60">
         <div
           className="absolute inset-0"
@@ -108,7 +114,10 @@ export default function MapaProcesosOrbitWidget({
         {clasificados.length} procesos conectados alrededor de tu organización
       </p>
 
-      <svg viewBox="0 0 520 460" className="relative z-10 w-full h-auto max-w-[460px] mx-auto">
+      <svg
+        viewBox="0 0 520 460"
+        className={`relative z-10 w-full h-auto mx-auto ${compact ? "max-w-[300px]" : "max-w-[460px]"}`}
+      >
         {/* Órbita */}
         <circle cx={CX} cy={CY} r={R} fill="none" stroke="#F5A623" strokeOpacity={0.15} strokeWidth={1.5} strokeDasharray="4 6" />
 
@@ -168,7 +177,11 @@ export default function MapaProcesosOrbitWidget({
       </svg>
 
       {/* Leyenda: nombres de cada proceso (evita amontonar texto en el gráfico) */}
-      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 mt-5 pt-4 border-t border-white/10">
+      <div
+        className={`relative z-10 grid gap-x-4 gap-y-1.5 mt-5 pt-4 border-t border-white/10 ${
+          compact ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3"
+        }`}
+      >
         {nodes.map((n) => (
           <Link
             key={n.proceso}

@@ -301,38 +301,38 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Mapa de Procesos — vista interactiva con la empresa en el centro */}
-      {!esDiagnostico && <MapaProcesosOrbitWidget docs={docsGerencia} loading={loadingGerencia} />}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Mapa de Procesos — vista interactiva con la empresa en el centro */}
+        {!esDiagnostico && <MapaProcesosOrbitWidget docs={docsGerencia} loading={loadingGerencia} compact />}
+
+        {/* Avance por módulo */}
+        <AvanceModulosChart userId={effectiveUser?.id ?? null} docsGerencia={docsGerencia} loadingGerencia={loadingGerencia} />
+      </div>
 
       {/* Calendario de Colaboradores */}
       <CalendarioResumenWidget docs={docsTH} loading={loadingTH} />
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Avance por módulo */}
-        <AvanceModulosChart userId={effectiveUser?.id ?? null} docsGerencia={docsGerencia} loadingGerencia={loadingGerencia} />
-
-        {/* CTA card */}
-        <div
-          className="rounded-xl p-6 relative overflow-hidden"
-          style={{ background: `linear-gradient(to bottom right, ${tema.bgFrom}, ${tema.bgTo})` }}
-        >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#F5A623]/10 rounded-full -translate-y-8 translate-x-8" />
-          <div className="relative">
-            <p className="text-[#F5A623] text-sm font-semibold mb-2">¿Listo para comenzar?</p>
-            <h3 className="text-xl font-bold mb-3" style={{ color: tema.textPrimary }}>
-              Realiza tu diagnóstico
-            </h3>
-            <p className="text-sm mb-5" style={{ color: tema.textMuted }}>
-              Evaluá tu Sistema de Gestión de Calidad contra ISO 9001:2015 y recibí un resultado inmediato con tus
-              próximos pasos.
-            </p>
-            <Link
-              href={`/${locale}/dashboard/diagnostico`}
-              className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm"
-            >
-              Empezar diagnóstico →
-            </Link>
-          </div>
+      {/* CTA card */}
+      <div
+        className="rounded-xl p-6 relative overflow-hidden"
+        style={{ background: `linear-gradient(to bottom right, ${tema.bgFrom}, ${tema.bgTo})` }}
+      >
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#F5A623]/10 rounded-full -translate-y-8 translate-x-8" />
+        <div className="relative">
+          <p className="text-[#F5A623] text-sm font-semibold mb-2">¿Listo para comenzar?</p>
+          <h3 className="text-xl font-bold mb-3" style={{ color: tema.textPrimary }}>
+            Realiza tu diagnóstico
+          </h3>
+          <p className="text-sm mb-5" style={{ color: tema.textMuted }}>
+            Evaluá tu Sistema de Gestión de Calidad contra ISO 9001:2015 y recibí un resultado inmediato con tus
+            próximos pasos.
+          </p>
+          <Link
+            href={`/${locale}/dashboard/diagnostico`}
+            className="inline-block bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm"
+          >
+            Empezar diagnóstico →
+          </Link>
         </div>
       </div>
 
