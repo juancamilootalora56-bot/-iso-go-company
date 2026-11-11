@@ -1,9 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
+import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parseLista, parseClasificacion, type CategoriaProceso } from "@/lib/mapaProcesos";
+import { parseCaracterizaciones, caracterizacionVacia, siguienteCodigo, numeroDeCodigo } from "@/lib/caracterizacionProcesos";
+
+const ITEM_KEY_CARACTERIZACIONES = "caracterizaciones_lista";
 
 const ITEM_KEY_SELECCION = "mapa_procesos_seleccion";
 const ITEM_KEY_CLASIFICACION = "mapa_procesos_clasificacion";
@@ -34,11 +38,32 @@ export default function MapaProcesosOrbitWidget({
   compact?: boolean;
 }) {
   const params = useParams();
+  const router = useRouter();
   const locale = params.locale as string;
-  const { profile } = useDashboardUser();
+  const { user, profile } = useDashboardUser();
   const basePath = `/${locale}/dashboard/gestion-gerencia/mapa_procesos`;
+  const basePathCalidad = `/${locale}/dashboard/gestion-calidad`;
 
-  if (loading) {
+  const { docs: docsCalidad, loading: loadingCalidad, save: saveCalidad } = useGestionDocumentos("calidad", user?.id ?? null);
+
+  // Lleva directo a la caracterización del proceso clickeado (mismo criterio
+  // que en Mapa de Procesos → resultado): si ya existe, abre esa; si no, la
+  // crea primero. Así el proceso "Gerencia General" del mapa cae en la misma
+  // ficha de Caracterizaciones de Gestión de Calidad, no en el mapa.
+  async function irACaracterizacion(proceso: string, categoria: string) {
+    const caracterizaciones = parseCaracterizaciones(docsCalidad[ITEM_KEY_CARACTERIZACIONES] ?? "");
+    const existente = caracterizaciones.find((c) => c.proceso === proceso);
+    if (existente) {
+      router.push(`${basePathCalidad}/caracterizaciones/${existente.id}?origen=mapa`);
+      return;
+    }
+    const codigo = siguienteCodigo(caracterizaciones.map((c) => numeroDeCodigo(c.codigo)));
+    const nueva = caracterizacionVacia(proceso, categoria, codigo);
+    await saveCalidad(ITEM_KEY_CARACTERIZACIONES, JSON.stringify([...caracterizaciones, nueva]));
+    router.push(`${basePathCalidad}/caracterizaciones/${nueva.id}?origen=mapa`);
+  }
+
+  if (loading || loadingCalidad) {
     return (
       <div className="bg-white rounded-2xl p-6 border border-gray-100">
         <p className="text-gray-400 text-sm">Cargando mapa de procesos...</p>
@@ -157,9 +182,14 @@ export default function MapaProcesosOrbitWidget({
           </text>
         )}
 
-        {/* Nodos de procesos */}
+        {/* Nodos de procesos — clickeables, llevan directo a su caracterización */}
         {nodes.map((n) => (
-          <g key={n.proceso}>
+          <g
+            key={n.proceso}
+            onClick={() => irACaracterizacion(n.proceso, n.categoria)}
+            className="cursor-pointer"
+          >
+            <circle cx={n.x} cy={n.y} r={16} fill="transparent" />
             <circle
               cx={n.x}
               cy={n.y}
@@ -168,10 +198,10 @@ export default function MapaProcesosOrbitWidget({
               stroke={n.color}
               strokeOpacity={0.4}
               strokeWidth={1.5}
-              className="iso-node-pulse"
+              className="iso-node-pulse pointer-events-none"
               style={{ animationDelay: `${n.i * 0.3}s` }}
             />
-            <circle cx={n.x} cy={n.y} r={7} fill={n.color} />
+            <circle cx={n.x} cy={n.y} r={7} fill={n.color} className="pointer-events-none" />
           </g>
         ))}
       </svg>
@@ -183,16 +213,17 @@ export default function MapaProcesosOrbitWidget({
         }`}
       >
         {nodes.map((n) => (
-          <Link
+          <button
             key={n.proceso}
-            href={`${basePath}/resultado`}
-            className="flex items-center gap-1.5 min-w-0 group"
+            type="button"
+            onClick={() => irACaracterizacion(n.proceso, n.categoria)}
+            className="flex items-center gap-1.5 min-w-0 group text-left"
           >
             <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: n.color }} />
             <span className="text-[11px] text-gray-300 group-hover:text-white truncate transition-colors">
               {n.proceso}
             </span>
-          </Link>
+          </button>
         ))}
       </div>
     </div>
