@@ -7,6 +7,21 @@ import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parsePersonal } from "@/lib/personal";
 import {
+  Search,
+  MessageSquare,
+  FlaskConical,
+  Scale,
+  CheckCircle2,
+  Star,
+  Paperclip,
+  IdCard,
+  Users,
+  Percent,
+  Clock,
+  Trash2,
+  type LucideIcon,
+} from "lucide-react";
+import {
   parseVacantes,
   parseCandidatos,
   candidatoVacio,
@@ -18,7 +33,6 @@ import {
   tiempoPromedioContratacion,
   colorEstadoVacante,
   colorEtapa,
-  ICONO_ETAPA,
   ETAPAS_PIPELINE,
   FUENTES_CANDIDATO,
   TIPOS_CONTRATO,
@@ -37,6 +51,14 @@ const ITEM_KEY_PERSONAL = "personal_lista";
 const NARANJA = "#F5A623";
 const MAX_CV_BYTES = 2_500_000;
 const MAX_FOTO_BYTES = 600_000;
+
+const ICONO_ETAPA: Record<string, LucideIcon> = {
+  "Búsqueda": Search,
+  "Entrevista": MessageSquare,
+  "Test de Habilidades": FlaskConical,
+  "Selección": Scale,
+  "Contratado": CheckCircle2,
+};
 
 const inputClass =
   "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] placeholder-gray-400 focus:outline-none focus:border-[#F5A623] transition-colors";
@@ -197,6 +219,7 @@ export default function PipelineVacantePage() {
   const resumen = resumenPorEtapa(activos);
   const conversion = tasaConversion(candidatos);
   const tiempoProm = tiempoPromedioContratacion(candidatos);
+  const colorEstado = colorEstadoVacante(vacante.estado);
 
   function onDragStart(id: string) {
     setDraggedId(id);
@@ -214,15 +237,25 @@ export default function PipelineVacantePage() {
         <Link href={`${basePath}/seleccion_personal`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
           ← Selección y Contratación
         </Link>
-        <button onClick={eliminarVacante} className="text-xs text-red-400 hover:text-red-600">
-          Eliminar requerimiento
+        <button onClick={eliminarVacante} className="flex items-center gap-1 text-xs text-red-400 hover:text-red-600">
+          <Trash2 size={12} /> Eliminar requerimiento
         </button>
       </div>
 
       {/* Encabezado de la vacante */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
-        <div className="flex items-start justify-between flex-wrap gap-3">
-          <div>
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl" style={{ background: `${NARANJA}33` }} />
+
+        <div className="relative z-10 flex items-start justify-between flex-wrap gap-3">
+          <div className="min-w-0 flex-1">
             <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: NARANJA }}>
               Requerimiento · {vacante.codigo}
             </p>
@@ -230,7 +263,7 @@ export default function PipelineVacantePage() {
               value={vacante.cargo}
               onChange={(e) => actualizarVacante({ cargo: e.target.value })}
               placeholder="Nombre del cargo"
-              className="text-2xl font-bold text-[#1A1A1A] mt-1 bg-transparent focus:outline-none placeholder-gray-300 w-full"
+              className="text-xl sm:text-2xl font-bold text-white mt-1 bg-transparent focus:outline-none placeholder-gray-500 w-full"
             />
             <p className="text-xs text-gray-400 mt-1">{vacante.area || "Sin área asignada"}</p>
           </div>
@@ -238,7 +271,7 @@ export default function PipelineVacantePage() {
             value={vacante.estado}
             onChange={(e) => actualizarVacante({ estado: e.target.value })}
             className="text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full text-white border-none focus:outline-none flex-shrink-0"
-            style={{ backgroundColor: colorEstadoVacante(vacante.estado) }}
+            style={{ backgroundColor: colorEstado }}
           >
             {ESTADOS_VACANTE.map((e) => (
               <option key={e} value={e} className="text-black">
@@ -248,12 +281,18 @@ export default function PipelineVacantePage() {
           </select>
         </div>
 
-        <button onClick={() => setMostrarRequerimiento(!mostrarRequerimiento)} className="text-xs font-semibold mt-3 hover:opacity-80" style={{ color: NARANJA }}>
+        <button
+          onClick={() => setMostrarRequerimiento(!mostrarRequerimiento)}
+          className="relative z-10 text-xs font-semibold mt-4 hover:opacity-80"
+          style={{ color: NARANJA }}
+        >
           {mostrarRequerimiento ? "▲ Ocultar detalles del requerimiento" : "▼ Ver / editar detalles del requerimiento"}
         </button>
+      </div>
 
-        {mostrarRequerimiento && (
-          <div className="grid sm:grid-cols-3 gap-3 mt-4 pt-4 border-t border-gray-100">
+      {mostrarRequerimiento && (
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="grid sm:grid-cols-3 gap-3">
             <div>
               <label className={labelClass}>Tipo de contrato</label>
               <select value={vacante.tipoContrato} onChange={(e) => actualizarVacante({ tipoContrato: e.target.value })} className={inputClass}>
@@ -332,25 +371,28 @@ export default function PipelineVacantePage() {
               />
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* KPIs */}
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="bg-white rounded-xl border border-gray-100 px-4 py-2.5">
+        <div className="flex items-center gap-2 bg-white rounded-xl border border-gray-100 px-4 py-2.5">
+          <Users size={15} className="text-gray-400" strokeWidth={2} />
           <span className="text-lg font-bold text-[#1A1A1A]">{candidatos.length}</span>
-          <span className="text-xs text-gray-500 ml-1.5">candidatos</span>
+          <span className="text-xs text-gray-500">candidatos</span>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-4 py-2.5">
-          <span className="text-lg font-bold" style={{ color: conversion >= 20 ? "#22C55E" : "#F5A623" }}>
+        <div className="flex items-center gap-2 bg-white rounded-xl border border-gray-100 px-4 py-2.5">
+          <Percent size={15} style={{ color: conversion >= 20 ? "#22C55E" : NARANJA }} strokeWidth={2} />
+          <span className="text-lg font-bold" style={{ color: conversion >= 20 ? "#22C55E" : NARANJA }}>
             {conversion}%
           </span>
-          <span className="text-xs text-gray-500 ml-1.5">tasa de conversión</span>
+          <span className="text-xs text-gray-500">tasa de conversión</span>
         </div>
         {tiempoProm !== null && (
-          <div className="bg-white rounded-xl border border-gray-100 px-4 py-2.5">
+          <div className="flex items-center gap-2 bg-white rounded-xl border border-gray-100 px-4 py-2.5">
+            <Clock size={15} className="text-gray-400" strokeWidth={2} />
             <span className="text-lg font-bold text-[#1A1A1A]">{tiempoProm}</span>
-            <span className="text-xs text-gray-500 ml-1.5">días promedio de contratación</span>
+            <span className="text-xs text-gray-500">días promedio de contratación</span>
           </div>
         )}
       </div>
@@ -361,6 +403,7 @@ export default function PipelineVacantePage() {
           {ETAPAS_PIPELINE.map((etapa) => {
             const columnaCandidatos = activos.filter((c) => c.etapa === etapa);
             const color = colorEtapa(etapa);
+            const Icono = ICONO_ETAPA[etapa];
             return (
               <div
                 key={etapa}
@@ -369,7 +412,7 @@ export default function PipelineVacantePage() {
                 className="flex-1 min-w-[260px] bg-[#FAFAFA] rounded-2xl border border-gray-100 flex flex-col"
               >
                 <div className="px-3 py-3 flex items-center gap-2 rounded-t-2xl" style={{ backgroundColor: `${color}18`, borderBottom: `2px solid ${color}` }}>
-                  <span>{ICONO_ETAPA[etapa]}</span>
+                  <Icono size={15} style={{ color }} strokeWidth={2.25} />
                   <span className="text-xs font-bold uppercase tracking-wide flex-1" style={{ color }}>
                     {etapa}
                   </span>
@@ -404,7 +447,7 @@ export default function PipelineVacantePage() {
         </div>
       </div>
 
-      <button onClick={agregarCandidato} className="text-sm font-semibold hover:opacity-80" style={{ color: NARANJA }}>
+      <button onClick={agregarCandidato} className="flex items-center gap-1 text-sm font-semibold hover:opacity-80" style={{ color: NARANJA }}>
         + Agregar candidato
       </button>
 
@@ -444,8 +487,8 @@ function Estrellas({ valor, onChange }: { valor: number; onChange: (v: number) =
   return (
     <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((n) => (
-        <button key={n} onClick={() => onChange(n === valor ? 0 : n)} className="text-xs leading-none">
-          {n <= valor ? "⭐" : "☆"}
+        <button key={n} onClick={() => onChange(n === valor ? 0 : n)} className="leading-none">
+          <Star size={12} fill={n <= valor ? "#F5A623" : "none"} className={n <= valor ? "text-[#F5A623]" : "text-gray-300"} strokeWidth={1.75} />
         </button>
       ))}
     </div>
@@ -558,8 +601,8 @@ function TarjetaCandidato({
 
           <div className="flex items-center gap-2">
             <input ref={cvInputRef} type="file" onChange={handleCv} className="hidden" />
-            <button onClick={() => cvInputRef.current?.click()} className="text-[10px] font-semibold px-2 py-1 rounded border border-gray-200 hover:border-[#F5A623]">
-              📎 {candidato.cvNombre ? "Cambiar CV" : "Adjuntar CV"}
+            <button onClick={() => cvInputRef.current?.click()} className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded border border-gray-200 hover:border-[#F5A623]">
+              <Paperclip size={11} /> {candidato.cvNombre ? "Cambiar CV" : "Adjuntar CV"}
             </button>
             {candidato.cvNombre && (
               <a href={candidato.cv ?? "#"} download={candidato.cvNombre} className="text-[10px] hover:opacity-80 truncate" style={{ color: NARANJA }}>
@@ -576,7 +619,7 @@ function TarjetaCandidato({
               onClick={(e) => e.stopPropagation()}
               className="flex items-center justify-center gap-1.5 w-full text-[11px] font-semibold py-1.5 rounded-lg border border-[#7C4DFF]/30 text-[#7C4DFF] hover:bg-[#7C4DFF]/5 transition-colors"
             >
-              🗣️ Abrir formulario de entrevista →
+              <MessageSquare size={13} /> Abrir formulario de entrevista →
             </a>
           )}
 
@@ -618,7 +661,7 @@ function TarjetaCandidato({
               onClick={(e) => e.stopPropagation()}
               className="flex items-center justify-center gap-1.5 w-full text-[11px] font-semibold py-1.5 rounded-lg border border-[#14B8A6]/30 text-[#14B8A6] hover:bg-[#14B8A6]/5 transition-colors"
             >
-              📇 Abrir formulario de referencias →
+              <IdCard size={13} /> Abrir formulario de referencias →
             </a>
           )}
 
@@ -633,8 +676,8 @@ function TarjetaCandidato({
           )}
 
           {onContratar && (
-            <button onClick={onContratar} className="w-full bg-green-500 text-white font-bold py-2 rounded-lg hover:bg-green-600 transition-colors text-xs">
-              ✓ Dar de alta en Gestión de Personal
+            <button onClick={onContratar} className="flex items-center justify-center gap-1.5 w-full bg-green-500 text-white font-bold py-2 rounded-lg hover:bg-green-600 transition-colors text-xs">
+              <CheckCircle2 size={14} /> Dar de alta en Gestión de Personal
             </button>
           )}
 
