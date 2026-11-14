@@ -43,30 +43,53 @@ export default function ValoresListaPage() {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
   }
 
+  const completos = valores.filter((v) => v.nombre.trim()).length;
+
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto pb-16">
       <Link href={`${basePath}/valores_organizacionales`} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
         ← Editar estructura
       </Link>
 
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">Valores Organizacionales</h1>
-        <p className="text-gray-500 text-sm mt-1">Definición de los 7 valores</p>
+      {/* Encabezado */}
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden mb-6">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 bg-[#F5A623]/20 rounded-full blur-3xl" />
+        <div className="relative z-10 flex items-start justify-between flex-wrap gap-4">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#F5A623" }}>
+              Gestión de la Gerencia
+            </p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white mt-0.5 flex items-center gap-2">
+              <span>💎</span> Valores Organizacionales
+            </h1>
+            <p className="text-gray-400 text-sm mt-1 max-w-md">
+              Describí los 7 valores que querés reflejar, del más al menos prioritario.
+            </p>
+          </div>
+          <div className="text-center flex-shrink-0">
+            <p className="text-white text-2xl font-extrabold">{completos}/7</p>
+            <p className="text-gray-400 text-[10px] uppercase tracking-wide">Definidos</p>
+          </div>
+        </div>
       </div>
-      <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-        Describan los 7 valores que quieren reflejar en su organización, del más al menos prioritario. Para cada
-        uno, pongan un nombre corto y una breve descripción de qué significa en la práctica.
-      </p>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {valores.map((v, idx) => (
           <div
             key={idx}
-            className="flex gap-3 bg-white rounded-xl border-2 p-4"
-            style={{ borderColor: COLORES_VALORES[idx] }}
+            className="flex gap-3 bg-white rounded-2xl border-2 p-4 shadow-sm"
+            style={{ borderColor: `${COLORES_VALORES[idx]}55` }}
           >
             <span
-              className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold mt-0.5"
+              className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold mt-0.5"
               style={{ backgroundColor: COLORES_VALORES[idx] }}
             >
               {idx + 1}
@@ -78,7 +101,8 @@ export default function ValoresListaPage() {
                   value={v.nombre}
                   onChange={(e) => update(idx, "nombre", e.target.value)}
                   placeholder={`Nombre del valor ${idx + 1}`}
-                  className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm font-semibold text-[#1A1A1A] focus:outline-none focus:border-gray-400"
+                  className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm font-semibold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[color:var(--ac)]/15 focus:border-[color:var(--ac)] transition-colors"
+                  style={{ "--ac": COLORES_VALORES[idx] } as React.CSSProperties}
                 />
               </div>
               <div>
@@ -88,7 +112,8 @@ export default function ValoresListaPage() {
                   onChange={(e) => update(idx, "descripcion", e.target.value)}
                   placeholder="Describan brevemente este valor..."
                   rows={2}
-                  className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:border-gray-400 resize-y"
+                  className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[color:var(--ac)]/15 focus:border-[color:var(--ac)] transition-colors resize-y"
+                  style={{ "--ac": COLORES_VALORES[idx] } as React.CSSProperties}
                 />
               </div>
             </div>
@@ -100,7 +125,7 @@ export default function ValoresListaPage() {
         <button
           onClick={handleGuardar}
           disabled={saving}
-          className="bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60"
+          className="bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60 transition-colors"
         >
           {saving ? "Guardando..." : "Guardar y ver pirámide →"}
         </button>

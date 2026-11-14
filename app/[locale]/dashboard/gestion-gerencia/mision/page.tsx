@@ -8,6 +8,7 @@ import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { ESTRUCTURA_MISION, estructuraVacia, parseEstructura } from "@/lib/misionEstructura";
 
 const ITEM_KEY_ESTRUCTURA = "mision_estructura";
+const COLOR = "#16A34A";
 
 export default function MisionEstructuraPage() {
   const { user } = useDashboardUser();
@@ -39,32 +40,56 @@ export default function MisionEstructuraPage() {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
   }
 
-  const inputClass =
-    "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F5A623] resize-y";
+  const respondidos = Object.values(form).filter((v) => v.trim()).length;
+  const totalCampos = ESTRUCTURA_MISION.reduce((s, g) => s + g.campos.length, 0);
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto pb-16">
       <Link href={basePath} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
         ← Gestión de la Gerencia
       </Link>
 
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">Estructura de la Misión</h1>
-        <p className="text-gray-500 text-sm mt-1">Carga de la estructura</p>
+      {/* Encabezado */}
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden mb-6">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl" style={{ background: `${COLOR}33` }} />
+        <div className="relative z-10 flex items-start justify-between flex-wrap gap-4">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: COLOR }}>
+              Gestión de la Gerencia
+            </p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white mt-0.5 flex items-center gap-2">
+              <span>🎯</span> Estructura de la Misión
+            </h1>
+            <p className="text-gray-400 text-sm mt-1 max-w-md">
+              Respondé cada pregunta para después redactar una declaración de misión sólida y completa.
+            </p>
+          </div>
+          <div className="text-center flex-shrink-0">
+            <p className="text-white text-2xl font-extrabold">
+              {respondidos}/{totalCampos}
+            </p>
+            <p className="text-gray-400 text-[10px] uppercase tracking-wide">Respondidas</p>
+          </div>
+        </div>
       </div>
-      <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-        Por favor, utilicen el siguiente formulario para definir la declaración de misión de la empresa.
-        Es importante que la información sea precisa y refleje claramente el propósito y los objetivos que
-        la organización busca alcanzar.
-      </p>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {ESTRUCTURA_MISION.map((g) => (
-          <div key={g.grupo}>
-            <h2 className="text-sm font-bold text-green-700 border-b border-dashed border-green-200 pb-1 mb-3">
-              {g.grupo}
-            </h2>
-            <div className="space-y-3">
+          <div key={g.grupo} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div className="px-4 py-2.5 border-l-4" style={{ borderColor: COLOR, background: `${COLOR}0A` }}>
+              <h2 className="text-xs font-bold uppercase tracking-wide" style={{ color: COLOR }}>
+                {g.grupo}
+              </h2>
+            </div>
+            <div className="p-4 space-y-3">
               {g.campos.map((c) => (
                 <div key={c.key}>
                   <label className="block text-xs font-medium text-gray-500 mb-1">{c.pregunta}</label>
@@ -72,7 +97,8 @@ export default function MisionEstructuraPage() {
                     value={form[c.key]}
                     onChange={(e) => setForm((f) => ({ ...f, [c.key]: e.target.value }))}
                     rows={2}
-                    className={inputClass}
+                    className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[color:var(--ac)]/15 focus:border-[color:var(--ac)] transition-colors resize-y"
+                    style={{ "--ac": COLOR } as React.CSSProperties}
                   />
                 </div>
               ))}
@@ -85,7 +111,7 @@ export default function MisionEstructuraPage() {
         <button
           onClick={handleGuardar}
           disabled={saving}
-          className="bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60"
+          className="bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-2.5 rounded-lg hover:bg-[#e09410] disabled:opacity-60 transition-colors"
         >
           {saving ? "Guardando..." : "Guardar y redactar Misión →"}
         </button>
