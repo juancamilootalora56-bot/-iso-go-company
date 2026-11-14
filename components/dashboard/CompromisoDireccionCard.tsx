@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useDashboardUser } from "./DashboardUserContext";
+import { useColorDesdeLogo, ajustarColor } from "@/lib/colorMarca";
+
+const COLOR_RESPALDO = "#F5A623";
 
 function defaultTexto(empresa: string) {
   const nombre = empresa || "[Nombre de la empresa]";
@@ -26,6 +29,15 @@ export default function CompromisoDireccionCard({
   const [saved, setSaved] = useState(false);
 
   const completo = contenido.trim().length > 0;
+
+  // Color de marca extraído del propio logo del cliente — cada empresa ve
+  // su certificado en sus propios colores, sin tener que configurar nada.
+  // Si el logo es mayormente blanco/negro/gris (o no hay logo), usamos el
+  // dorado de ISO Go como respaldo.
+  const colorExtraido = useColorDesdeLogo(profile?.logo_url);
+  const colorBase = colorExtraido ?? COLOR_RESPALDO;
+  const colorClaro = ajustarColor(colorBase, 0.1);
+  const colorOscuro = ajustarColor(colorBase, -0.32);
 
   async function handleSave() {
     setSaving(true);
@@ -82,24 +94,39 @@ export default function CompromisoDireccionCard({
       </div>
 
       {/* Certificado */}
-      <div className="flex flex-col sm:flex-row m-4 rounded-lg overflow-hidden border border-gray-100">
-        {/* Panel izquierdo */}
-        <div className="bg-[#F5A623] text-white p-6 sm:w-[38%] flex flex-col justify-between">
-          <div className="mb-6">
+      <div className="flex flex-col sm:flex-row m-4 rounded-xl overflow-hidden shadow-lg" style={{ boxShadow: `0 10px 30px -12px ${colorBase}55` }}>
+        {/* Panel izquierdo — color de marca del cliente */}
+        <div
+          className="relative text-white p-6 sm:w-[38%] flex flex-col justify-between overflow-hidden"
+          style={{ background: `linear-gradient(160deg, ${colorClaro}, ${colorOscuro})` }}
+        >
+          <div
+            className="absolute inset-0 opacity-[0.08] pointer-events-none"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+              backgroundSize: "22px 22px",
+            }}
+          />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-black/10 blur-2xl pointer-events-none" />
+
+          <div className="relative mb-6">
             {profile?.logo_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={profile.logo_url} alt={profile.company_name || "Logo"} className="max-h-24 max-w-[180px] object-contain" />
+              <div className="bg-white/95 rounded-lg p-2.5 inline-flex max-w-[180px] shadow-sm">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={profile.logo_url} alt={profile.company_name || "Logo"} className="max-h-16 max-w-full object-contain" />
+              </div>
             ) : (
               <Image src="/logo.jpg" alt="Iso Go" width={110} height={122} className="object-contain" />
             )}
           </div>
-          <div>
+          <div className="relative">
             <div className="border-t border-white/40 mb-3" />
             <h2 className="text-3xl font-extrabold leading-tight">COMPROMISO</h2>
             <p className="text-lg font-medium">DE LA DIRECCIÓN</p>
             <div className="border-t border-white/40 mt-3" />
           </div>
-          <div className="flex gap-1 mt-6">
+          <div className="relative flex gap-1 mt-6">
             <span className="w-1.5 h-1.5 bg-white/60 rounded-full" />
             <span className="w-1.5 h-1.5 bg-white/60 rounded-full" />
             <span className="w-1.5 h-1.5 bg-white/60 rounded-full" />
@@ -108,7 +135,10 @@ export default function CompromisoDireccionCard({
 
         {/* Panel derecho */}
         <div className="bg-white p-6 flex-1 relative">
-          <h3 className="font-bold text-[#1A1A1A] text-sm mb-3 border-b border-[#F5A623] inline-block pb-1">
+          <h3
+            className="font-bold text-[#1A1A1A] text-sm mb-3 border-b-2 inline-block pb-1"
+            style={{ borderColor: colorBase }}
+          >
             Compromiso con el Sistema de Gestión de Calidad
           </h3>
 
@@ -137,8 +167,16 @@ export default function CompromisoDireccionCard({
                 </div>
               </div>
             </div>
-            <div className="w-14 h-14 flex-shrink-0">
-              <Image src="/logo.jpg" alt="Iso Go" width={56} height={62} className="w-full h-full object-contain" />
+
+            {/* Sello de certificación — discreto, no compite con el logo del cliente */}
+            <div
+              className="w-16 h-16 flex-shrink-0 rounded-full flex items-center justify-center border-2"
+              style={{ borderColor: `${colorBase}55` }}
+              title="Documento gestionado en Iso Go"
+            >
+              <div className="w-11 h-11 rounded-full overflow-hidden opacity-80">
+                <Image src="/logo.jpg" alt="Iso Go" width={44} height={49} className="w-full h-full object-contain" />
+              </div>
             </div>
           </div>
         </div>
