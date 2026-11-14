@@ -10,6 +10,14 @@ import { parseLeccionesAprendidas } from "@/lib/leccionesAprendidas";
 import { parseProcedimientos, parseInstructivos, parseFormatos } from "@/lib/procedimientos";
 import { parseCaracterizaciones } from "@/lib/caracterizacionProcesos";
 import { parseOtrosDocumentos } from "@/lib/controlDocumentos";
+import {
+  FileText,
+  Lightbulb,
+  BrainCircuit,
+  Ruler,
+  Puzzle,
+  Archive,
+} from "lucide-react";
 
 const NARANJA = "#F97316";
 
@@ -51,12 +59,23 @@ export default function GestionCalidadPage() {
   const omAbiertas = oportunidades.filter((o) => estaAbiertaOM(o.estado)).length;
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">Gestión de Calidad</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Procedimientos, mejora continua, conocimiento organizacional y control documental — ISO 9001.
-        </p>
+    <div className="max-w-3xl mx-auto pb-16">
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden mb-6">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl" style={{ background: `${NARANJA}33` }} />
+        <div className="relative z-10">
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Gestión de Calidad</h1>
+          <p className="text-gray-400 text-sm mt-1 max-w-md">
+            Procedimientos, mejora continua, conocimiento organizacional y control documental — ISO 9001.
+          </p>
+        </div>
       </div>
 
       {!loading && (oportunidades.length > 0 || lecciones.length > 0 || procedimientos.length > 0) && (
@@ -84,12 +103,11 @@ export default function GestionCalidadPage() {
         {puedeVer("procedimientos") && (
         <Link
           href={`${basePath}/procedimientos`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: NARANJA }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#FDBA74] via-[#F97316] to-[#C2410C] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF3E8] to-[#FFE4CC] text-xl">
-              📋
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: `${NARANJA}18` }}>
+            <FileText size={22} style={{ color: NARANJA }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -111,12 +129,11 @@ export default function GestionCalidadPage() {
         {puedeVer("oportunidades_mejora") && (
         <Link
           href={`${basePath}/oportunidades_mejora`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#F59E0B" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#FDBA74] via-[#F97316] to-[#C2410C] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF3E8] to-[#FFE4CC] text-xl">
-              💡
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#F59E0B18" }}>
+            <Lightbulb size={22} style={{ color: "#F59E0B" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -138,12 +155,11 @@ export default function GestionCalidadPage() {
         {puedeVer("lecciones_aprendidas") && (
         <Link
           href={`${basePath}/lecciones_aprendidas`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#7C4DFF" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#FDBA74] via-[#F97316] to-[#C2410C] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF3E8] to-[#FFE4CC] text-xl">
-              🧠
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#7C4DFF18" }}>
+            <BrainCircuit size={22} style={{ color: "#7C4DFF" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -165,12 +181,11 @@ export default function GestionCalidadPage() {
         {puedeVer("matrices") && (
         <Link
           href={`${basePath}/matrices`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#0891B2" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#FDBA74] via-[#F97316] to-[#C2410C] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF3E8] to-[#FFE4CC] text-xl">
-              📐
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#0891B218" }}>
+            <Ruler size={22} style={{ color: "#0891B2" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-sm text-[#1A1A1A]">Matrices</h2>
@@ -182,12 +197,11 @@ export default function GestionCalidadPage() {
         {puedeVer("caracterizaciones") && (
         <Link
           href={`${basePath}/caracterizaciones`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#16A34A" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#FDBA74] via-[#F97316] to-[#C2410C] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF3E8] to-[#FFE4CC] text-xl">
-              🧩
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#16A34A18" }}>
+            <Puzzle size={22} style={{ color: "#16A34A" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -208,12 +222,11 @@ export default function GestionCalidadPage() {
         {puedeVer("control_documentos") && (
         <Link
           href={`${basePath}/control_documentos`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F97316]/40 hover:shadow-[0_4px_20px_-4px_rgba(249,115,22,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#475569" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#FDBA74] via-[#F97316] to-[#C2410C] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF3E8] to-[#FFE4CC] text-xl">
-              🗄️
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#47556918" }}>
+            <Archive size={22} style={{ color: "#475569" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">

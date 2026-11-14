@@ -6,6 +6,15 @@ import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { usePuedeVerActividad } from "@/hooks/usePuedeVerActividad";
 import { parseClientes } from "@/lib/clientes";
+import {
+  UserPlus,
+  Users,
+  Smile,
+  MessageSquareWarning,
+  TrendingUp,
+} from "lucide-react";
+
+const ACENTO = "#F5A623";
 
 export default function GestionComercialPage() {
   const { user } = useDashboardUser();
@@ -18,23 +27,32 @@ export default function GestionComercialPage() {
   const cantidadClientes = parseClientes(docs["clientes_lista"] ?? "").length;
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">Gestión Comercial</h1>
-        <p className="text-gray-500 text-sm mt-1">Clientes, satisfacción y seguimiento de ventas.</p>
+    <div className="max-w-3xl mx-auto pb-16">
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden mb-6">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl" style={{ background: `${ACENTO}33` }} />
+        <div className="relative z-10">
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Gestión Comercial</h1>
+          <p className="text-gray-400 text-sm mt-1 max-w-md">Clientes, satisfacción y seguimiento de ventas.</p>
+        </div>
       </div>
 
       <div className="space-y-2">
         {puedeVer("inscripcion_clientes") && (
         <Link
           href={`${basePath}/inscripcion_clientes`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#16A34A" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/gestion-comercial/clientes.jpg" alt="Alta de Cliente" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#16A34A18" }}>
+            <UserPlus size={22} style={{ color: "#16A34A" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-sm text-[#1A1A1A]">Alta de Cliente</h2>
@@ -49,12 +67,11 @@ export default function GestionComercialPage() {
         {puedeVer("lista_maestra_clientes") && (
         <Link
           href={`${basePath}/lista_maestra_clientes`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#0891B2" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#FFF6E5] to-[#FDEBC8] text-xl">
-              📋
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#0891B218" }}>
+            <Users size={22} style={{ color: "#0891B2" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -76,13 +93,11 @@ export default function GestionComercialPage() {
         {puedeVer("satisfaccion_clientes") && (
         <Link
           href={`${basePath}/satisfaccion_clientes`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#E8366B" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/gestion-comercial/satisfaccion_cliente.jpg" alt="Satisfacción del Cliente" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#E8366B18" }}>
+            <Smile size={22} style={{ color: "#E8366B" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-sm text-[#1A1A1A]">Satisfacción del Cliente</h2>
@@ -97,13 +112,11 @@ export default function GestionComercialPage() {
         {puedeVer("pqrsf") && (
         <Link
           href={`${basePath}/pqrsf`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#F59E0B" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/gestion-comercial/reclamos_sugerencias.jpg" alt="Sistema PQRSF" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#F59E0B18" }}>
+            <MessageSquareWarning size={22} style={{ color: "#F59E0B" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-sm text-[#1A1A1A]">Sistema PQRSF</h2>
@@ -118,13 +131,11 @@ export default function GestionComercialPage() {
         {puedeVer("seguimiento_ventas") && (
         <Link
           href={`${basePath}/seguimiento_ventas`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#F5A623]/40 hover:shadow-[0_4px_20px_-4px_rgba(245,166,35,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#2563EB" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#F9D57C] via-[#F5A623] to-[#C9790A] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/gestion-comercial/seguimiento_ventas.jpg" alt="Seguimiento de ventas" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#2563EB18" }}>
+            <TrendingUp size={22} style={{ color: "#2563EB" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-sm text-[#1A1A1A]">Seguimiento de ventas</h2>

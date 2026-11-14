@@ -8,6 +8,15 @@ import { usePuedeVerActividad } from "@/hooks/usePuedeVerActividad";
 import { parseProyectosDiseno, proyectoDisenoAbierto, proyectoDisenoVencido } from "@/lib/disenoDesarrollo";
 import { parseCambiosDiseno, cambioDisenoAbierto } from "@/lib/cambiosDiseno";
 import { parsePlanesCalidad } from "@/lib/planesCalidad";
+import {
+  FolderPlus,
+  FlaskConical,
+  RefreshCw,
+  FileCheck2,
+  BarChart3,
+} from "lucide-react";
+
+const ACENTO = "#14B8A6";
 
 export default function GestionDisenoDesarrolloPage() {
   const { user } = useDashboardUser();
@@ -25,12 +34,23 @@ export default function GestionDisenoDesarrolloPage() {
   const cambiosAbiertos = cambios.filter((c) => cambioDisenoAbierto(c.estado)).length;
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">Gestión de Diseño y Desarrollo</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Planificación, entradas, salidas, revisión, verificación, validación y control de cambios — ISO 9001 cláusula 8.3.
-        </p>
+    <div className="max-w-3xl mx-auto pb-16">
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden mb-6">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl" style={{ background: `${ACENTO}33` }} />
+        <div className="relative z-10">
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Gestión de Diseño y Desarrollo</h1>
+          <p className="text-gray-400 text-sm mt-1 max-w-md">
+            Planificación, entradas, salidas, revisión, verificación, validación y control de cambios — ISO 9001 cláusula 8.3.
+          </p>
+        </div>
       </div>
 
       {!loading && proyectos.length > 0 && (
@@ -54,13 +74,11 @@ export default function GestionDisenoDesarrolloPage() {
         {puedeVer("inscripcion_proyecto") && (
         <Link
           href={`${basePath}/inscripcion_proyecto`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#16A34A" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#5EEAD4] via-[#14B8A6] to-[#0d9488] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/gestion-diseno-desarrollo/proyectos_diseno.jpg" alt="Alta de Proyecto" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#16A34A18" }}>
+            <FolderPlus size={22} style={{ color: "#16A34A" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-sm text-[#1A1A1A]">Alta de Proyecto</h2>
@@ -73,12 +91,11 @@ export default function GestionDisenoDesarrolloPage() {
         {puedeVer("proyectos") && (
         <Link
           href={`${basePath}/proyectos`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: ACENTO }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#5EEAD4] via-[#14B8A6] to-[#0d9488] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#E6FFFB] to-[#CCFBF1] text-xl">
-              🧪
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: `${ACENTO}18` }}>
+            <FlaskConical size={22} style={{ color: ACENTO }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -100,13 +117,11 @@ export default function GestionDisenoDesarrolloPage() {
         {puedeVer("control_cambios") && (
         <Link
           href={`${basePath}/control_cambios`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#F59E0B" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#5EEAD4] via-[#14B8A6] to-[#0d9488] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-white overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/gestion-diseno-desarrollo/control_cambios.jpg" alt="Control de Cambios" className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#F59E0B18" }}>
+            <RefreshCw size={22} style={{ color: "#F59E0B" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -128,12 +143,11 @@ export default function GestionDisenoDesarrolloPage() {
         {puedeVer("planes_calidad") && (
         <Link
           href={`${basePath}/planes_calidad`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#2563EB" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#5EEAD4] via-[#14B8A6] to-[#0d9488] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#E6FFFB] to-[#CCFBF1] text-xl">
-              📑
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#2563EB18" }}>
+            <FileCheck2 size={22} style={{ color: "#2563EB" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -155,12 +169,11 @@ export default function GestionDisenoDesarrolloPage() {
         {puedeVer("indicadores") && (
         <Link
           href={`${basePath}/indicadores`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 hover:border-[#14B8A6]/40 hover:shadow-[0_4px_20px_-4px_rgba(20,184,166,0.25)] transition-all"
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#7C4DFF" }}
         >
-          <span className="relative flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-gradient-to-br from-[#5EEAD4] via-[#14B8A6] to-[#0d9488] shadow-sm">
-            <span className="flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-[#E6FFFB] to-[#CCFBF1] text-xl">
-              📊
-            </span>
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#7C4DFF18" }}>
+            <BarChart3 size={22} style={{ color: "#7C4DFF" }} strokeWidth={2} />
           </span>
           <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-sm text-[#1A1A1A]">Indicadores de Diseño</h2>
