@@ -40,7 +40,7 @@ export default function TestHabilidadesPage() {
   const params = useParams();
   const router = useRouter();
   const locale = params.locale as string;
-  const basePath = `/${locale}/dashboard/gestion-talento-humano/seleccion_personal`;
+  const basePath = `/${locale}/dashboard/gestion-talento-humano`;
 
   const { docs, loading, save } = useGestionDocumentos("talento_humano", user?.id ?? null);
   const tests = useMemo(() => parseTests(docs[ITEM_KEY] ?? ""), [docs]);
@@ -69,7 +69,7 @@ export default function TestHabilidadesPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-4 pb-10">
       <Link href={basePath} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
-        ← Selección y Contratación de Personal
+        ← Gestión del Talento Humano
       </Link>
 
       <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden">

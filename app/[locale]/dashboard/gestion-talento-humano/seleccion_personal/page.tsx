@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
-import { Briefcase, Plus, Users, UserCheck, ClipboardList } from "lucide-react";
+import { Briefcase, Plus, Users, UserCheck } from "lucide-react";
 import {
   parseVacantes,
   parseCandidatos,
@@ -74,20 +74,12 @@ export default function SeleccionPersonalPage() {
               contratación de cada vacante.
             </p>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Link
-              href={`${basePath}/seleccion_personal/test_habilidades`}
-              className="flex items-center gap-1.5 bg-white/10 text-white font-bold px-4 py-2.5 rounded-lg hover:bg-white/15 transition-colors text-sm"
-            >
-              <ClipboardList size={16} strokeWidth={2.5} /> Test de Habilidades
-            </Link>
-            <button
-              onClick={nuevaVacante}
-              className="flex items-center gap-1.5 bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm"
-            >
-              <Plus size={16} strokeWidth={2.5} /> Nuevo requerimiento
-            </button>
-          </div>
+          <button
+            onClick={nuevaVacante}
+            className="flex items-center gap-1.5 bg-[#F5A623] text-[#1A1A1A] font-bold px-5 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors text-sm flex-shrink-0"
+          >
+            <Plus size={16} strokeWidth={2.5} /> Nuevo requerimiento
+          </button>
         </div>
 
         {vacantes.length > 0 && (

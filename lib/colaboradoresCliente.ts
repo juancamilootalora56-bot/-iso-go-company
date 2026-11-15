@@ -35,6 +35,7 @@ export const ACTIVIDADES_POR_MODULO: Record<string, ActividadCatalogo[]> = {
   ],
   talento_humano: [
     { actividad: "seleccion_personal", label: "Selección y Contratación de Personal" },
+    { actividad: "test_habilidades", label: "Test de Habilidades" },
     { actividad: "alta_personal", label: "Alta de Personal" },
     { actividad: "gestion_personal", label: "Gestión del Personal" },
     { actividad: "capacitaciones_generales", label: "Capacitaciones Generales" },
