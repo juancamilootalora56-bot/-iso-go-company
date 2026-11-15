@@ -39,7 +39,6 @@ export const ACTIVIDADES_POR_MODULO: Record<string, ActividadCatalogo[]> = {
     { actividad: "gestion_personal", label: "Gestión del Personal" },
     { actividad: "capacitaciones_generales", label: "Capacitaciones Generales" },
     { actividad: "evaluaciones_generales", label: "Evaluaciones Generales" },
-    { actividad: "test_habilidades", label: "Test de Habilidades" },
     { actividad: "calendario_personal", label: "Calendario de Colaboradores" },
   ],
   compras: [

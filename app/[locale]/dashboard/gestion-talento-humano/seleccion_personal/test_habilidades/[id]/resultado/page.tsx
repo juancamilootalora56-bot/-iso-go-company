@@ -40,7 +40,7 @@ export default function ResultadoTestHabilidadesPage() {
   const params = useParams();
   const locale = params.locale as string;
   const testId = params.id as string;
-  const basePath = `/${locale}/dashboard/gestion-talento-humano`;
+  const basePath = `/${locale}/dashboard/gestion-talento-humano/seleccion_personal`;
 
   const { docs, loading, save } = useGestionDocumentos("talento_humano", user?.id ?? null);
   const tests = useMemo(() => parseTests(docs[ITEM_KEY] ?? ""), [docs]);
