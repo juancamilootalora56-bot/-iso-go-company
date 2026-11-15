@@ -7,6 +7,7 @@ const SITE_URL = "https://www.isogo.company";
 const NEGRO = "#1A1A1A";
 const NARANJA = "#F5A623";
 const NARANJA_OSCURO = "#C9790A";
+const ADMIN_EMAIL = "info@isogo.company";
 
 function emailBienvenida(nombre: string) {
   const primerNombre = nombre.trim().split(" ")[0] || nombre;
@@ -113,19 +114,105 @@ function emailBienvenida(nombre: string) {
   `;
 }
 
+type SolicitudNotificacion = {
+  nombre: string;
+  email: string;
+  empresa?: string;
+  sector?: string;
+  pais?: string;
+  telefono?: string;
+  normasInteres?: string[];
+  comoNosConocio?: string;
+};
+
+function filaDato(label: string, valor?: string | null) {
+  if (!valor) return "";
+  return `
+    <tr>
+      <td style="padding: 8px 0; color: #999; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; width: 140px; vertical-align: top;">${label}</td>
+      <td style="padding: 8px 0; color: ${NEGRO}; font-size: 14px; border-bottom: 1px solid #f0f0f0;">${valor}</td>
+    </tr>
+  `;
+}
+
+function emailNotificacionAdmin(data: SolicitudNotificacion) {
+  return `
+    <div style="font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+
+      <!-- Header -->
+      <div style="background: ${NEGRO}; padding: 32px 40px; border-radius: 14px 14px 0 0;">
+        <p style="color: ${NARANJA}; margin: 0; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em;">
+          Nueva solicitud de inscripción
+        </p>
+        <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin: 8px 0 0;">
+          ${data.empresa || data.nombre}
+        </h1>
+      </div>
+
+      <div style="height: 4px; background: linear-gradient(to right, ${NARANJA}, ${NARANJA_OSCURO});"></div>
+
+      <!-- Body -->
+      <div style="background: #ffffff; padding: 32px 40px; border: 1px solid #eee; border-top: none;">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 28px;">
+          ${filaDato("Nombre", data.nombre)}
+          ${filaDato("Email", data.email)}
+          ${filaDato("Empresa", data.empresa)}
+          ${filaDato("Sector", data.sector)}
+          ${filaDato("País", data.pais)}
+          ${filaDato("Teléfono", data.telefono)}
+          ${filaDato("Normas de interés", data.normasInteres?.join(", "))}
+          ${filaDato("Cómo nos conoció", data.comoNosConocio)}
+        </table>
+
+        <div style="text-align: center;">
+          <a href="${SITE_URL}/admin" style="background: ${NARANJA}; color: ${NEGRO}; font-weight: 800; text-decoration: none; padding: 14px 36px; border-radius: 8px; display: inline-block; font-size: 14px;">
+            Ver en el panel de administración →
+          </a>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="background: ${NEGRO}; padding: 20px 40px; border-radius: 0 0 14px 14px; text-align: center;">
+        <p style="color: #777; font-size: 11px; margin: 0;">
+          © ${new Date().getFullYear()} Iso Go Company · Notificación automática de solicitudes_inscripcion
+        </p>
+      </div>
+    </div>
+  `;
+}
+
 export async function POST(request: Request) {
-  const { nombre, email } = await request.json();
+  const body = await request.json();
+  const { nombre, email } = body;
 
   if (!nombre || !email) {
     return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
   }
 
-  const { error } = await resend.emails.send({
-    from: "Iso Go Company <acceso@isogo.company>",
-    to: email,
-    subject: "Recibimos tu solicitud — Iso Go Company",
-    html: emailBienvenida(nombre),
-  });
+  const [bienvenida, notificacion] = await Promise.allSettled([
+    resend.emails.send({
+      from: "Iso Go Company <acceso@isogo.company>",
+      to: email,
+      subject: "Recibimos tu solicitud — Iso Go Company",
+      html: emailBienvenida(nombre),
+    }),
+    resend.emails.send({
+      from: "Iso Go Company <acceso@isogo.company>",
+      to: ADMIN_EMAIL,
+      subject: `Nueva solicitud de inscripción — ${body.empresa || nombre}`,
+      html: emailNotificacionAdmin({
+        nombre,
+        email,
+        empresa: body.empresa,
+        sector: body.sector,
+        pais: body.pais,
+        telefono: body.telefono,
+        normasInteres: body.normasInteres,
+        comoNosConocio: body.comoNosConocio,
+      }),
+    }),
+  ]);
 
-  return NextResponse.json({ ok: !error, error: error?.message ?? null });
+  const ok = bienvenida.status === "fulfilled" && notificacion.status === "fulfilled";
+  return NextResponse.json({ ok });
 }

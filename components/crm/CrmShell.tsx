@@ -2,22 +2,41 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import {
+  Home,
+  TrendingUp,
+  Handshake,
+  Receipt,
+  CalendarDays,
+  Building2,
+  Users,
+  ClipboardCheck,
+  UserCircle,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  type LucideIcon,
+} from "lucide-react";
 
 type Rol = "admin" | "comercial" | "tecnico";
 
-const navItems: { href: string; label: string; roles: Rol[] }[] = [
-  { href: "/crm", label: "Inicio", roles: ["admin", "comercial", "tecnico"] },
-  { href: "/crm/leads", label: "Leads", roles: ["admin", "comercial"] },
-  { href: "/crm/clientes", label: "Clientes", roles: ["admin", "comercial"] },
-  { href: "/crm/cotizaciones", label: "Cotizaciones", roles: ["admin", "comercial"] },
-  { href: "/crm/calendario", label: "Calendario", roles: ["admin", "comercial"] },
-  { href: "/crm/admin/empresas", label: "Base de empresas", roles: ["admin"] },
-  { href: "/crm/admin/colaboradores", label: "Colaboradores", roles: ["admin"] },
-  { href: "/admin", label: "Solicitudes de Inscripción", roles: ["admin"] },
-  { href: "/crm/perfil", label: "Mi perfil", roles: ["admin", "comercial", "tecnico"] },
+type NavItem = { href: string; label: string; icon: LucideIcon; color: string; roles: Rol[] };
+
+const navItems: NavItem[] = [
+  { href: "/crm", label: "Inicio", icon: Home, color: "#F5A623", roles: ["admin", "comercial", "tecnico"] },
+  { href: "/crm/leads", label: "Leads", icon: TrendingUp, color: "#2563EB", roles: ["admin", "comercial"] },
+  { href: "/crm/clientes", label: "Clientes", icon: Handshake, color: "#7C4DFF", roles: ["admin", "comercial"] },
+  { href: "/crm/cotizaciones", label: "Cotizaciones", icon: Receipt, color: "#D97706", roles: ["admin", "comercial"] },
+  { href: "/crm/calendario", label: "Calendario", icon: CalendarDays, color: "#14B8A6", roles: ["admin", "comercial"] },
+];
+
+const navItemsAdmin: NavItem[] = [
+  { href: "/crm/admin/empresas", label: "Base de empresas", icon: Building2, color: "#6366F1", roles: ["admin"] },
+  { href: "/crm/admin/colaboradores", label: "Colaboradores", icon: Users, color: "#EC4899", roles: ["admin"] },
+  { href: "/admin", label: "Solicitudes de Inscripción", icon: ClipboardCheck, color: "#F97316", roles: ["admin"] },
 ];
 
 export default function CrmShell({
@@ -34,6 +53,19 @@ export default function CrmShell({
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("crm_sidebar_collapsed");
+    if (saved === "1") setCollapsed(true);
+  }, []);
+
+  function toggleCollapsed() {
+    setCollapsed((prev) => {
+      localStorage.setItem("crm_sidebar_collapsed", prev ? "0" : "1");
+      return !prev;
+    });
+  }
 
   async function handleLogout() {
     const supabase = createClient();
@@ -41,36 +73,74 @@ export default function CrmShell({
     router.push("/es/auth/login");
   }
 
+  const esAdmin = rol === "admin";
   const visibleItems = navItems.filter((item) => item.roles.includes(rol as Rol));
+  const visibleAdminItems = navItemsAdmin.filter((item) => item.roles.includes(rol as Rol));
+
+  function NavLink({ item }: { item: NavItem }) {
+    const Icon = item.icon;
+    const active = pathname === item.href;
+    return (
+      <Link
+        href={item.href}
+        onClick={() => setMenuOpen(false)}
+        title={collapsed ? item.label : undefined}
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+          collapsed ? "lg:justify-center lg:px-2" : ""
+        } ${active ? "bg-[#1A1A1A] text-white shadow-sm" : "text-[#5C564C] hover:bg-[#F0EBE2] hover:text-[#2D2A26]"}`}
+      >
+        <Icon size={18} strokeWidth={2} className="flex-shrink-0" style={{ color: item.color }} />
+        <span className={collapsed ? "lg:hidden" : ""}>{item.label}</span>
+      </Link>
+    );
+  }
 
   const sidebarContent = (
     <>
-      <nav className="flex-1 p-3 space-y-1">
-        {visibleItems.map((item) => {
-          const active = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMenuOpen(false)}
-              className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                active ? "bg-[#F5A623] text-[#1A1A1A]" : "text-[#5C564C] hover:bg-[#F0EBE2]"
-              }`}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        {visibleItems.map((item) => (
+          <NavLink key={item.href} item={item} />
+        ))}
+
+        {visibleAdminItems.length > 0 && (
+          <>
+            <div className={`pt-3 mt-2 border-t border-[#E8E2D8] ${collapsed ? "lg:hidden" : ""}`}>
+              <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-[#B5AEA0]">Administración</p>
+            </div>
+            {collapsed && <div className="hidden lg:block border-t border-[#E8E2D8] my-2" />}
+            {visibleAdminItems.map((item) => (
+              <NavLink key={item.href} item={item} />
+            ))}
+          </>
+        )}
       </nav>
 
-      <div className="p-3 border-t border-[#E8E2D8]">
-        <p className="text-xs text-[#8A8478] truncate">{nombre || email}</p>
-        <p className="text-[10px] uppercase tracking-wider text-[#F5A623] font-bold mb-2">{rol}</p>
+      <div className={`p-3 border-t border-[#E8E2D8] ${collapsed ? "lg:px-2" : ""}`}>
+        <Link
+          href="/crm/perfil"
+          onClick={() => setMenuOpen(false)}
+          title={collapsed ? "Mi perfil" : undefined}
+          className={`flex items-center gap-2.5 px-1 py-1.5 rounded-lg hover:bg-[#F0EBE2] transition-colors mb-1 ${
+            collapsed ? "lg:justify-center" : ""
+          }`}
+        >
+          <span className="w-7 h-7 rounded-full bg-[#F5A623] text-[#1A1A1A] text-xs font-bold flex items-center justify-center flex-shrink-0">
+            {(nombre || email).charAt(0).toUpperCase()}
+          </span>
+          <span className={`min-w-0 ${collapsed ? "lg:hidden" : ""}`}>
+            <span className="block text-xs text-[#2D2A26] font-semibold truncate">{nombre || email}</span>
+            <span className="block text-[10px] uppercase tracking-wider text-[#F5A623] font-bold">{rol}</span>
+          </span>
+        </Link>
         <button
           onClick={handleLogout}
-          className="w-full text-left text-xs text-[#8A8478] hover:text-[#2D2A26] transition-colors py-1"
+          title={collapsed ? "Cerrar sesión" : undefined}
+          className={`w-full flex items-center gap-2.5 text-xs text-[#8A8478] hover:text-red-500 transition-colors py-1.5 px-1 ${
+            collapsed ? "lg:justify-center" : ""
+          }`}
         >
-          Cerrar sesión
+          <LogOut size={15} strokeWidth={1.75} className="flex-shrink-0" />
+          <span className={collapsed ? "lg:hidden" : ""}>Cerrar sesión</span>
         </button>
       </div>
     </>
@@ -98,15 +168,15 @@ export default function CrmShell({
       {/* Mobile drawer overlay */}
       {menuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/60 z-40"
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={() => setMenuOpen(false)}
         />
       )}
 
       {/* Mobile drawer */}
       <aside
-        className={`lg:hidden fixed top-0 right-0 h-full w-64 bg-[#FAF7F2] border-l border-[#E8E2D8] z-50 flex flex-col transition-transform duration-300 ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
+        className={`lg:hidden fixed top-0 left-0 h-full w-64 bg-[#FAF7F2] border-r border-[#E8E2D8] z-50 flex flex-col transition-transform duration-300 ${
+          menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="p-4 border-b border-[#E8E2D8] flex items-center justify-between">
@@ -119,11 +189,29 @@ export default function CrmShell({
       </aside>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-56 flex-shrink-0 border-r border-[#E8E2D8] flex-col">
-        <div className="p-5 border-b border-[#E8E2D8] flex items-center gap-2">
-          <Image src="/logo.jpg" alt="Iso Go Company" width={32} height={36} />
-          <span className="font-bold text-sm">Iso Go Interno</span>
+      <aside
+        className={`hidden lg:flex relative flex-shrink-0 border-r border-[#E8E2D8] flex-col transition-all duration-300 ${
+          collapsed ? "w-[76px]" : "w-60"
+        }`}
+      >
+        <button
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? "Expandir menú" : "Contraer menú"}
+          className="absolute -right-3 top-8 w-6 h-6 rounded-full bg-white border border-[#E8E2D8] text-[#8A8478] hover:text-[#F5A623] hover:border-[#F5A623]/40 flex items-center justify-center z-10 transition-colors"
+        >
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
+
+        <div className={`pt-6 pb-5 border-b border-[#E8E2D8] flex items-center gap-2 ${collapsed ? "justify-center px-2" : "px-5"}`}>
+          <Image src="/logo.jpg" alt="Iso Go Company" width={32} height={36} className={collapsed ? "" : "flex-shrink-0"} />
+          {!collapsed && (
+            <div className="min-w-0">
+              <span className="block font-bold text-sm truncate">Iso Go Interno</span>
+              <span className="block text-[10px] text-[#8A8478]">Panel de gestión comercial</span>
+            </div>
+          )}
         </div>
+
         {sidebarContent}
       </aside>
 

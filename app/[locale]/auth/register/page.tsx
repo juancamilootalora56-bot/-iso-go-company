@@ -108,12 +108,22 @@ export default function RegisterPage() {
         return;
       }
 
-      // El email de bienvenida no es parte crítica del flujo: si falla, no
-      // le mostramos error al usuario — la solicitud ya quedó guardada.
+      // Los emails (bienvenida al prospecto + notificación al admin) no son
+      // parte crítica del flujo: si fallan, no le mostramos error al usuario
+      // — la solicitud ya quedó guardada.
       fetch("/api/auth/notificar-solicitud", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre: step1Data.full_name, email: step1Data.email }),
+        body: JSON.stringify({
+          nombre: step1Data.full_name,
+          email: step1Data.email,
+          empresa: step2Data.company_name,
+          sector: step2Data.sector,
+          pais: step2Data.country,
+          telefono: step2Data.phone || null,
+          normasInteres: data.interested_norms,
+          comoNosConocio: data.how_heard || null,
+        }),
       }).catch(() => {});
 
       setEnviado(true);

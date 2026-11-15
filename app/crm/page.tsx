@@ -1,5 +1,16 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import {
+  TrendingUp,
+  Target,
+  Handshake,
+  Receipt,
+  CalendarClock,
+  Activity,
+  Plus,
+  FileText,
+  CalendarPlus,
+} from "lucide-react";
 
 function formatGs(n: number) {
   return `${Math.round(n).toLocaleString("es")}Gs.`;
@@ -30,6 +41,8 @@ const TIPO_COLORS: Record<string, { label: string; color: string }> = {
 function tipoInfo(tipo: string) {
   return TIPO_COLORS[tipo] ?? TIPO_COLORS.otro;
 }
+
+const ACENTO = "#F5A623";
 
 export default async function CrmHomePage() {
   const supabase = await createClient();
@@ -83,140 +96,196 @@ export default async function CrmHomePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-2">
-        Hola, {perfil?.nombre || "colaborador"} 👋
-      </h1>
-      <p className="text-[#8A8478] text-sm mb-6">
-        Panel interno de Iso Go Company — rol: <span className="text-[#F5A623] font-semibold">{perfil?.rol}</span>
-      </p>
-
-      {/* Accesos rápidos */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        <Link
-          href="/crm/leads/nuevo"
-          className="bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#e09410]"
-        >
-          + Nuevo lead
-        </Link>
-        <Link
-          href="/crm/cotizaciones/nueva"
-          className="bg-white border border-[#E8E2D8] text-[#2D2A26] font-semibold text-sm px-4 py-2 rounded-lg hover:bg-[#F0EBE2]"
-        >
-          + Nueva cotización
-        </Link>
-        <Link
-          href="/crm/calendario"
-          className="bg-white border border-[#E8E2D8] text-[#2D2A26] font-semibold text-sm px-4 py-2 rounded-lg hover:bg-[#F0EBE2]"
-        >
-          + Agendar visita
-        </Link>
+      {/* Encabezado */}
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden mb-6">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl" style={{ background: `${ACENTO}33` }} />
+        <div className="relative z-10 flex items-start justify-between flex-wrap gap-4">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: ACENTO }}>
+              Panel interno · {perfil?.rol}
+            </p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white mt-1">
+              Hola, {perfil?.nombre || "colaborador"} 👋
+            </h1>
+            <p className="text-gray-400 text-sm mt-1 max-w-md">Resumen de tu actividad comercial hoy.</p>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Link
+              href="/crm/leads/nuevo"
+              className="flex items-center gap-1.5 bg-[#F5A623] text-[#1A1A1A] font-bold text-sm px-4 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors"
+            >
+              <Plus size={15} strokeWidth={2.5} /> Nuevo lead
+            </Link>
+            <Link
+              href="/crm/cotizaciones/nueva"
+              className="flex items-center gap-1.5 bg-white/10 text-white font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-white/15 transition-colors"
+            >
+              <FileText size={15} strokeWidth={2.5} /> Nueva cotización
+            </Link>
+            <Link
+              href="/crm/calendario"
+              className="flex items-center gap-1.5 bg-white/10 text-white font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-white/15 transition-colors"
+            >
+              <CalendarPlus size={15} strokeWidth={2.5} /> Agendar visita
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        <Link href="/crm/leads" className="bg-white border border-[#E8E2D8] rounded-2xl p-4 hover:border-[#F5A623]/40 transition-colors">
-          <p className="text-xs font-semibold text-[#8A8478]">📈 PIPELINE ACTIVO</p>
-          <p className="text-xl font-bold text-[#2D2A26] mt-1">{formatGs(pipelineTotal)}</p>
-          <p className="text-xs text-[#8A8478]">{activos.length} leads en curso</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <Link href="/crm/leads" className="group bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all" style={{ borderLeftColor: "#2563EB" }}>
+          <div className="flex items-center gap-3">
+            <span className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#2563EB18" }}>
+              <TrendingUp size={19} style={{ color: "#2563EB" }} strokeWidth={2} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-wide font-bold text-gray-400">Pipeline activo</p>
+              <p className="text-base font-bold text-[#1A1A1A] truncate">{formatGs(pipelineTotal)}</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">{activos.length} leads en curso</p>
         </Link>
-        <Link href="/crm/leads" className="bg-green-50 border border-green-200 rounded-2xl p-4 hover:border-green-400 transition-colors">
-          <p className="text-xs font-semibold text-green-600">🎯 GANADOS ESTE MES</p>
-          <p className="text-xl font-bold text-[#2D2A26] mt-1">{formatGs(ganadosMesTotal)}</p>
-          <p className="text-xs text-[#8A8478]">{ganadosMes.length} leads</p>
+
+        <Link href="/crm/leads" className="group bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all" style={{ borderLeftColor: "#22C55E" }}>
+          <div className="flex items-center gap-3">
+            <span className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#22C55E18" }}>
+              <Target size={19} style={{ color: "#22C55E" }} strokeWidth={2} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-wide font-bold text-gray-400">Ganados este mes</p>
+              <p className="text-base font-bold text-[#1A1A1A] truncate">{formatGs(ganadosMesTotal)}</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">{ganadosMes.length} leads</p>
         </Link>
-        <Link href="/crm/clientes" className="bg-white border border-[#E8E2D8] rounded-2xl p-4 hover:border-[#F5A623]/40 transition-colors">
-          <p className="text-xs font-semibold text-[#8A8478]">🤝 CLIENTES</p>
-          <p className="text-xl font-bold text-[#2D2A26] mt-1">{clientesTotal}</p>
-          <p className="text-xs text-[#8A8478]">{formatGs(clientesValor)} en cartera</p>
+
+        <Link href="/crm/clientes" className="group bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all" style={{ borderLeftColor: "#7C4DFF" }}>
+          <div className="flex items-center gap-3">
+            <span className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#7C4DFF18" }}>
+              <Handshake size={19} style={{ color: "#7C4DFF" }} strokeWidth={2} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-wide font-bold text-gray-400">Clientes</p>
+              <p className="text-base font-bold text-[#1A1A1A] truncate">{clientesTotal}</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">{formatGs(clientesValor)} en cartera</p>
         </Link>
-        <Link href="/crm/cotizaciones" className="bg-white border border-[#E8E2D8] rounded-2xl p-4 hover:border-[#F5A623]/40 transition-colors">
-          <p className="text-xs font-semibold text-[#8A8478]">🧾 COTIZACIONES PENDIENTES</p>
-          <p className="text-xl font-bold text-[#2D2A26] mt-1">{cotizacionesPendientes.length}</p>
-          <p className="text-xs text-[#8A8478]">borrador / enviadas</p>
+
+        <Link href="/crm/cotizaciones" className="group bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all" style={{ borderLeftColor: "#D97706" }}>
+          <div className="flex items-center gap-3">
+            <span className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#D9770618" }}>
+              <Receipt size={19} style={{ color: "#D97706" }} strokeWidth={2} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-wide font-bold text-gray-400">Cotizaciones pendientes</p>
+              <p className="text-base font-bold text-[#1A1A1A] truncate">{cotizacionesPendientes.length}</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">borrador / enviadas</p>
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Próximas visitas */}
-        <div className="bg-white border border-[#E8E2D8] rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-[#2D2A26]">Próximas visitas</h2>
-            <Link href="/crm/calendario" className="text-xs text-[#F5A623] font-semibold hover:text-[#e09410]">
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div className="px-5 py-3 bg-gradient-to-r from-[#1A1A1A] to-[#2A2A2A] flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <CalendarClock size={14} className="text-white" />
+              <h2 className="text-white text-xs font-bold uppercase tracking-wide">Próximas visitas</h2>
+            </div>
+            <Link href="/crm/calendario" className="text-xs font-semibold hover:opacity-80" style={{ color: ACENTO }}>
               Ver calendario
             </Link>
           </div>
-          {!proximasVisitas || proximasVisitas.length === 0 ? (
-            <p className="text-[#8A8478] text-sm">No hay visitas agendadas próximamente.</p>
-          ) : (
-            <div className="space-y-2">
-              {proximasVisitas.map((v) => {
-                const info = tipoInfo(v.tipo);
-                return (
-                  <div key={v.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#F0EBE2]">
-                    <span
-                      className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: info.color }}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-[#2D2A26] font-medium truncate">{v.titulo}</p>
-                      <p className="text-xs text-[#8A8478] truncate">
-                        {new Date(v.fecha_inicio).toLocaleString("es", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                        {v.ubicacion ? ` · ${v.ubicacion}` : ""}
-                      </p>
+          <div className="p-4">
+            {!proximasVisitas || proximasVisitas.length === 0 ? (
+              <p className="text-gray-400 text-sm">No hay visitas agendadas próximamente.</p>
+            ) : (
+              <div className="space-y-2">
+                {proximasVisitas.map((v) => {
+                  const info = tipoInfo(v.tipo);
+                  return (
+                    <div key={v.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50">
+                      <span
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: info.color }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-[#1A1A1A] font-medium truncate">{v.titulo}</p>
+                        <p className="text-xs text-gray-400 truncate">
+                          {new Date(v.fecha_inicio).toLocaleString("es", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                          {v.ubicacion ? ` · ${v.ubicacion}` : ""}
+                        </p>
+                      </div>
+                      <span
+                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: `${info.color}22`, color: info.color }}
+                      >
+                        {info.label}
+                      </span>
                     </div>
-                    <span
-                      className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: `${info.color}22`, color: info.color }}
-                    >
-                      {info.label}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Leads recientes */}
-        <div className="bg-white border border-[#E8E2D8] rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-[#2D2A26]">Actividad reciente en Leads</h2>
-            <Link href="/crm/leads" className="text-xs text-[#F5A623] font-semibold hover:text-[#e09410]">
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div className="px-5 py-3 bg-gradient-to-r from-[#1A1A1A] to-[#2A2A2A] flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Activity size={14} className="text-white" />
+              <h2 className="text-white text-xs font-bold uppercase tracking-wide">Actividad reciente en leads</h2>
+            </div>
+            <Link href="/crm/leads" className="text-xs font-semibold hover:opacity-80" style={{ color: ACENTO }}>
               Ver pipeline
             </Link>
           </div>
-          {leadsRecientes.length === 0 ? (
-            <p className="text-[#8A8478] text-sm">Todavía no hay leads cargados.</p>
-          ) : (
-            <div className="space-y-2">
-              {leadsRecientes.map((l) => {
-                const info = etapaInfo(l.etapa);
-                return (
-                  <Link
-                    key={l.id}
-                    href={`/crm/leads/${l.id}`}
-                    className="flex items-center justify-between p-2 rounded-lg hover:bg-[#F0EBE2]"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm text-[#2D2A26] font-medium truncate">{l.empresa || l.nombre}</p>
-                      <p className="text-xs text-[#8A8478] truncate">{formatGs(l.valor_estimado || 0)}</p>
-                    </div>
-                    <span
-                      className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: `${info.color}22`, color: info.color }}
+          <div className="p-4">
+            {leadsRecientes.length === 0 ? (
+              <p className="text-gray-400 text-sm">Todavía no hay leads cargados.</p>
+            ) : (
+              <div className="space-y-2">
+                {leadsRecientes.map((l) => {
+                  const info = etapaInfo(l.etapa);
+                  return (
+                    <Link
+                      key={l.id}
+                      href={`/crm/leads/${l.id}`}
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50"
                     >
-                      {info.label}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
+                      <div className="min-w-0">
+                        <p className="text-sm text-[#1A1A1A] font-medium truncate">{l.empresa || l.nombre}</p>
+                        <p className="text-xs text-gray-400 truncate">{formatGs(l.valor_estimado || 0)}</p>
+                      </div>
+                      <span
+                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: `${info.color}22`, color: info.color }}
+                      >
+                        {info.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
