@@ -8,6 +8,7 @@ import { usePuedeVerActividad } from "@/hooks/usePuedeVerActividad";
 import { parsePersonal } from "@/lib/personal";
 import { parseVacantes } from "@/lib/seleccionPersonal";
 import { parseTests } from "@/lib/testHabilidades";
+import { parseTests as parseTestsAtencion } from "@/lib/testAtencion";
 import {
   Briefcase,
   UserPlus,
@@ -16,6 +17,7 @@ import {
   GraduationCap,
   ClipboardCheck,
   ClipboardList,
+  Eye,
   DoorOpen,
 } from "lucide-react";
 
@@ -32,6 +34,7 @@ export default function GestionTalentoHumanoPage() {
   const cantidadPersonal = parsePersonal(docs["personal_lista"] ?? "").length;
   const cantidadVacantes = parseVacantes(docs["seleccion_vacantes_lista"] ?? "").length;
   const cantidadTests = parseTests(docs["test_habilidades_lista"] ?? "").length;
+  const cantidadTestsAtencion = parseTestsAtencion(docs["test_atencion_lista"] ?? "").length;
 
   return (
     <div className="max-w-3xl mx-auto pb-16">
@@ -98,6 +101,32 @@ export default function GestionTalentoHumanoPage() {
             </div>
             <p className="text-xs text-gray-500 mt-0.5">
               Cuestionario de 18 competencias con calificación e interpretación automática.
+            </p>
+          </div>
+          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
+        </Link>
+        )}
+
+        {puedeVer("test_atencion") && (
+        <Link
+          href={`${basePath}/test_atencion`}
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#7C3AED" }}
+        >
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#7C3AED18" }}>
+            <Eye size={22} style={{ color: "#7C3AED" }} strokeWidth={2} />
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">Test de Atención y Concentración</h2>
+              {!loading && cantidadTestsAtencion > 0 && (
+                <span className="text-[10px] uppercase tracking-wide font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                  {cantidadTestsAtencion}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Prueba cronometrada de discriminación de detalles, con corrección automática.
             </p>
           </div>
           <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
