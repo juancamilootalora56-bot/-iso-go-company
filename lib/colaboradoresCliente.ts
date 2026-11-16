@@ -38,6 +38,7 @@ export const ACTIVIDADES_POR_MODULO: Record<string, ActividadCatalogo[]> = {
     { actividad: "test_habilidades", label: "Test de Habilidades" },
     { actividad: "test_atencion", label: "Test de Atención y Concentración" },
     { actividad: "test_sjt", label: "Test de Juicio Situacional Comercial" },
+    { actividad: "test_ipv", label: "Test de Personalidad Comercial (IPV)" },
     { actividad: "alta_personal", label: "Alta de Personal" },
     { actividad: "gestion_personal", label: "Gestión del Personal" },
     { actividad: "capacitaciones_generales", label: "Capacitaciones Generales" },
