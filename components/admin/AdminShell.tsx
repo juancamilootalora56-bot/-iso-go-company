@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { ArrowLeft, ClipboardCheck, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function AdminShell({
   children,
@@ -15,6 +17,21 @@ export default function AdminShell({
   email: string;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("crm_sidebar_collapsed");
+    if (saved === "1") setCollapsed(true);
+  }, []);
+
+  function toggleCollapsed() {
+    setCollapsed((prev) => {
+      localStorage.setItem("crm_sidebar_collapsed", prev ? "0" : "1");
+      return !prev;
+    });
+  }
 
   async function handleLogout() {
     const supabase = createClient();
@@ -22,29 +39,135 @@ export default function AdminShell({
     router.push("/es/auth/login");
   }
 
-  return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#1A1A1A]">
-      <header className="bg-[#1A1A1A] border-b border-white/10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/admin" className="flex items-center gap-2.5">
-            <Image src="/logo.jpg" alt="Iso Go Company" width={30} height={34} />
-            <div>
-              <span className="font-bold text-sm text-white block leading-tight">Iso Go Admin</span>
-              <span className="text-[10px] text-gray-400 uppercase tracking-wide">Solicitudes de inscripción</span>
-            </div>
-          </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-400 hidden sm:inline">{nombre || email}</span>
-            <button
-              onClick={handleLogout}
-              className="text-xs text-gray-400 hover:text-white transition-colors border border-white/10 rounded-lg px-3 py-1.5"
-            >
-              Cerrar sesión
-            </button>
-          </div>
+  const activo = pathname === "/admin";
+
+  const sidebarContent = (
+    <>
+      <nav className="flex-1 p-3 space-y-1">
+        <Link
+          href="/crm"
+          onClick={() => setMenuOpen(false)}
+          title={collapsed ? "Volver al CRM" : undefined}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#5C564C] hover:bg-[#F0EBE2] hover:text-[#2D2A26] transition-colors ${
+            collapsed ? "lg:justify-center lg:px-2" : ""
+          }`}
+        >
+          <ArrowLeft size={18} strokeWidth={2} className="flex-shrink-0 text-gray-400" />
+          <span className={collapsed ? "lg:hidden" : ""}>Volver al CRM</span>
+        </Link>
+
+        <div className={`pt-3 mt-2 border-t border-[#E8E2D8] ${collapsed ? "lg:hidden" : ""}`}>
+          <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-[#B5AEA0]">Administración</p>
         </div>
-      </header>
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">{children}</main>
+        {collapsed && <div className="hidden lg:block border-t border-[#E8E2D8] my-2" />}
+
+        <Link
+          href="/admin"
+          onClick={() => setMenuOpen(false)}
+          title={collapsed ? "Solicitudes de Inscripción" : undefined}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+            collapsed ? "lg:justify-center lg:px-2" : ""
+          } ${activo ? "bg-[#1A1A1A] text-white shadow-sm" : "text-[#5C564C] hover:bg-[#F0EBE2] hover:text-[#2D2A26]"}`}
+        >
+          <ClipboardCheck size={18} strokeWidth={2} className="flex-shrink-0" style={{ color: "#F97316" }} />
+          <span className={collapsed ? "lg:hidden" : ""}>Solicitudes de Inscripción</span>
+        </Link>
+      </nav>
+
+      <div className={`p-3 border-t border-[#E8E2D8] ${collapsed ? "lg:px-2" : ""}`}>
+        <div className={`flex items-center gap-2.5 px-1 py-1.5 mb-1 ${collapsed ? "lg:justify-center" : ""}`}>
+          <span className="w-7 h-7 rounded-full bg-[#F5A623] text-[#1A1A1A] text-xs font-bold flex items-center justify-center flex-shrink-0">
+            {(nombre || email).charAt(0).toUpperCase()}
+          </span>
+          <span className={`min-w-0 ${collapsed ? "lg:hidden" : ""}`}>
+            <span className="block text-xs text-[#2D2A26] font-semibold truncate">{nombre || email}</span>
+            <span className="block text-[10px] uppercase tracking-wider text-[#F97316] font-bold">Admin</span>
+          </span>
+        </div>
+        <button
+          onClick={handleLogout}
+          title={collapsed ? "Cerrar sesión" : undefined}
+          className={`w-full flex items-center gap-2.5 text-xs text-[#8A8478] hover:text-red-500 transition-colors py-1.5 px-1 ${
+            collapsed ? "lg:justify-center" : ""
+          }`}
+        >
+          <LogOut size={15} strokeWidth={1.75} className="flex-shrink-0" />
+          <span className={collapsed ? "lg:hidden" : ""}>Cerrar sesión</span>
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#FAF7F2] text-[#2D2A26] flex flex-col lg:flex-row">
+      {/* Mobile top bar */}
+      <div className="lg:hidden flex items-center justify-between p-4 border-b border-[#E8E2D8] sticky top-0 bg-[#FAF7F2] z-30">
+        <Link href="/admin" className="flex items-center gap-2">
+          <Image src="/logo.jpg" alt="Iso Go Company" width={28} height={32} />
+          <span className="font-bold text-sm">Iso Go Admin</span>
+        </Link>
+        <button
+          onClick={() => setMenuOpen(true)}
+          aria-label="Abrir menú"
+          className="p-2 -mr-2 text-[#5C564C]"
+        >
+          <div className="w-5 h-0.5 bg-current mb-1.5" />
+          <div className="w-5 h-0.5 bg-current mb-1.5" />
+          <div className="w-5 h-0.5 bg-current" />
+        </button>
+      </div>
+
+      {/* Mobile drawer overlay */}
+      {menuOpen && (
+        <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setMenuOpen(false)} />
+      )}
+
+      {/* Mobile drawer */}
+      <aside
+        className={`lg:hidden fixed top-0 left-0 h-full w-64 bg-[#FAF7F2] border-r border-[#E8E2D8] z-50 flex flex-col transition-transform duration-300 ${
+          menuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-4 border-b border-[#E8E2D8] flex items-center justify-between">
+          <span className="font-bold text-sm">Menú</span>
+          <button onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" className="text-[#8A8478] p-1">
+            ✕
+          </button>
+        </div>
+        {sidebarContent}
+      </aside>
+
+      {/* Desktop sidebar */}
+      <aside
+        className={`hidden lg:flex relative flex-shrink-0 border-r border-[#E8E2D8] flex-col transition-all duration-300 ${
+          collapsed ? "w-[76px]" : "w-60"
+        }`}
+      >
+        <button
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? "Expandir menú" : "Contraer menú"}
+          className="absolute -right-3 top-8 w-6 h-6 rounded-full bg-white border border-[#E8E2D8] text-[#8A8478] hover:text-[#F5A623] hover:border-[#F5A623]/40 flex items-center justify-center z-10 transition-colors"
+        >
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
+
+        <div className={`pt-6 pb-5 border-b border-[#E8E2D8] flex items-center gap-2 ${collapsed ? "justify-center px-2" : "px-5"}`}>
+          <Image src="/logo.jpg" alt="Iso Go Company" width={32} height={36} className={collapsed ? "" : "flex-shrink-0"} />
+          {!collapsed && (
+            <div className="min-w-0">
+              <span className="block font-bold text-sm truncate">Iso Go Admin</span>
+              <span className="block text-[10px] text-[#8A8478]">Solicitudes de inscripción</span>
+            </div>
+          )}
+        </div>
+
+        {sidebarContent}
+      </aside>
+
+      {/* Main content */}
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden min-w-0">
+        <div className="max-w-5xl mx-auto">{children}</div>
+      </main>
     </div>
   );
 }

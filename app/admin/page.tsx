@@ -2,6 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import {
+  MessageCircle,
+  X,
+  CheckCircle2,
+  Search,
+  Unlock,
+  ChevronDown,
+  ClipboardCheck,
+  Copy,
+} from "lucide-react";
 
 type Solicitud = {
   id: string;
@@ -26,6 +36,8 @@ const ESTADOS: { valor: Solicitud["estado"]; label: string; color: string }[] = 
   { valor: "aprobada", label: "Aprobada", color: "#22C55E" },
   { valor: "rechazada", label: "Rechazada", color: "#EF4444" },
 ];
+
+const ACENTO = "#F97316";
 
 function colorEstado(estado: string) {
   return ESTADOS.find((e) => e.valor === estado)?.color ?? "#9CA3AF";
@@ -155,12 +167,41 @@ export default function AdminSolicitudesPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">Solicitudes de Inscripción</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Revisá cada solicitud, coordiná la reunión/acuerdo por fuera del sistema y, cuando esté cerrado, aprobala
-          para crear el acceso real del cliente.
-        </p>
+      {/* Encabezado */}
+      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl" style={{ background: `${ACENTO}33` }} />
+        <div className="relative z-10">
+          <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: ACENTO }}>
+            Administración
+          </p>
+          <h1 className="text-xl sm:text-2xl font-bold text-white mt-1">Solicitudes de Inscripción</h1>
+          <p className="text-gray-400 text-sm mt-1 max-w-xl">
+            Revisá cada solicitud, coordiná la reunión/acuerdo por fuera del sistema y, cuando esté cerrado,
+            aprobala para crear el acceso real del cliente.
+          </p>
+
+          <div className="relative z-10 flex items-center gap-5 mt-5 pt-5 border-t border-white/10 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold text-white">{solicitudes.length}</span>
+              <span className="text-xs text-gray-400">solicitudes totales</span>
+            </div>
+            {conteos.map((e) => (
+              <div key={e.valor} className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: e.color }} />
+                <span className="text-lg font-bold text-white">{e.cantidad}</span>
+                <span className="text-xs text-gray-400">{e.label.toLowerCase()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {mensaje && (
@@ -170,14 +211,14 @@ export default function AdminSolicitudesPage() {
       )}
 
       {enlaceManual && (
-        <div className="p-3 rounded-lg bg-[#FFF6E5] border border-[#F5A623]/30 flex items-center gap-2">
+        <div className="p-3 rounded-lg bg-[#FFF3E8] border border-[#F97316]/30 flex items-center gap-2">
           <input readOnly value={enlaceManual} className="flex-1 text-xs bg-white border border-gray-200 rounded-lg px-3 py-2 font-mono" onFocus={(e) => e.currentTarget.select()} />
           <button
             onClick={() => { navigator.clipboard.writeText(enlaceManual); }}
-            className="text-xs font-bold px-3 py-2 rounded-lg text-white hover:opacity-90 flex-shrink-0"
-            style={{ backgroundColor: "#F5A623" }}
+            className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg text-white hover:opacity-90 flex-shrink-0"
+            style={{ backgroundColor: ACENTO }}
           >
-            Copiar
+            <Copy size={12} /> Copiar
           </button>
         </div>
       )}
@@ -206,20 +247,22 @@ export default function AdminSolicitudesPage() {
       {loading ? (
         <p className="text-gray-400 text-sm text-center py-10">Cargando...</p>
       ) : filtradas.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
+        <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center">
+          <ClipboardCheck size={28} className="mx-auto mb-2 text-gray-300" strokeWidth={1.5} />
           <p className="text-gray-500 text-sm">No hay solicitudes {filtro !== "todas" ? `en estado "${labelEstado(filtro)}"` : "registradas"}.</p>
         </div>
       ) : (
         <div className="space-y-2.5">
           {filtradas.map((s) => {
             const expandido = expandidoId === s.id;
+            const color = colorEstado(s.estado);
             return (
-              <div key={s.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden" style={{ borderTop: `3px solid ${colorEstado(s.estado)}` }}>
+              <div key={s.id} className="bg-white rounded-xl border border-gray-100 border-l-4 shadow-sm overflow-hidden" style={{ borderLeftColor: color }}>
                 <div className="p-4 cursor-pointer" onClick={() => setExpandidoId(expandido ? null : s.id)}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: colorEstado(s.estado) }}>
+                        <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: color }}>
                           {labelEstado(s.estado)}
                         </span>
                         <span className="text-[11px] text-gray-400">{fechaLegible(s.fecha_solicitud)}</span>
@@ -227,10 +270,10 @@ export default function AdminSolicitudesPage() {
                       <p className="text-sm font-semibold text-[#1A1A1A]">{s.empresa}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{s.nombre} · {s.email}</p>
                       {s.normas_interes.length > 0 && (
-                        <p className="text-xs text-[#F5A623] font-semibold mt-1">{s.normas_interes.join(" · ")}</p>
+                        <p className="text-xs font-semibold mt-1" style={{ color: ACENTO }}>{s.normas_interes.join(" · ")}</p>
                       )}
                     </div>
-                    <span className="text-gray-300 flex-shrink-0">{expandido ? "▲" : "▼"}</span>
+                    <ChevronDown size={16} className={`text-gray-300 flex-shrink-0 transition-transform ${expandido ? "rotate-180" : ""}`} />
                   </div>
                 </div>
 
@@ -254,7 +297,7 @@ export default function AdminSolicitudesPage() {
                     {s.normas_interes.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {s.normas_interes.map((n) => (
-                          <span key={n} className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F5A623]/10 text-[#F5A623]">{n}</span>
+                          <span key={n} className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: `${ACENTO}18`, color: ACENTO }}>{n}</span>
                         ))}
                       </div>
                     )}
@@ -265,31 +308,34 @@ export default function AdminSolicitudesPage() {
                         value={notasBorrador[s.id] ?? s.notas_admin ?? ""}
                         onChange={(e) => setNotasBorrador((prev) => ({ ...prev, [s.id]: e.target.value }))}
                         rows={2}
-                        className="w-full text-xs bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#F5A623] resize-y"
+                        className="w-full text-xs bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#F97316] resize-y"
                         placeholder="Ej: reunión agendada 20/10, propuesta enviada..."
                       />
                     </div>
 
                     {s.usuario_creado_id && (
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-[11px] text-green-600 font-semibold">✓ Ya tiene una cuenta creada en la plataforma.</p>
+                        <p className="flex items-center gap-1 text-[11px] text-green-600 font-semibold">
+                          <CheckCircle2 size={12} /> Ya tiene una cuenta creada en la plataforma.
+                        </p>
                         <span
-                          className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                          className={`flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
                             planesPorPerfil[s.usuario_creado_id] === "completo"
                               ? "bg-green-100 text-green-700"
                               : "bg-[#F5A623]/15 text-[#C9790A]"
                           }`}
                         >
-                          {planesPorPerfil[s.usuario_creado_id] === "completo" ? "Acceso completo" : "🔍 Diagnóstico"}
+                          {planesPorPerfil[s.usuario_creado_id] !== "completo" && <Search size={10} />}
+                          {planesPorPerfil[s.usuario_creado_id] === "completo" ? "Acceso completo" : "Diagnóstico"}
                         </span>
                         {planesPorPerfil[s.usuario_creado_id] !== "completo" && (
                           <button
                             onClick={() => activarAccesoCompleto(s)}
                             disabled={activando === s.id}
-                            className="text-[11px] font-bold px-3 py-1 rounded-lg text-white hover:opacity-90 disabled:opacity-50"
+                            className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-lg text-white hover:opacity-90 disabled:opacity-50"
                             style={{ backgroundColor: "#1A1A1A" }}
                           >
-                            {activando === s.id ? "Activando..." : "🔓 Activar acceso completo"}
+                            <Unlock size={11} /> {activando === s.id ? "Activando..." : "Activar acceso completo"}
                           </button>
                         )}
                       </div>
@@ -299,9 +345,9 @@ export default function AdminSolicitudesPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <button
                           onClick={() => cambiarEstado(s.id, "en_conversacion", notasBorrador[s.id] ?? s.notas_admin ?? undefined)}
-                          className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 hover:border-[#3B82F6] text-gray-600 hover:text-[#3B82F6]"
+                          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 hover:border-[#3B82F6] text-gray-600 hover:text-[#3B82F6]"
                         >
-                          💬 En conversación
+                          <MessageCircle size={13} /> En conversación
                         </button>
                         <button
                           onClick={() => guardarNotas(s.id, notasBorrador[s.id] ?? s.notas_admin ?? "")}
@@ -311,19 +357,19 @@ export default function AdminSolicitudesPage() {
                         </button>
                         <button
                           onClick={() => cambiarEstado(s.id, "rechazada", notasBorrador[s.id] ?? s.notas_admin ?? undefined)}
-                          className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50"
+                          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50"
                         >
-                          ✕ Rechazar
+                          <X size={13} /> Rechazar
                         </button>
                       </div>
                       {!s.usuario_creado_id && (
                         <button
                           onClick={() => aprobarYDarAcceso(s)}
                           disabled={procesando === s.id}
-                          className="text-xs font-bold px-4 py-2 rounded-lg text-white hover:opacity-90 disabled:opacity-50"
+                          className="flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg text-white hover:opacity-90 disabled:opacity-50"
                           style={{ backgroundColor: "#22C55E" }}
                         >
-                          {procesando === s.id ? "Creando acceso..." : "✓ Aprobar y dar acceso"}
+                          <CheckCircle2 size={13} /> {procesando === s.id ? "Creando acceso..." : "Aprobar y dar acceso"}
                         </button>
                       )}
                     </div>
