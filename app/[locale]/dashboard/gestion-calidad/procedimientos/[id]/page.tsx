@@ -226,7 +226,7 @@ export default function ProcedimientoPage() {
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden print:border-0 print:p-0">
       <fieldset disabled={soloLectura} className="border-0 p-0 m-0 min-w-0">
         <div
-          className="relative px-6 py-9 sm:px-10 sm:py-12 overflow-hidden print:p-0"
+          className="relative px-6 py-9 sm:px-10 sm:py-12 overflow-hidden print:py-6 print:px-6 print:[print-color-adjust:exact] print:[-webkit-print-color-adjust:exact]"
           style={{ background: `linear-gradient(to bottom right, ${tema.bgFrom}, ${tema.bgTo})` }}
         >
           <div
