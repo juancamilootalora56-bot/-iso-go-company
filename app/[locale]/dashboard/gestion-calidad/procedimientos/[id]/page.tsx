@@ -11,6 +11,7 @@ import EncabezadoDocumento from "@/components/dashboard/EncabezadoDocumento";
 import SelectorAccesoColaboradores from "@/components/dashboard/SelectorAccesoColaboradores";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
 import { Printer } from "lucide-react";
+import { temaPanelDe } from "@/lib/temaPanel";
 import {
   parseProcedimientos,
   parseInstructivos,
@@ -47,7 +48,8 @@ const textareaClass = inputClass + " resize-y print:resize-none";
 type Tab = "documento" | "instructivos" | "formatos";
 
 export default function ProcedimientoPage() {
-  const { user, colaborador } = useDashboardUser();
+  const { user, profile, colaborador } = useDashboardUser();
+  const tema = temaPanelDe(profile?.tema_panel);
   const params = useParams();
   const router = useRouter();
   const locale = params.locale as string;
@@ -221,42 +223,57 @@ export default function ProcedimientoPage() {
       )}
 
       {/* Encabezado del documento */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 print:border-0 print:p-0">
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden print:border-0 print:p-0">
       <fieldset disabled={soloLectura} className="border-0 p-0 m-0 min-w-0">
-        <EncabezadoDocumento />
-        <div className="flex items-start justify-between flex-wrap gap-3">
-          <div className="flex-1 min-w-[220px]">
-            <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: NARANJA }}>
+        <div
+          className="relative px-6 py-9 sm:px-10 sm:py-12 overflow-hidden print:p-0"
+          style={{ background: `linear-gradient(to bottom right, ${tema.bgFrom}, ${tema.bgTo})` }}
+        >
+          <div
+            className="absolute inset-0 opacity-[0.06] print:hidden"
+            style={{
+              backgroundImage: `linear-gradient(to right, ${tema.gridColor} 1px, transparent 1px), linear-gradient(to bottom, ${tema.gridColor} 1px, transparent 1px)`,
+              backgroundSize: "28px 28px",
+            }}
+          />
+          <div className="relative flex flex-col items-center text-center">
+            <EncabezadoDocumento centrado />
+
+            <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: tema.isLight ? NARANJA : "#FDBA74" }}>
               Procedimiento · {actual.codigo}
             </p>
             <input
               value={actual.nombre}
               onChange={(e) => actualizar({ nombre: e.target.value })}
               placeholder="Nombre del procedimiento"
-              className="text-2xl font-bold text-[#1A1A1A] mt-1 w-full bg-transparent focus:outline-none focus:border-b focus:border-[#F5A623] placeholder-gray-300"
+              className="text-3xl sm:text-4xl font-extrabold mt-2 w-full max-w-2xl bg-transparent text-center focus:outline-none focus:border-b focus:border-[#F5A623] placeholder-gray-400"
+              style={{ color: tema.textPrimary }}
             />
+
+            <div className="mt-5">
+              <span
+                className="hidden print:inline-block text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full border"
+                style={{ borderColor: colorEstadoDocumento(actual.estado), color: colorEstadoDocumento(actual.estado) }}
+              >
+                {actual.estado}
+              </span>
+              <select
+                value={actual.estado}
+                onChange={(e) => actualizar({ estado: e.target.value as Procedimiento["estado"] })}
+                className="print:hidden text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full text-white border-none focus:outline-none"
+                style={{ backgroundColor: colorEstadoDocumento(actual.estado) }}
+              >
+                {ESTADOS_DOCUMENTO.map((e) => (
+                  <option key={e} value={e} className="text-black">
+                    {e}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <span
-            className="hidden print:inline-block text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full border"
-            style={{ borderColor: colorEstadoDocumento(actual.estado), color: colorEstadoDocumento(actual.estado) }}
-          >
-            {actual.estado}
-          </span>
-          <select
-            value={actual.estado}
-            onChange={(e) => actualizar({ estado: e.target.value as Procedimiento["estado"] })}
-            className="print:hidden text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full text-white border-none focus:outline-none"
-            style={{ backgroundColor: colorEstadoDocumento(actual.estado) }}
-          >
-            {ESTADOS_DOCUMENTO.map((e) => (
-              <option key={e} value={e} className="text-black">
-                {e}
-              </option>
-            ))}
-          </select>
         </div>
 
-        <div className="grid sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-gray-100">
+        <div className="grid sm:grid-cols-4 gap-3 p-6">
           <div>
             <label className={labelClass}>Versión</label>
             <input value={actual.version} onChange={(e) => actualizar({ version: e.target.value })} className={inputClass} />
