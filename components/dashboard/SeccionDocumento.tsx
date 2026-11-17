@@ -12,10 +12,10 @@ export function Seccion({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <div className="flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-[#1A1A1A] to-[#2A2A2A]">
+    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden print:break-inside-avoid print:border-gray-300">
+      <div className="flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-[#1A1A1A] to-[#2A2A2A] print:[print-color-adjust:exact] print:[-webkit-print-color-adjust:exact]">
         {numero && (
-          <span className="w-6 h-6 rounded-md bg-[#F5A623] text-[#1A1A1A] text-[11px] font-extrabold flex items-center justify-center flex-shrink-0">
+          <span className="w-6 h-6 rounded-md bg-[#F5A623] text-[#1A1A1A] text-[11px] font-extrabold flex items-center justify-center flex-shrink-0 print:[print-color-adjust:exact] print:[-webkit-print-color-adjust:exact]">
             {numero}
           </span>
         )}

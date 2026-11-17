@@ -10,6 +10,7 @@ import { otorgarAccesoPorRegistro } from "@/lib/colaboradoresCliente";
 import EncabezadoDocumento from "@/components/dashboard/EncabezadoDocumento";
 import SelectorAccesoColaboradores from "@/components/dashboard/SelectorAccesoColaboradores";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
+import { Printer } from "lucide-react";
 import {
   parseProcedimientos,
   parseInstructivos,
@@ -39,9 +40,9 @@ const NARANJA = "#F97316";
 const MAX_ARCHIVO_BYTES = 4_000_000;
 
 const inputClass =
-  "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:outline-none focus:border-[#F5A623] transition-colors";
+  "w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:outline-none focus:border-[#F5A623] transition-colors print:border-0 print:bg-transparent print:px-0 print:py-0.5 print:rounded-none";
 const labelClass = "block text-xs font-medium text-gray-500 mb-1";
-const textareaClass = inputClass + " resize-y";
+const textareaClass = inputClass + " resize-y print:resize-none";
 
 type Tab = "documento" | "instructivos" | "formatos";
 
@@ -119,6 +120,15 @@ export default function ProcedimientoPage() {
     setTimeout(() => setGuardado(false), 2000);
   }
 
+  function imprimir() {
+    if (tab !== "documento") {
+      setTab("documento");
+      setTimeout(() => window.print(), 50);
+    } else {
+      window.print();
+    }
+  }
+
   async function eliminarProcedimiento() {
     if (!confirm(`¿Eliminar el procedimiento "${actual!.nombre || actual!.codigo}"? También se eliminarán sus instructivos y formatos asociados.`)) return;
     await save(ITEM_KEY_PROC, JSON.stringify(todosProcedimientos.filter((p) => p.id !== actual!.id)));
@@ -175,11 +185,22 @@ export default function ProcedimientoPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-4 pb-16">
-      <div className="flex items-center justify-between flex-wrap gap-2">
+      <style>{`
+        @media print {
+          @page { margin: 1.3cm; }
+          body { background: #fff; }
+          nav, aside, header { display: none !important; }
+        }
+      `}</style>
+
+      <div className="flex items-center justify-between flex-wrap gap-2 print:hidden">
         <Link href={`${basePath}/procedimientos`} className="text-sm text-gray-500 hover:text-[#1A1A1A] inline-block">
           ← Procedimientos
         </Link>
         <div className="flex items-center gap-3">
+          <button onClick={imprimir} className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#1A1A1A]">
+            <Printer size={13} /> Imprimir
+          </button>
           {!soloLectura && (
             <SelectorAccesoColaboradores
               ownerId={user?.id ?? null}
@@ -196,11 +217,11 @@ export default function ProcedimientoPage() {
       </div>
 
       {soloLectura && (
-        <p className="text-xs font-semibold text-gray-400">🔒 Modo solo lectura — no se puede modificar</p>
+        <p className="text-xs font-semibold text-gray-400 print:hidden">🔒 Modo solo lectura — no se puede modificar</p>
       )}
 
       {/* Encabezado del documento */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 print:border-0 print:p-0">
       <fieldset disabled={soloLectura} className="border-0 p-0 m-0 min-w-0">
         <EncabezadoDocumento />
         <div className="flex items-start justify-between flex-wrap gap-3">
@@ -215,10 +236,16 @@ export default function ProcedimientoPage() {
               className="text-2xl font-bold text-[#1A1A1A] mt-1 w-full bg-transparent focus:outline-none focus:border-b focus:border-[#F5A623] placeholder-gray-300"
             />
           </div>
+          <span
+            className="hidden print:inline-block text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full border"
+            style={{ borderColor: colorEstadoDocumento(actual.estado), color: colorEstadoDocumento(actual.estado) }}
+          >
+            {actual.estado}
+          </span>
           <select
             value={actual.estado}
             onChange={(e) => actualizar({ estado: e.target.value as Procedimiento["estado"] })}
-            className="text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full text-white border-none focus:outline-none"
+            className="print:hidden text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full text-white border-none focus:outline-none"
             style={{ backgroundColor: colorEstadoDocumento(actual.estado) }}
           >
             {ESTADOS_DOCUMENTO.map((e) => (
@@ -269,7 +296,7 @@ export default function ProcedimientoPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 bg-white rounded-xl border border-gray-100 p-1.5 w-fit">
+      <div className="flex items-center gap-1 bg-white rounded-xl border border-gray-100 p-1.5 w-fit print:hidden">
         {[
           { key: "documento" as Tab, label: "📄 Documento" },
           { key: "instructivos" as Tab, label: `📝 Instructivos${instructivosActuales.length > 0 ? ` (${instructivosActuales.length})` : ""}` },
@@ -384,7 +411,7 @@ export default function ProcedimientoPage() {
             />
           </Seccion>
 
-          <div className="flex items-center gap-3 justify-end">
+          <div className="flex items-center gap-3 justify-end print:hidden">
             {guardado && <span className="text-xs text-green-600 font-semibold">Guardado ✓</span>}
             <button
               onClick={guardarProcedimiento}
@@ -487,30 +514,31 @@ function ListaDefiniciones({
   onChange: (d: Procedimiento["definiciones"]) => void;
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {definiciones.map((d) => (
-        <div key={d.id} className="grid sm:grid-cols-4 gap-2 items-start">
+        <div key={d.id} className="bg-[#FAFAFA] border border-gray-100 rounded-xl p-3.5 space-y-2.5 print:bg-transparent print:border-gray-200 print:break-inside-avoid">
           <input
             value={d.termino}
             onChange={(e) => onChange(definiciones.map((x) => (x.id === d.id ? { ...x, termino: e.target.value } : x)))}
             placeholder="Término"
-            className={inputClass + " sm:col-span-1 font-semibold"}
+            className={inputClass + " font-bold"}
           />
-          <input
+          <textarea
             value={d.definicion}
             onChange={(e) => onChange(definiciones.map((x) => (x.id === d.id ? { ...x, definicion: e.target.value } : x)))}
             placeholder="Definición"
-            className={inputClass + " sm:col-span-3"}
+            rows={3}
+            className={textareaClass}
           />
           <button
             onClick={() => onChange(definiciones.filter((x) => x.id !== d.id))}
-            className="text-xs text-red-400 hover:text-red-600 sm:col-span-4 text-left -mt-1"
+            className="text-xs text-red-400 hover:text-red-600 print:hidden"
           >
             Eliminar término
           </button>
         </div>
       ))}
-      <button onClick={() => onChange([...definiciones, definicionVacia()])} className="text-xs font-semibold hover:opacity-80" style={{ color: NARANJA }}>
+      <button onClick={() => onChange([...definiciones, definicionVacia()])} className="text-xs font-semibold hover:opacity-80 print:hidden" style={{ color: NARANJA }}>
         + Agregar término
       </button>
     </div>
@@ -528,16 +556,16 @@ function TablaActividades({
 }) {
   const ordenadas = [...actividades].sort((a, b) => a.numero - b.numero);
   return (
-    <div className="space-y-2">
-      <div className="hidden sm:grid grid-cols-[2rem_1fr_2fr_1.2fr_auto] gap-2 px-1">
+    <div className="space-y-3">
+      <div className="hidden sm:grid grid-cols-[2rem_1fr_2fr_1.3fr_auto] gap-3 px-1 print:hidden">
         <span className="text-[10px] font-bold uppercase text-gray-400">N°</span>
         <span className="text-[10px] font-bold uppercase text-gray-400">Etapa</span>
         <span className="text-[10px] font-bold uppercase text-gray-400">Descripción</span>
-        <span className="text-[10px] font-bold uppercase text-gray-400">Responsable</span>
+        <span className="text-[10px] font-bold uppercase text-gray-400">Responsable(s)</span>
         <span />
       </div>
       {ordenadas.map((a, idx) => (
-        <div key={a.id} className="grid sm:grid-cols-[2rem_1fr_2fr_1.2fr_auto] gap-2 items-start bg-[#FAFAFA] rounded-lg p-2">
+        <div key={a.id} className="grid sm:grid-cols-[2rem_1fr_2fr_1.3fr_auto] gap-3 items-start bg-[#FAFAFA] rounded-xl p-3.5 print:bg-transparent print:border print:border-gray-200 print:break-inside-avoid">
           <div className="flex sm:items-center justify-center text-sm font-bold text-gray-400 pt-2 sm:pt-0">{a.numero}</div>
           <input
             value={a.etapa}
@@ -549,16 +577,17 @@ function TablaActividades({
             value={a.descripcion}
             onChange={(e) => onChange(ordenadas.map((x) => (x.id === a.id ? { ...x, descripcion: e.target.value } : x)))}
             placeholder="¿Qué se hace?"
-            rows={2}
+            rows={3}
             className={textareaClass}
           />
-          <input
+          <textarea
             value={a.responsable}
             onChange={(e) => onChange(ordenadas.map((x) => (x.id === a.id ? { ...x, responsable: e.target.value } : x)))}
-            placeholder="Responsable"
-            className={inputClass}
+            placeholder="Responsable(s) — uno por línea si son varios"
+            rows={3}
+            className={textareaClass}
           />
-          <div className="flex sm:flex-col gap-1 items-center justify-center">
+          <div className="flex sm:flex-col gap-1 items-center justify-center print:hidden">
             <button disabled={idx === 0} onClick={() => onChange(reordenarActividades(ordenadas, a.id, "arriba"))} className="text-gray-400 hover:text-[#1A1A1A] disabled:opacity-20 text-xs">
               ↑
             </button>
