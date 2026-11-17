@@ -15,6 +15,7 @@ import {
   PUNTAJE_REQUERIDO,
   type TestHabilidades,
 } from "@/lib/testHabilidades";
+import { parsePersonal } from "@/lib/personal";
 
 const ITEM_KEY = "test_habilidades_lista";
 const NARANJA = "#D97706";
@@ -39,6 +40,10 @@ export default function TestHabilidadesDetallePage() {
 
   const { docs, loading, save } = useGestionDocumentos("talento_humano", user?.id ?? null);
   const testsGuardados = useMemo(() => parseTests(docs[ITEM_KEY] ?? ""), [docs]);
+  const colaboradores = useMemo(
+    () => parsePersonal(docs["personal_lista"] ?? "").filter((c) => (c.nombre + c.apellido).trim()),
+    [docs]
+  );
 
   const [draft, setDraft] = useState<TestHabilidades | null>(null);
   const [guardando, setGuardando] = useState(false);
@@ -121,9 +126,15 @@ export default function TestHabilidadesDetallePage() {
           <input
             value={test.nombre}
             onChange={(e) => actualizar({ nombre: e.target.value })}
-            placeholder="Nombre de la persona evaluada"
+            list="colaboradores-existentes"
+            placeholder="Escribí o elegí un colaborador existente"
             className="text-xl sm:text-2xl font-bold text-white mt-1 bg-transparent focus:outline-none placeholder-gray-500 w-full"
           />
+          <datalist id="colaboradores-existentes">
+            {colaboradores.map((c) => (
+              <option key={c.id} value={`${c.nombre} ${c.apellido}`.trim()} />
+            ))}
+          </datalist>
           <p className="text-xs text-gray-400 mt-1">{test.cargo || "Sin cargo asignado"}</p>
 
           <div className="mt-5">

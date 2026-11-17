@@ -7,6 +7,7 @@ import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { Info, CheckCircle2, Trash2 } from "lucide-react";
 import { parseTests, testAplicado, testCompleto, totalRespondidas, ESCENARIOS, type TestSJT } from "@/lib/testSJT";
+import { parsePersonal } from "@/lib/personal";
 
 const ITEM_KEY = "test_sjt_lista";
 const ACENTO = "#0D9488";
@@ -22,6 +23,10 @@ export default function TestSJTDetallePage() {
   const { docs, loading, save } = useGestionDocumentos("talento_humano", user?.id ?? null);
   const testsGuardados = useMemo(() => parseTests(docs[ITEM_KEY] ?? ""), [docs]);
   const testGuardado = testsGuardados.find((t) => t.id === testId) ?? null;
+  const colaboradores = useMemo(
+    () => parsePersonal(docs["personal_lista"] ?? "").filter((c) => (c.nombre + c.apellido).trim()),
+    [docs]
+  );
 
   const [draft, setDraft] = useState<TestSJT | null>(null);
   const [guardando, setGuardando] = useState(false);
@@ -108,7 +113,14 @@ export default function TestSJTDetallePage() {
           <h1 className="text-xl sm:text-2xl font-bold text-white mt-1">Evaluación de Juicio Situacional Comercial</h1>
 
           <div className="grid sm:grid-cols-2 gap-3 mt-4">
-            <Campo label="Nombre del candidato" value={test.nombre} onChange={(v) => actualizar({ nombre: v })} disabled={aplicado} />
+            <Campo
+              label="Nombre del candidato"
+              value={test.nombre}
+              onChange={(v) => actualizar({ nombre: v })}
+              disabled={aplicado}
+              list="colaboradores-existentes"
+              placeholder="Escribí o elegí un colaborador existente"
+            />
             <Campo label="Cargo al que aplica" value={test.cargo} onChange={(v) => actualizar({ cargo: v })} disabled={aplicado} />
             <Campo label="Evaluador" value={test.evaluador} onChange={(v) => actualizar({ evaluador: v })} disabled={aplicado} />
             <Campo
@@ -119,6 +131,11 @@ export default function TestSJTDetallePage() {
               type="date"
             />
           </div>
+          <datalist id="colaboradores-existentes">
+            {colaboradores.map((c) => (
+              <option key={c.id} value={`${c.nombre} ${c.apellido}`.trim()} />
+            ))}
+          </datalist>
         </div>
       </div>
 
@@ -234,12 +251,16 @@ function Campo({
   onChange,
   disabled,
   type = "text",
+  list,
+  placeholder,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   disabled?: boolean;
   type?: string;
+  list?: string;
+  placeholder?: string;
 }) {
   return (
     <div>
@@ -249,6 +270,8 @@ function Campo({
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
+        list={list}
+        placeholder={placeholder}
         className="w-full mt-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 disabled:opacity-60"
       />
     </div>
