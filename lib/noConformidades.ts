@@ -7,6 +7,14 @@ export type EventoNC = {
   autor: string;
 };
 
+export type EvidenciaNC = {
+  id: string;
+  nombre: string;
+  archivo: string; // data URL
+};
+
+export const MAX_EVIDENCIAS_NC = 10;
+
 export type NoConformidad = {
   id: string;
   radicado: string; // ej: "NC-0001"
@@ -24,8 +32,7 @@ export type NoConformidad = {
   detectadoPor: string;
   descripcion: string;
   requisitoIncumplido: string;
-  evidencia: string | null; // data URL
-  evidenciaNombre: string;
+  evidencias: EvidenciaNC[]; // hasta MAX_EVIDENCIAS_NC archivos
 
   // Clasificación
   severidad: string; // ver SEVERIDADES_NC
@@ -172,8 +179,7 @@ export function noConformidadVacia(radicado: string): NoConformidad {
     detectadoPor: "",
     descripcion: "",
     requisitoIncumplido: "",
-    evidencia: null,
-    evidenciaNombre: "",
+    evidencias: [],
     severidad: "Menor",
     causaAparente: "",
     disposiciones: [],
@@ -206,11 +212,17 @@ export function parseNoConformidades(contenido: string): NoConformidad[] {
   try {
     const parsed = JSON.parse(contenido);
     if (!Array.isArray(parsed)) return [];
-    return parsed.map((n: NoConformidad) => ({
-      ...n,
-      disposiciones: n.disposiciones ?? [],
-      bitacora: n.bitacora ?? [],
-    }));
+    return parsed.map((n: NoConformidad & { evidencia?: string | null; evidenciaNombre?: string }) => {
+      const { evidencia, evidenciaNombre, ...resto } = n;
+      const evidenciaMigrada: EvidenciaNC[] =
+        evidencia ? [{ id: crypto.randomUUID(), nombre: evidenciaNombre || "Evidencia", archivo: evidencia }] : [];
+      return {
+        ...resto,
+        disposiciones: resto.disposiciones ?? [],
+        bitacora: resto.bitacora ?? [],
+        evidencias: resto.evidencias ?? evidenciaMigrada,
+      };
+    });
   } catch {
     return [];
   }

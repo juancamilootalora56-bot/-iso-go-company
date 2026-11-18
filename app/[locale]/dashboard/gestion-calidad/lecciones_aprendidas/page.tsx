@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
+import { temaPanelDe } from "@/lib/temaPanel";
 import {
   parseLeccionesAprendidas,
   leccionAprendidaVacia,
@@ -84,14 +85,28 @@ function fechaHoraLegible(iso: string) {
   }
 }
 
-function AnilloProgreso({ valor, color, label }: { valor: number | null; color: string; label: string }) {
+function AnilloProgreso({
+  valor,
+  color,
+  label,
+  textColor = "#FFFFFF",
+  trackColor = "rgba(255,255,255,0.12)",
+  labelColor = "#9CA3AF",
+}: {
+  valor: number | null;
+  color: string;
+  label: string;
+  textColor?: string;
+  trackColor?: string;
+  labelColor?: string;
+}) {
   const pct = valor === null ? 0 : Math.max(0, Math.min(100, valor));
   const r = 26;
   const c = 2 * Math.PI * r;
   return (
     <div className="flex items-center gap-3">
       <svg width="64" height="64" viewBox="0 0 64 64" className="flex-shrink-0 -rotate-90">
-        <circle cx="32" cy="32" r={r} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="6" />
+        <circle cx="32" cy="32" r={r} fill="none" stroke={trackColor} strokeWidth="6" />
         <circle
           cx="32"
           cy="32"
@@ -106,15 +121,16 @@ function AnilloProgreso({ valor, color, label }: { valor: number | null; color: 
         />
       </svg>
       <div className="-ml-[52px] w-11 text-center">
-        <span className="text-sm font-bold text-white">{valor !== null ? `${valor}%` : "—"}</span>
+        <span className="text-sm font-bold" style={{ color: textColor }}>{valor !== null ? `${valor}%` : "—"}</span>
       </div>
-      <p className="text-xs text-gray-400">{label}</p>
+      <p className="text-xs" style={{ color: labelColor }}>{label}</p>
     </div>
   );
 }
 
 export default function LeccionesAprendidasPage() {
-  const { user } = useDashboardUser();
+  const { user, profile } = useDashboardUser();
+  const tema = temaPanelDe(profile?.tema_panel);
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-calidad`;
@@ -235,48 +251,54 @@ export default function LeccionesAprendidasPage() {
       </div>
 
       {/* Hero */}
-      <div className="relative bg-[#1A1A1A] rounded-2xl p-6 sm:p-8 overflow-hidden">
+      <div
+        className="relative rounded-2xl p-6 sm:p-8 overflow-hidden"
+        style={{ background: `linear-gradient(to bottom right, ${tema.bgFrom}, ${tema.bgTo})`, border: `1px solid ${tema.cardBorder}` }}
+      >
         <div
           className="absolute inset-0 opacity-[0.07]"
           style={{
-            backgroundImage: "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+            backgroundImage: `linear-gradient(to right, ${tema.gridColor} 1px, transparent 1px), linear-gradient(to bottom, ${tema.gridColor} 1px, transparent 1px)`,
             backgroundSize: "28px 28px",
           }}
         />
         <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl" style={{ background: `${ACENTO}40` }} />
         <div className="relative z-10">
-          <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "#67E8F9" }}>
+          <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: tema.isLight ? ACENTO : "#67E8F9" }}>
             Conocimiento organizacional · ISO 9001 cl. 7.1.6
           </p>
-          <h1 className="text-xl sm:text-2xl font-bold text-white mt-1">Gestión de Lecciones Aprendidas</h1>
-          <p className="text-gray-400 text-sm mt-1 max-w-xl">
+          <h1 className="text-xl sm:text-2xl font-bold mt-1" style={{ color: tema.textPrimary }}>Gestión de Lecciones Aprendidas</h1>
+          <p className="text-sm mt-1 max-w-xl" style={{ color: tema.textMuted }}>
             Capturá la experiencia como conocimiento reutilizable: qué replicar, qué evitar, y cómo se difunde al resto de la organización.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6">
-            <div className="bg-white/5 rounded-xl p-3.5 border border-white/10">
-              <BrainCircuit size={16} style={{ color: "#67E8F9" }} className="mb-1.5" />
-              <p className="text-xl font-bold text-white">{lecciones.length}</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Lecciones registradas</p>
+            <div className="rounded-xl p-3.5" style={{ backgroundColor: tema.cardBg, border: `1px solid ${tema.cardBorder}` }}>
+              <BrainCircuit size={16} style={{ color: tema.isLight ? ACENTO : "#67E8F9" }} className="mb-1.5" />
+              <p className="text-xl font-bold" style={{ color: tema.textPrimary }}>{lecciones.length}</p>
+              <p className="text-[11px] mt-0.5" style={{ color: tema.textMuted }}>Lecciones registradas</p>
             </div>
-            <div className="bg-white/5 rounded-xl p-3.5 border border-white/10">
+            <div className="rounded-xl p-3.5" style={{ backgroundColor: tema.cardBg, border: `1px solid ${tema.cardBorder}` }}>
               <CheckCircle2 size={16} style={{ color: "#22C55E" }} className="mb-1.5" />
-              <p className="text-xl font-bold text-white">{exitos}</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Éxitos a replicar</p>
+              <p className="text-xl font-bold" style={{ color: tema.textPrimary }}>{exitos}</p>
+              <p className="text-[11px] mt-0.5" style={{ color: tema.textMuted }}>Éxitos a replicar</p>
             </div>
-            <div className="bg-white/5 rounded-xl p-3.5 border border-white/10">
+            <div className="rounded-xl p-3.5" style={{ backgroundColor: tema.cardBg, border: `1px solid ${tema.cardBorder}` }}>
               <AlertTriangle size={16} style={{ color: "#EF4444" }} className="mb-1.5" />
-              <p className="text-xl font-bold text-white">{errores}</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Errores a evitar</p>
+              <p className="text-xl font-bold" style={{ color: tema.textPrimary }}>{errores}</p>
+              <p className="text-[11px] mt-0.5" style={{ color: tema.textMuted }}>Errores a evitar</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/10">
+          <div className="flex items-center gap-2 mt-4 pt-4" style={{ borderTop: `1px solid ${tema.cardBorder}` }}>
             <Target size={14} style={{ color: tasaIncorporacion === null ? "#9CA3AF" : tasaIncorporacion >= 60 ? "#22C55E" : tasaIncorporacion >= 30 ? "#F5A623" : "#EF4444" }} />
             <AnilloProgreso
               valor={tasaIncorporacion}
               color={tasaIncorporacion === null ? "#9CA3AF" : tasaIncorporacion >= 60 ? "#22C55E" : tasaIncorporacion >= 30 ? "#F5A623" : "#EF4444"}
               label="Incorporadas al SGC (procedimiento o capacitación)"
+              textColor={tema.textPrimary}
+              trackColor={tema.cardBorder}
+              labelColor={tema.textMuted}
             />
           </div>
         </div>

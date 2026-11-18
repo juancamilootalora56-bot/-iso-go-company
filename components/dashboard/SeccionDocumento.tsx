@@ -10,7 +10,7 @@ export function Seccion({
   children,
 }: {
   numero?: string;
-  icono?: string;
+  icono?: React.ReactNode;
   titulo: string;
   children: React.ReactNode;
 }) {
@@ -37,7 +37,11 @@ export function Seccion({
             {numero}
           </span>
         )}
-        {icono && <span className="text-base flex-shrink-0">{icono}</span>}
+        {icono && (
+          <span className="text-base flex-shrink-0 flex items-center" style={{ color: tema.textPrimary }}>
+            {icono}
+          </span>
+        )}
         <h3 className="text-xs font-bold uppercase tracking-wide" style={{ color: tema.textPrimary }}>
           {titulo}
         </h3>
