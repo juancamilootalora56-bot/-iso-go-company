@@ -54,7 +54,9 @@ export default function CalendarioPersonalPage() {
   const esJefe = !esOwner && !!propio?.esJefeProceso && !!propio?.proceso;
   const personasVisibles = personasVisiblesEquipo(personal, empleadoPropioId, esOwner);
 
-  const idsEditables = new Set(esOwner ? personasVisibles.map((p) => p.id) : propio ? [propio.id] : []);
+  const idsEditables = new Set(
+    esOwner || esJefe ? personasVisibles.map((p) => p.id) : propio ? [propio.id] : []
+  );
 
   const seleccionActiva = seleccionados ?? new Set(personasVisibles.map((p) => p.id));
   const mostrarRoster = personasVisibles.length > 1;
@@ -331,7 +333,7 @@ export default function CalendarioPersonalPage() {
             </h2>
 
             <fieldset disabled={!puedeEditarModal} className="space-y-3 border-0 p-0 m-0">
-              {esOwner && personasVisibles.length > 1 && (
+              {(esOwner || esJefe) && personasVisibles.length > 1 && (
                 <div>
                   <label className={labelClass}>Colaborador</label>
                   <select
@@ -340,7 +342,9 @@ export default function CalendarioPersonalPage() {
                     className={inputClass}
                   >
                     {personasVisibles.map((p) => (
-                      <option key={p.id} value={p.id}>{p.nombre} {p.apellido}</option>
+                      <option key={p.id} value={p.id}>
+                        {p.nombre} {p.apellido}{p.id === propio?.id ? " (yo)" : ""}
+                      </option>
                     ))}
                   </select>
                 </div>
