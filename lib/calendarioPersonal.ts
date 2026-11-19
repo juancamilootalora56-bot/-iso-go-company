@@ -2,15 +2,45 @@
 // guardado con el mismo patrón que Relación de Actividades: un item_key por
 // colaborador y mes dentro del módulo "talento_humano".
 
+export type Cumplimiento = "pendiente" | "realizado" | "no_realizado";
+
 export type EventoCalendario = {
   id: string;
-  fecha: string; // YYYY-MM-DD
+  fecha: string; // YYYY-MM-DD — para una rutina, es la fecha de inicio (ancla)
   horaInicio: string; // "09:00"
   horaFin: string; // "10:00"
   titulo: string;
   tipo: string;
   descripcion: string;
+  archivo: string | null; // data URL del PDF adjunto
+  archivoNombre: string;
+  esRutinaria: boolean; // se repite cada semana, el mismo día que `fecha`
+  cumplimiento: Cumplimiento;
 };
+
+export const CUMPLIMIENTOS: Cumplimiento[] = ["pendiente", "realizado", "no_realizado"];
+
+export function colorCumplimiento(c: Cumplimiento): string {
+  switch (c) {
+    case "realizado":
+      return "#22C55E";
+    case "no_realizado":
+      return "#EF4444";
+    default:
+      return "#9CA3AF";
+  }
+}
+
+export function labelCumplimiento(c: Cumplimiento): string {
+  switch (c) {
+    case "realizado":
+      return "Realizado";
+    case "no_realizado":
+      return "No realizado";
+    default:
+      return "Pendiente";
+  }
+}
 
 export const TIPOS_EVENTO = [
   "Reunión",
@@ -47,6 +77,10 @@ export function eventoVacio(fecha: string): EventoCalendario {
     titulo: "",
     tipo: TIPOS_EVENTO[0],
     descripcion: "",
+    archivo: null,
+    archivoNombre: "",
+    esRutinaria: false,
+    cumplimiento: "pendiente",
   };
 }
 
@@ -63,6 +97,43 @@ export function parseEventos(contenido: string): EventoCalendario[] {
 
 export function itemKeyCalendario(empleadoId: string, mes: string): string {
   return `calendario_personal_${empleadoId}_${mes}`;
+}
+
+export function prefijoCalendario(empleadoId: string): string {
+  return `calendario_personal_${empleadoId}_`;
+}
+
+// 0 = lunes .. 6 = domingo, mismo criterio que diasGrilla().
+export function diaSemana(fechaISO: string): number {
+  const d = new Date(fechaISO + "T00:00:00");
+  return (d.getDay() + 6) % 7;
+}
+
+// A partir de todos los eventos guardados de una persona (de cualquier mes),
+// devuelve las fechas concretas dentro de `mes` en que cada uno aparece: la
+// propia fecha si es un evento puntual, o todas las fechas del mes con el
+// mismo día de semana (desde su fecha de inicio en adelante) si es rutinaria.
+export function ocurrenciasEnMes(
+  eventos: EventoCalendario[],
+  mes: string
+): { fecha: string; evento: EventoCalendario }[] {
+  const resultado: { fecha: string; evento: EventoCalendario }[] = [];
+  const diasDelMes = diasGrilla(mes)
+    .filter((d) => d.enMes)
+    .map((d) => d.fecha);
+
+  for (const evento of eventos) {
+    if (!evento.esRutinaria) {
+      if (evento.fecha.slice(0, 7) === mes) resultado.push({ fecha: evento.fecha, evento });
+      continue;
+    }
+    const diaRef = diaSemana(evento.fecha);
+    for (const fecha of diasDelMes) {
+      if (fecha < evento.fecha) continue;
+      if (diaSemana(fecha) === diaRef) resultado.push({ fecha, evento });
+    }
+  }
+  return resultado;
 }
 
 export function mesActual(): string {

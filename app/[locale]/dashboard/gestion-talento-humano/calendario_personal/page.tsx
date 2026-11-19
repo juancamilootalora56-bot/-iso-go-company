@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
@@ -8,11 +8,18 @@ import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parsePersonal, personasVisiblesEquipo, type Empleado } from "@/lib/personal";
 import {
   type EventoCalendario,
+  type Cumplimiento,
   TIPOS_EVENTO,
+  CUMPLIMIENTOS,
   colorTipoEvento,
+  colorCumplimiento,
+  labelCumplimiento,
   eventoVacio,
   parseEventos,
   itemKeyCalendario,
+  prefijoCalendario,
+  ocurrenciasEnMes,
+  diaSemana,
   mesActual,
   nombreMes,
   mesAnterior,
@@ -23,6 +30,7 @@ import {
 
 const ITEM_KEY_PERSONAL = "personal_lista";
 const SIN_PROCESO = "Sin proceso asignado";
+const MAX_PDF_BYTES = 3_000_000; // ~3MB
 
 const PALETA_PERSONAS = ["#4F46E5", "#F5A623", "#0EA5A4", "#EC4899", "#3B82F6", "#8B5CF6", "#10B981", "#EF4444"];
 
@@ -37,11 +45,13 @@ export default function CalendarioPersonalPage() {
   const basePath = `/${locale}/dashboard/gestion-talento-humano`;
 
   const { docs, loading, save } = useGestionDocumentos("talento_humano", user?.id ?? null);
+  const archivoInputRef = useRef<HTMLInputElement>(null);
 
   const [mes, setMes] = useState(mesActual());
   const [seleccionados, setSeleccionados] = useState<Set<string> | null>(null);
   const [diaAbierto, setDiaAbierto] = useState<string | null>(null);
   const [modal, setModal] = useState<{ personaId: string; evento: EventoCalendario } | null>(null);
+  const [errorArchivo, setErrorArchivo] = useState<string | null>(null);
 
   if (loading) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
@@ -73,14 +83,19 @@ export default function CalendarioPersonalPage() {
   }
   const nombresGrupos = Object.keys(grupos).sort((a, b) => (a === SIN_PROCESO ? 1 : b === SIN_PROCESO ? -1 : a.localeCompare(b)));
 
-  // Eventos del mes visible, de las personas seleccionadas.
+  // Eventos del mes visible, de las personas seleccionadas — incluye las
+  // ocurrencias proyectadas de actividades rutinarias creadas en cualquier
+  // mes anterior (ej: "todos los sábados").
   const eventosPorFecha: Record<string, { personaId: string; evento: EventoCalendario }[]> = {};
   personasVisibles
     .filter((p) => seleccionActiva.has(p.id))
     .forEach((p) => {
-      const eventos = parseEventos(docs[itemKeyCalendario(p.id, mes)] ?? "");
-      eventos.forEach((evento) => {
-        (eventosPorFecha[evento.fecha] ??= []).push({ personaId: p.id, evento });
+      const prefijo = prefijoCalendario(p.id);
+      const eventosDeLaPersona = Object.keys(docs)
+        .filter((key) => key.startsWith(prefijo))
+        .flatMap((key) => parseEventos(docs[key] ?? ""));
+      ocurrenciasEnMes(eventosDeLaPersona, mes).forEach(({ fecha, evento }) => {
+        (eventosPorFecha[fecha] ??= []).push({ personaId: p.id, evento });
       });
     });
 
@@ -107,7 +122,27 @@ export default function CalendarioPersonalPage() {
   }
 
   function abrirEvento(personaId: string, evento: EventoCalendario) {
+    setErrorArchivo(null);
     setModal({ personaId, evento });
+  }
+
+  function handleArchivo(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > MAX_PDF_BYTES) {
+      setErrorArchivo("El PDF es muy pesado. Usá uno de menos de 3MB.");
+      return;
+    }
+    setErrorArchivo(null);
+    const reader = new FileReader();
+    reader.onload = () =>
+      setModal((m) => m && { ...m, evento: { ...m.evento, archivo: reader.result as string, archivoNombre: file.name } });
+    reader.readAsDataURL(file);
+  }
+
+  function quitarArchivo() {
+    setModal((m) => m && { ...m, evento: { ...m.evento, archivo: null, archivoNombre: "" } });
+    if (archivoInputRef.current) archivoInputRef.current.value = "";
   }
 
   async function guardarEvento() {
@@ -246,16 +281,22 @@ export default function CalendarioPersonalPage() {
                     <div className="mt-1 space-y-1">
                       {eventosDia.slice(0, 3).map(({ personaId, evento }) => (
                         <button
-                          key={evento.id}
+                          key={`${evento.id}-${fecha}`}
                           onClick={(e) => {
                             e.stopPropagation();
                             abrirEvento(personaId, evento);
                           }}
-                          className="w-full text-left text-[10px] font-semibold text-white rounded px-1 py-0.5 truncate block"
+                          className="w-full flex items-center gap-1 text-left text-[10px] font-semibold text-white rounded px-1 py-0.5 truncate"
                           style={{ backgroundColor: mostrarRoster ? colorPorPersona[personaId] : colorTipoEvento(evento.tipo) }}
-                          title={`${evento.horaInicio} ${evento.titulo}`}
+                          title={`${evento.horaInicio} ${evento.titulo}${evento.esRutinaria ? " (rutinaria)" : ""} · ${labelCumplimiento(evento.cumplimiento)}`}
                         >
-                          {evento.horaInicio} {evento.titulo || evento.tipo}
+                          {evento.cumplimiento !== "pendiente" && (
+                            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colorCumplimiento(evento.cumplimiento) }} />
+                          )}
+                          <span className="truncate">
+                            {evento.esRutinaria && "↻ "}
+                            {evento.horaInicio} {evento.titulo || evento.tipo}
+                          </span>
                         </button>
                       ))}
                       {eventosDia.length > 3 && (
@@ -289,17 +330,20 @@ export default function CalendarioPersonalPage() {
                 const persona = personasVisibles.find((p) => p.id === personaId);
                 return (
                   <button
-                    key={evento.id}
+                    key={`${evento.id}-${diaAbierto}`}
                     onClick={() => abrirEvento(personaId, evento)}
                     className="w-full text-left flex items-center gap-2 bg-[#FAFAFA] rounded-lg p-2.5 hover:bg-gray-100 transition-colors"
                   >
                     <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: colorTipoEvento(evento.tipo) }} />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-[#1A1A1A] truncate">
+                        {evento.esRutinaria && "↻ "}
                         {evento.horaInicio}–{evento.horaFin} · {evento.titulo || "(sin título)"}
+                        {evento.archivo && " 📎"}
                       </p>
-                      <p className="text-[11px] text-gray-500 truncate">
-                        {evento.tipo}
+                      <p className="text-[11px] text-gray-500 truncate flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colorCumplimiento(evento.cumplimiento) }} />
+                        {labelCumplimiento(evento.cumplimiento)} · {evento.tipo}
                         {mostrarRoster && persona && ` · ${persona.nombre} ${persona.apellido}`}
                       </p>
                     </div>
@@ -408,6 +452,73 @@ export default function CalendarioPersonalPage() {
                   rows={2}
                   className={`${inputClass} resize-y`}
                 />
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={modal.evento.esRutinaria}
+                    onChange={(e) => setModal((m) => m && { ...m, evento: { ...m.evento, esRutinaria: e.target.checked } })}
+                    className="accent-[#F5A623] w-3.5 h-3.5"
+                  />
+                  Es una actividad rutinaria (se repite todas las semanas)
+                </label>
+                {modal.evento.esRutinaria && (
+                  <p className="text-[11px] text-gray-400 mt-1 pl-5">
+                    Se va a mostrar todos los{" "}
+                    <strong>{DIAS_SEMANA[diaSemana(modal.evento.fecha)]}</strong>, a partir del{" "}
+                    {new Date(modal.evento.fecha + "T00:00:00").toLocaleDateString("es", { day: "2-digit", month: "short", year: "numeric" })}.
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className={labelClass}>Cumplimiento</label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {CUMPLIMIENTOS.map((c) => {
+                    const color = colorCumplimiento(c);
+                    const activo = modal.evento.cumplimiento === c;
+                    return (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setModal((m) => m && { ...m, evento: { ...m.evento, cumplimiento: c } })}
+                        className="text-xs font-semibold py-1.5 rounded-lg border transition-colors"
+                        style={
+                          activo
+                            ? { backgroundColor: color, borderColor: color, color: "#fff" }
+                            : { borderColor: "#E5E7EB", color: "#6B7280" }
+                        }
+                      >
+                        {labelCumplimiento(c)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <label className={labelClass}>Adjuntar PDF</label>
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => archivoInputRef.current?.click()}
+                    className="text-xs font-semibold text-[#1A1A1A] bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:border-[#F5A623]/50"
+                  >
+                    📎 {modal.evento.archivoNombre ? "Cambiar archivo" : "Subir archivo"}
+                  </button>
+                  <input ref={archivoInputRef} type="file" accept="application/pdf" onChange={handleArchivo} className="hidden" />
+                  {modal.evento.archivoNombre && (
+                    <span className="text-xs text-gray-500 truncate max-w-[180px] flex items-center gap-1.5">
+                      <a href={modal.evento.archivo ?? "#"} download={modal.evento.archivoNombre} className="hover:text-[#F5A623] truncate" style={{ color: "#F5A623" }}>
+                        {modal.evento.archivoNombre}
+                      </a>
+                      <button type="button" onClick={quitarArchivo} className="text-gray-300 hover:text-red-500 flex-shrink-0">✕</button>
+                    </span>
+                  )}
+                </div>
+                {errorArchivo && <p className="text-[11px] text-red-500 mt-1">{errorArchivo}</p>}
               </div>
             </fieldset>
 
