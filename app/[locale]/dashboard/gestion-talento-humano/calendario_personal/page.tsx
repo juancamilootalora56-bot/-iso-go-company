@@ -8,12 +8,12 @@ import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { parsePersonal, personasVisiblesEquipo, type Empleado } from "@/lib/personal";
 import {
   type EventoCalendario,
-  type Cumplimiento,
   TIPOS_EVENTO,
   CUMPLIMIENTOS,
   colorTipoEvento,
   colorCumplimiento,
   labelCumplimiento,
+  cumplimientoEnFecha,
   eventoVacio,
   parseEventos,
   itemKeyCalendario,
@@ -50,7 +50,7 @@ export default function CalendarioPersonalPage() {
   const [mes, setMes] = useState(mesActual());
   const [seleccionados, setSeleccionados] = useState<Set<string> | null>(null);
   const [diaAbierto, setDiaAbierto] = useState<string | null>(null);
-  const [modal, setModal] = useState<{ personaId: string; evento: EventoCalendario } | null>(null);
+  const [modal, setModal] = useState<{ personaId: string; fecha: string; evento: EventoCalendario } | null>(null);
   const [errorArchivo, setErrorArchivo] = useState<string | null>(null);
 
   if (loading) {
@@ -118,12 +118,12 @@ export default function CalendarioPersonalPage() {
   function abrirNuevo(fecha: string) {
     const personaId = personaDefectoPara(fecha);
     if (!personaId) return;
-    setModal({ personaId, evento: eventoVacio(fecha) });
+    setModal({ personaId, fecha, evento: eventoVacio(fecha) });
   }
 
-  function abrirEvento(personaId: string, evento: EventoCalendario) {
+  function abrirEvento(personaId: string, evento: EventoCalendario, fecha: string) {
     setErrorArchivo(null);
-    setModal({ personaId, evento });
+    setModal({ personaId, fecha, evento });
   }
 
   function handleArchivo(e: React.ChangeEvent<HTMLInputElement>) {
@@ -284,14 +284,14 @@ export default function CalendarioPersonalPage() {
                           key={`${evento.id}-${fecha}`}
                           onClick={(e) => {
                             e.stopPropagation();
-                            abrirEvento(personaId, evento);
+                            abrirEvento(personaId, evento, fecha);
                           }}
                           className="w-full flex items-center gap-1 text-left text-[10px] font-semibold text-white rounded px-1 py-0.5 truncate"
                           style={{ backgroundColor: mostrarRoster ? colorPorPersona[personaId] : colorTipoEvento(evento.tipo) }}
-                          title={`${evento.horaInicio} ${evento.titulo}${evento.esRutinaria ? " (rutinaria)" : ""} · ${labelCumplimiento(evento.cumplimiento)}`}
+                          title={`${evento.horaInicio} ${evento.titulo}${evento.esRutinaria ? " (rutinaria)" : ""} · ${labelCumplimiento(cumplimientoEnFecha(evento, fecha))}`}
                         >
-                          {evento.cumplimiento !== "pendiente" && (
-                            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colorCumplimiento(evento.cumplimiento) }} />
+                          {cumplimientoEnFecha(evento, fecha) !== "pendiente" && (
+                            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colorCumplimiento(cumplimientoEnFecha(evento, fecha)) }} />
                           )}
                           <span className="truncate">
                             {evento.esRutinaria && "↻ "}
@@ -331,7 +331,7 @@ export default function CalendarioPersonalPage() {
                 return (
                   <button
                     key={`${evento.id}-${diaAbierto}`}
-                    onClick={() => abrirEvento(personaId, evento)}
+                    onClick={() => abrirEvento(personaId, evento, diaAbierto)}
                     className="w-full text-left flex items-center gap-2 bg-[#FAFAFA] rounded-lg p-2.5 hover:bg-gray-100 transition-colors"
                   >
                     <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: colorTipoEvento(evento.tipo) }} />
@@ -342,8 +342,8 @@ export default function CalendarioPersonalPage() {
                         {evento.archivo && " 📎"}
                       </p>
                       <p className="text-[11px] text-gray-500 truncate flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colorCumplimiento(evento.cumplimiento) }} />
-                        {labelCumplimiento(evento.cumplimiento)} · {evento.tipo}
+                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colorCumplimiento(cumplimientoEnFecha(evento, diaAbierto)) }} />
+                        {labelCumplimiento(cumplimientoEnFecha(evento, diaAbierto))} · {evento.tipo}
                         {mostrarRoster && persona && ` · ${persona.nombre} ${persona.apellido}`}
                       </p>
                     </div>
@@ -474,16 +474,35 @@ export default function CalendarioPersonalPage() {
               </div>
 
               <div>
-                <label className={labelClass}>Cumplimiento</label>
+                <label className={labelClass}>
+                  Cumplimiento
+                  {modal.evento.esRutinaria && (
+                    <span className="normal-case font-normal text-gray-400">
+                      {" "}
+                      — solo para el {new Date(modal.fecha + "T00:00:00").toLocaleDateString("es", { day: "2-digit", month: "short" })}
+                    </span>
+                  )}
+                </label>
                 <div className="grid grid-cols-3 gap-1.5">
                   {CUMPLIMIENTOS.map((c) => {
                     const color = colorCumplimiento(c);
-                    const activo = modal.evento.cumplimiento === c;
+                    const activo = cumplimientoEnFecha(modal.evento, modal.fecha) === c;
                     return (
                       <button
                         key={c}
                         type="button"
-                        onClick={() => setModal((m) => m && { ...m, evento: { ...m.evento, cumplimiento: c } })}
+                        onClick={() =>
+                          setModal(
+                            (m) =>
+                              m && {
+                                ...m,
+                                evento: {
+                                  ...m.evento,
+                                  cumplimientoPorFecha: { ...(m.evento.cumplimientoPorFecha ?? {}), [m.fecha]: c },
+                                },
+                              }
+                          )
+                        }
                         className="text-xs font-semibold py-1.5 rounded-lg border transition-colors"
                         style={
                           activo

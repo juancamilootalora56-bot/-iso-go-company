@@ -15,10 +15,20 @@ export type EventoCalendario = {
   archivo: string | null; // data URL del PDF adjunto
   archivoNombre: string;
   esRutinaria: boolean; // se repite cada semana, el mismo día que `fecha`
-  cumplimiento: Cumplimiento;
+  cumplimiento: Cumplimiento; // valor legado, solo aplica a la fecha ancla si no hay entrada en cumplimientoPorFecha
+  cumplimientoPorFecha?: Record<string, Cumplimiento>; // cumplimiento real de cada ocurrencia concreta (clave YYYY-MM-DD)
 };
 
 export const CUMPLIMIENTOS: Cumplimiento[] = ["pendiente", "realizado", "no_realizado"];
+
+// El cumplimiento es por ocurrencia, no por evento: marcar "No realizado" en
+// una fecha puntual no debe afectar a las demás fechas de una rutina.
+export function cumplimientoEnFecha(evento: EventoCalendario, fecha: string): Cumplimiento {
+  if (evento.cumplimientoPorFecha && fecha in evento.cumplimientoPorFecha) {
+    return evento.cumplimientoPorFecha[fecha];
+  }
+  return fecha === evento.fecha ? evento.cumplimiento : "pendiente";
+}
 
 export function colorCumplimiento(c: Cumplimiento): string {
   switch (c) {
