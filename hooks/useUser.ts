@@ -22,6 +22,9 @@ interface Profile {
   procesos_empresa: string | null;
   tema_panel: string | null;
   mi_ficha_tabs_colaborador: string[] | null;
+  // Servicio especial con costo adicional, se habilita manualmente por
+  // cliente (no autoservicio). false/null = módulo bloqueado con candado.
+  asistencia_habilitada: boolean | null;
 }
 
 interface UseUserResult {

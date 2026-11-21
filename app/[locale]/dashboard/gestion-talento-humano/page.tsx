@@ -24,12 +24,14 @@ import {
   Brain,
   DoorOpen,
   Fingerprint,
+  Lock,
 } from "lucide-react";
 
 const ACENTO = "#F5A623";
 
 export default function GestionTalentoHumanoPage() {
-  const { user } = useDashboardUser();
+  const { user, profile } = useDashboardUser();
+  const asistenciaHabilitada = !!profile?.asistencia_habilitada;
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-talento-humano`;
@@ -309,24 +311,42 @@ export default function GestionTalentoHumanoPage() {
           </div>
         </div>
 
-        {puedeVer("control_asistencia") && (
-        <Link
-          href={`${basePath}/control_asistencia`}
-          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
-          style={{ borderLeftColor: "#16A34A" }}
-        >
-          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#16A34A18" }}>
-            <Fingerprint size={22} style={{ color: "#16A34A" }} strokeWidth={2} />
-          </span>
-          <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-sm text-[#1A1A1A]">Control de Asistencia</h2>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Marcá tu entrada y salida desde tu sede. Validado por ubicación.
-            </p>
-          </div>
-          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
-        </Link>
-        )}
+        {puedeVer("control_asistencia") &&
+          (asistenciaHabilitada ? (
+            <Link
+              href={`${basePath}/control_asistencia`}
+              className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+              style={{ borderLeftColor: "#16A34A" }}
+            >
+              <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#16A34A18" }}>
+                <Fingerprint size={22} style={{ color: "#16A34A" }} strokeWidth={2} />
+              </span>
+              <div className="flex-1 min-w-0">
+                <h2 className="font-semibold text-sm text-[#1A1A1A]">Control de Asistencia</h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Marcá tu entrada y salida desde tu sede. Validado por ubicación.
+                </p>
+              </div>
+              <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 opacity-70" style={{ borderLeftColor: "#D1D5DB" }}>
+              <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center bg-gray-100">
+                <Lock size={20} className="text-gray-400" strokeWidth={2} />
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-semibold text-sm text-[#1A1A1A]">Control de Asistencia</h2>
+                  <span className="text-[10px] uppercase tracking-wide font-bold text-[#F5A623] bg-[#F5A623]/10 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                    Servicio adicional
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Marcación de entrada/salida geolocalizada. Hablá con tu asesor para activarlo.
+                </p>
+              </div>
+            </div>
+          ))}
       </div>
 
       <div className="mt-6 bg-[#1A1A1A] rounded-xl p-6 text-center">

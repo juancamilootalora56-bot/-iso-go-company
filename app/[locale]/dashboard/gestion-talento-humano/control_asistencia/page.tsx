@@ -16,13 +16,13 @@ import {
   siguienteTipo,
   agruparPorDia,
 } from "@/lib/asistencia";
-import { Fingerprint, LogIn, LogOut, MapPin, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
+import { Fingerprint, LogIn, LogOut, MapPin, CheckCircle2, AlertTriangle, Loader2, Lock } from "lucide-react";
 
 const ITEM_KEY_PERSONAL = "personal_lista";
 const ACENTO = "#16A34A";
 
 export default function ControlAsistenciaPage() {
-  const { user, colaborador } = useDashboardUser();
+  const { user, colaborador, profile } = useDashboardUser();
   const params = useParams();
   const locale = params.locale as string;
   const basePath = `/${locale}/dashboard/gestion-talento-humano`;
@@ -86,6 +86,26 @@ export default function ControlAsistenciaPage() {
 
   if (loading) {
     return <p className="text-gray-400 text-sm">Cargando...</p>;
+  }
+
+  if (!profile?.asistencia_habilitada) {
+    return (
+      <div className="max-w-2xl mx-auto pb-16">
+        <Link href={basePath} className="text-sm text-gray-500 hover:text-[#1A1A1A] mb-4 inline-block">
+          ← Gestión del Talento Humano
+        </Link>
+        <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center">
+          <span className="inline-flex w-14 h-14 rounded-full bg-gray-100 items-center justify-center mb-4">
+            <Lock size={24} className="text-gray-400" />
+          </span>
+          <h1 className="font-semibold text-[#1A1A1A] mb-1">Control de Asistencia</h1>
+          <p className="text-sm text-gray-500 max-w-sm mx-auto">
+            Este es un servicio adicional, con costo aparte del plan. Hablá con tu asesor de Iso Go para activarlo
+            en tu cuenta.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const sedePropia = propio?.sedeId ? sedes.find((s) => s.id === propio.sedeId) ?? null : null;

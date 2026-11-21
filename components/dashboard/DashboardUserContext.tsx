@@ -26,6 +26,9 @@ type Profile = {
   // null/vacío = comportamiento por defecto (todas las pestañas), igual que
   // siempre. Solo se setea manualmente para clientes puntuales que lo pidan.
   mi_ficha_tabs_colaborador: string[] | null;
+  // Servicio especial con costo adicional, se habilita manualmente por
+  // cliente (no autoservicio). false/null = módulo bloqueado con candado.
+  asistencia_habilitada: boolean | null;
 };
 
 export type ColaboradorContextInfo = {
