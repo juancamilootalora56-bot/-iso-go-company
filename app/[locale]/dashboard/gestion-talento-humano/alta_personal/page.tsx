@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useDashboardUser } from "@/components/dashboard/DashboardUserContext";
 import { useGestionDocumentos } from "@/hooks/useGestionDocumentos";
 import { Seccion } from "@/components/dashboard/SeccionDocumento";
+import { createClient } from "@/lib/supabase/client";
 import {
   parsePersonal,
   empleadoVacio,
@@ -17,6 +18,7 @@ import {
   type Empleado,
 } from "@/lib/personal";
 import { parseLista as parseProcesos, PROCESOS_COMUNES } from "@/lib/mapaProcesos";
+import type { Sede } from "@/lib/sedesEmpresa";
 
 const ITEM_KEY = "personal_lista";
 const MAX_FOTO_BYTES = 800_000; // ~800KB
@@ -42,6 +44,7 @@ export default function AltaPersonalPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [sedes, setSedes] = useState<Sede[]>([]);
 
   useEffect(() => {
     if (!loading) {
@@ -49,6 +52,19 @@ export default function AltaPersonalPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    (async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("sedes_empresa")
+        .select("*")
+        .eq("profile_id", user.id)
+        .order("nombre");
+      setSedes(data ?? []);
+    })();
+  }, [user?.id]);
 
   function handleLimpiar() {
     setForm(empleadoVacio());
@@ -291,6 +307,22 @@ export default function AltaPersonalPage() {
                 {sugerenciasProceso.map((p) => <option key={p} value={p} />)}
               </datalist>
               <p className="text-[11px] text-gray-400 mt-1">Define a qué proceso pertenece en el Calendario de Colaboradores.</p>
+            </div>
+            <div>
+              <label className={labelClass}>Sede</label>
+              <select value={form.sedeId ?? ""} onChange={(e) => campo("sedeId", e.target.value)} className={inputClass}>
+                <option value="">Sin sede asignada</option>
+                {sedes.map((s) => (
+                  <option key={s.id} value={s.id}>{s.nombre}</option>
+                ))}
+              </select>
+              {sedes.length === 0 ? (
+                <p className="text-[11px] text-gray-400 mt-1">
+                  Todavía no cargaste ninguna sede (Perfil → Sedes). Sin sede asignada, este colaborador no va a poder marcar asistencia.
+                </p>
+              ) : (
+                <p className="text-[11px] text-gray-400 mt-1">Único lugar donde podrá marcar entrada/salida en Control de Asistencia.</p>
+              )}
             </div>
             <div className="sm:col-span-2 flex items-center gap-2 pt-1">
               <input

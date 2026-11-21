@@ -44,6 +44,7 @@ export const ACTIVIDADES_POR_MODULO: Record<string, ActividadCatalogo[]> = {
     { actividad: "capacitaciones_generales", label: "Capacitaciones Generales" },
     { actividad: "evaluaciones_generales", label: "Evaluaciones Generales" },
     { actividad: "calendario_personal", label: "Calendario de Colaboradores" },
+    { actividad: "control_asistencia", label: "Control de Asistencia" },
   ],
   compras: [
     { actividad: "requisicion_pedidos", label: "Requisición de Pedidos" },
@@ -137,10 +138,11 @@ export function etapasPermitidas(permisos: PermisosColaborador, modulo: string, 
 
 // Accesos de base que todo colaborador tiene siempre, sin que el dueño se
 // los asigne explícitamente — hoy son Relación de Actividades (su propia
-// planilla) y el Calendario de Colaboradores (su propio calendario). Como el
-// acceso a datos (RLS de gestion_documentos) es por módulo completo, hay que
-// garantizar que los módulos "operativa" y "talento_humano" queden presentes
-// en los permisos para que la consulta no quede bloqueada.
+// planilla), el Calendario de Colaboradores (su propio calendario) y el
+// Control de Asistencia (su propia marcación). Como el acceso a datos (RLS
+// de gestion_documentos / registro_asistencia) es por módulo completo, hay
+// que garantizar que los módulos "operativa" y "talento_humano" queden
+// presentes en los permisos para que la consulta no quede bloqueada.
 export function conAccesosBaseColaborador(permisos: PermisosColaborador): PermisosColaborador {
   let resultado = permisos;
 
@@ -155,8 +157,11 @@ export function conAccesosBaseColaborador(permisos: PermisosColaborador): Permis
   const talentoHumano = resultado.talento_humano;
   if (!(talentoHumano && "completo" in talentoHumano && talentoHumano.completo)) {
     const actividades = talentoHumano && "actividades" in talentoHumano ? talentoHumano.actividades : {};
-    if (!("calendario_personal" in actividades)) {
-      resultado = { ...resultado, talento_humano: { actividades: { ...actividades, calendario_personal: true } } };
+    const faltantes: Record<string, true> = {};
+    if (!("calendario_personal" in actividades)) faltantes.calendario_personal = true;
+    if (!("control_asistencia" in actividades)) faltantes.control_asistencia = true;
+    if (Object.keys(faltantes).length > 0) {
+      resultado = { ...resultado, talento_humano: { actividades: { ...actividades, ...faltantes } } };
     }
   }
 
@@ -179,7 +184,7 @@ export function tieneAccesoReal(permisos: PermisosColaborador): boolean {
     if (modulo === "operativa") {
       if (actividades.some((a) => a !== "relacion_actividades")) return true;
     } else if (modulo === "talento_humano") {
-      if (actividades.some((a) => a !== "calendario_personal")) return true;
+      if (actividades.some((a) => a !== "calendario_personal" && a !== "control_asistencia")) return true;
     } else if (actividades.length > 0) {
       return true;
     }

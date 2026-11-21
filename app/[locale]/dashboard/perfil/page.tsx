@@ -11,7 +11,8 @@ import { actividadesVisibles, tieneAccesoModulo, conAccesosBaseColaborador, MODU
 import SelectorPermisosColaborador from "@/components/dashboard/SelectorPermisosColaborador";
 import { TEMAS_PANEL, type TemaPanelKey } from "@/lib/temaPanel";
 import { esPlanDiagnostico } from "@/lib/planCuenta";
-import { Building2, Palette, Users, Check, Pencil, Power, Trash2, UserPlus, X } from "lucide-react";
+import { RADIO_METROS_DEFECTO, type Sede } from "@/lib/sedesEmpresa";
+import { Building2, Palette, Users, Check, Pencil, Power, Trash2, UserPlus, X, MapPin, LocateFixed } from "lucide-react";
 
 const MAX_LOGO_BYTES = 800_000; // ~800KB
 
@@ -36,13 +37,18 @@ function colaboradorVacio() {
   };
 }
 
-type TabKey = "organizacion" | "apariencia" | "colaboradores";
+type TabKey = "organizacion" | "apariencia" | "sedes" | "colaboradores";
 
 const TABS: { key: TabKey; label: string; icon: typeof Building2 }[] = [
   { key: "organizacion", label: "Organización", icon: Building2 },
   { key: "apariencia", label: "Apariencia", icon: Palette },
+  { key: "sedes", label: "Sedes", icon: MapPin },
   { key: "colaboradores", label: "Colaboradores", icon: Users },
 ];
+
+function sedeVacia() {
+  return { nombre: "", direccion: "", radioMetros: String(RADIO_METROS_DEFECTO), lat: null as number | null, lng: null as number | null };
+}
 
 export default function PerfilPage() {
   const { user, profile } = useUser();
@@ -66,6 +72,14 @@ export default function PerfilPage() {
   const [savingEmpresa, setSavingEmpresa] = useState(false);
   const [savedEmpresa, setSavedEmpresa] = useState(false);
   const [errorEmpresa, setErrorEmpresa] = useState<string | null>(null);
+
+  const [sedes, setSedes] = useState<Sede[]>([]);
+  const [loadingSedes, setLoadingSedes] = useState(true);
+  const [mostrarFormSede, setMostrarFormSede] = useState(false);
+  const [formSede, setFormSede] = useState(sedeVacia());
+  const [capturandoUbicacion, setCapturandoUbicacion] = useState(false);
+  const [errorSede, setErrorSede] = useState<string | null>(null);
+  const [guardandoSede, setGuardandoSede] = useState(false);
 
   const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
   const [loadingColaboradores, setLoadingColaboradores] = useState(true);
@@ -101,6 +115,86 @@ export default function PerfilPage() {
       setLoadingColaboradores(false);
     })();
   }, [user]);
+
+  async function cargarSedes() {
+    if (!user) return;
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("sedes_empresa")
+      .select("*")
+      .eq("profile_id", user.id)
+      .order("created_at");
+    setSedes(data ?? []);
+    setLoadingSedes(false);
+  }
+
+  useEffect(() => {
+    cargarSedes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  function capturarUbicacionSede() {
+    if (!navigator.geolocation) {
+      setErrorSede("Tu navegador no soporta geolocalización.");
+      return;
+    }
+    setErrorSede(null);
+    setCapturandoUbicacion(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setFormSede((f) => ({ ...f, lat: pos.coords.latitude, lng: pos.coords.longitude }));
+        setCapturandoUbicacion(false);
+      },
+      () => {
+        setErrorSede("No se pudo obtener tu ubicación. Revisá que le hayas dado permiso al navegador y volvé a intentar parado en la sede.");
+        setCapturandoUbicacion(false);
+      },
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
+  }
+
+  async function handleCrearSede(e: React.FormEvent) {
+    e.preventDefault();
+    setErrorSede(null);
+    if (!formSede.nombre.trim()) {
+      setErrorSede("Ponele un nombre a la sede (ej: Casa Matriz, Sucursal Centro).");
+      return;
+    }
+    if (formSede.lat === null || formSede.lng === null) {
+      setErrorSede("Primero capturá la ubicación, parado físicamente en la sede.");
+      return;
+    }
+    const radio = parseInt(formSede.radioMetros, 10);
+    if (!radio || radio < 10) {
+      setErrorSede("El radio permitido debe ser de al menos 10 metros.");
+      return;
+    }
+    setGuardandoSede(true);
+    const supabase = createClient();
+    const { error } = await supabase.from("sedes_empresa").insert({
+      profile_id: user!.id,
+      nombre: formSede.nombre.trim(),
+      direccion: formSede.direccion.trim() || null,
+      latitud: formSede.lat,
+      longitud: formSede.lng,
+      radio_metros: radio,
+    });
+    setGuardandoSede(false);
+    if (error) {
+      setErrorSede("Error al guardar la sede. Intentá de nuevo.");
+      return;
+    }
+    setFormSede(sedeVacia());
+    setMostrarFormSede(false);
+    await cargarSedes();
+  }
+
+  async function eliminarSede(id: string, nombre: string) {
+    if (!confirm(`¿Eliminar la sede "${nombre}"? Los colaboradores asignados a ella van a quedar sin sede.`)) return;
+    const supabase = createClient();
+    const { error } = await supabase.from("sedes_empresa").delete().eq("id", id);
+    if (!error) setSedes((prev) => prev.filter((s) => s.id !== id));
+  }
 
   function handleLogo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -452,6 +546,136 @@ export default function PerfilPage() {
                 {savingEmpresa ? "Guardando..." : "Guardar apariencia"}
               </button>
             </form>
+          )}
+
+          {tab === "sedes" && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl border border-gray-100 p-6">
+                <div className="flex items-center justify-between flex-wrap gap-3 mb-1">
+                  <div>
+                    <h2 className="font-semibold text-[#1A1A1A]">Sedes de la empresa</h2>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Cargá cada local o sede una sola vez, parado físicamente ahí. Control de Asistencia usa esta
+                      ubicación para validar que un colaborador marque entrada/salida solo cuando está en su sede.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMostrarFormSede((v) => !v);
+                      setErrorSede(null);
+                      setFormSede(sedeVacia());
+                    }}
+                    className="flex items-center gap-1.5 text-xs font-bold text-[#1A1A1A] bg-[#F5A623] hover:bg-[#e09410] transition-colors px-3.5 py-2 rounded-lg flex-shrink-0"
+                  >
+                    {mostrarFormSede ? <X size={14} /> : <MapPin size={14} />}
+                    {mostrarFormSede ? "Cerrar" : "Agregar sede"}
+                  </button>
+                </div>
+
+                {errorSede && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{errorSede}</div>
+                )}
+
+                {mostrarFormSede && (
+                  <form onSubmit={handleCrearSede} className="mt-5 pt-5 border-t border-gray-100 space-y-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Nombre de la sede</label>
+                        <input
+                          value={formSede.nombre}
+                          onChange={(e) => setFormSede((f) => ({ ...f, nombre: e.target.value }))}
+                          className={inputClass}
+                          placeholder="Ej: Casa Matriz"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Dirección (opcional, solo referencia)</label>
+                        <input
+                          value={formSede.direccion}
+                          onChange={(e) => setFormSede((f) => ({ ...f, direccion: e.target.value }))}
+                          className={inputClass}
+                          placeholder="Ej: Av. España 123"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Radio permitido (metros)</label>
+                        <input
+                          type="number"
+                          min={10}
+                          value={formSede.radioMetros}
+                          onChange={(e) => setFormSede((f) => ({ ...f, radioMetros: e.target.value }))}
+                          className={inputClass}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Ubicación</label>
+                        <button
+                          type="button"
+                          onClick={capturarUbicacionSede}
+                          disabled={capturandoUbicacion}
+                          className="w-full flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-semibold text-[#1A1A1A] hover:border-[#F5A623] transition-colors disabled:opacity-60"
+                        >
+                          <LocateFixed size={16} className={capturandoUbicacion ? "animate-pulse" : ""} />
+                          {capturandoUbicacion
+                            ? "Obteniendo ubicación..."
+                            : formSede.lat !== null
+                              ? "Ubicación capturada ✓ — volver a capturar"
+                              : "Usar mi ubicación actual"}
+                        </button>
+                        {formSede.lat !== null && (
+                          <p className="text-[11px] text-gray-400 mt-1">
+                            {formSede.lat.toFixed(5)}, {formSede.lng!.toFixed(5)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-gray-400">
+                      Importante: pará físicamente en la sede antes de tocar &quot;Usar mi ubicación actual&quot;.
+                    </p>
+                    <button
+                      type="submit"
+                      disabled={guardandoSede}
+                      className="bg-[#F5A623] text-[#1A1A1A] font-bold px-6 py-2.5 rounded-lg hover:bg-[#e09410] transition-colors disabled:opacity-60"
+                    >
+                      {guardandoSede ? "Guardando..." : "Guardar sede"}
+                    </button>
+                  </form>
+                )}
+              </div>
+
+              {loadingSedes ? (
+                <p className="text-gray-400 text-sm">Cargando...</p>
+              ) : sedes.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center text-sm text-gray-400">
+                  Todavía no cargaste ninguna sede.
+                </div>
+              ) : (
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {sedes.map((s) => (
+                    <div key={s.id} className="bg-white rounded-2xl border border-gray-100 p-4">
+                      <div className="flex items-start gap-3">
+                        <span className="w-10 h-10 rounded-full bg-[#F5A623]/10 flex items-center justify-center flex-shrink-0">
+                          <MapPin size={16} style={{ color: "#F5A623" }} />
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-[#1A1A1A] truncate">{s.nombre}</p>
+                          <p className="text-xs text-gray-500 truncate">{s.direccion || "Sin dirección de referencia"}</p>
+                          <p className="text-[11px] text-gray-400 mt-1">Radio permitido: {s.radio_metros} m</p>
+                        </div>
+                        <button
+                          onClick={() => eliminarSede(s.id, s.nombre)}
+                          title="Eliminar sede"
+                          className="w-7 h-7 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
 
           {tab === "colaboradores" &&

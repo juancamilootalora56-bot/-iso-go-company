@@ -23,6 +23,7 @@ import {
   Handshake,
   Brain,
   DoorOpen,
+  Fingerprint,
 } from "lucide-react";
 
 const ACENTO = "#F5A623";
@@ -307,6 +308,25 @@ export default function GestionTalentoHumanoPage() {
             <p className="text-xs text-gray-500 mt-0.5">Proceso de incorporación de nuevos integrantes.</p>
           </div>
         </div>
+
+        {puedeVer("control_asistencia") && (
+        <Link
+          href={`${basePath}/control_asistencia`}
+          className="group flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 hover:shadow-md transition-all"
+          style={{ borderLeftColor: "#16A34A" }}
+        >
+          <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: "#16A34A18" }}>
+            <Fingerprint size={22} style={{ color: "#16A34A" }} strokeWidth={2} />
+          </span>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-sm text-[#1A1A1A]">Control de Asistencia</h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Marcá tu entrada y salida desde tu sede. Validado por ubicación.
+            </p>
+          </div>
+          <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
+        </Link>
+        )}
       </div>
 
       <div className="mt-6 bg-[#1A1A1A] rounded-xl p-6 text-center">

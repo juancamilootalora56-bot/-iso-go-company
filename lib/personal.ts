@@ -33,6 +33,9 @@ export type Empleado = {
   // su proceso si es el jefe). Opcionales para no romper fichas ya cargadas.
   proceso?: string;
   esJefeProceso?: boolean;
+  // Sede fija (de sedes_empresa) donde este colaborador puede marcar su
+  // asistencia. Opcional para no romper fichas ya cargadas.
+  sedeId?: string;
 
   // Formación
   nivelEducativo: string;
@@ -79,6 +82,7 @@ export function empleadoVacio(): Empleado {
     jefeDirecto: "",
     proceso: "",
     esJefeProceso: false,
+    sedeId: "",
     nivelEducativo: "",
     profesion: "",
     observaciones: "",
