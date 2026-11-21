@@ -330,20 +330,18 @@ export default function GestionTalentoHumanoPage() {
               <span className="text-gray-300 flex-shrink-0 group-hover:text-[#F5A623] transition-colors">›</span>
             </Link>
           ) : (
-            <div className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 border-l-4 p-4 opacity-70" style={{ borderLeftColor: "#D1D5DB" }}>
-              <span className="relative flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center bg-gray-100">
-                <Lock size={20} className="text-gray-400" strokeWidth={2} />
+            <div className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4">
+              <span className="relative flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center bg-[#FAFAFA] border border-gray-100">
+                <Lock size={22} className="text-[#C9A227]" strokeWidth={2} />
               </span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h2 className="font-semibold text-sm text-[#1A1A1A]">Control de Asistencia</h2>
-                  <span className="text-[10px] uppercase tracking-wide font-bold text-[#F5A623] bg-[#F5A623]/10 px-1.5 py-0.5 rounded-full flex-shrink-0">
-                    Servicio adicional
+                  <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full flex-shrink-0">
+                    <Lock size={10} strokeWidth={2.5} /> Restringido
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Marcación de entrada/salida geolocalizada. Hablá con tu asesor para activarlo.
-                </p>
+                <p className="text-xs text-gray-500 mt-0.5">Acceso restringido.</p>
               </div>
             </div>
           ))}

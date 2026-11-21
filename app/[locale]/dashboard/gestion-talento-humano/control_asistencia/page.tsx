@@ -95,14 +95,16 @@ export default function ControlAsistenciaPage() {
           ← Gestión del Talento Humano
         </Link>
         <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center">
-          <span className="inline-flex w-14 h-14 rounded-full bg-gray-100 items-center justify-center mb-4">
-            <Lock size={24} className="text-gray-400" />
+          <span className="inline-flex w-14 h-14 rounded-full bg-[#FAFAFA] border border-gray-100 items-center justify-center mb-4">
+            <Lock size={24} className="text-[#C9A227]" />
           </span>
-          <h1 className="font-semibold text-[#1A1A1A] mb-1">Control de Asistencia</h1>
-          <p className="text-sm text-gray-500 max-w-sm mx-auto">
-            Este es un servicio adicional, con costo aparte del plan. Hablá con tu asesor de Iso Go para activarlo
-            en tu cuenta.
-          </p>
+          <h1 className="font-semibold text-[#1A1A1A] mb-1 flex items-center justify-center gap-2">
+            Control de Asistencia
+            <span className="flex items-center gap-1 text-[10px] uppercase tracking-wide font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              <Lock size={10} strokeWidth={2.5} /> Restringido
+            </span>
+          </h1>
+          <p className="text-sm text-gray-500 max-w-sm mx-auto">Acceso restringido.</p>
         </div>
       </div>
     );
