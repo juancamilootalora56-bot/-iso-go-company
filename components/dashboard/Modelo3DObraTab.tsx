@@ -64,9 +64,12 @@ export default function Modelo3DObraTab({ fases }: { fases: FaseCronograma[] }) 
     scene.background = new THREE.Color("#0D0D0D");
 
     const alturaTotal = fases.length * (ALTURA_NIVEL + GAP);
+    // Distancia de cámara proporcional a la altura de la torre, para que
+    // edificios con muchos niveles (ej. 20+) entren completos en cuadro.
+    const distanciaCamara = Math.max(9, alturaTotal * 0.85);
 
-    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-    camera.position.set(7, alturaTotal * 0.75, 9);
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 200);
+    camera.position.set(distanciaCamara * 0.75, alturaTotal * 0.62, distanciaCamara);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -80,7 +83,7 @@ export default function Modelo3DObraTab({ fases }: { fases: FaseCronograma[] }) 
     controls.autoRotate = true;
     controls.autoRotateSpeed = 1.1;
     controls.minDistance = 4;
-    controls.maxDistance = 30;
+    controls.maxDistance = Math.max(40, alturaTotal * 2);
     controls.update();
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.65));
