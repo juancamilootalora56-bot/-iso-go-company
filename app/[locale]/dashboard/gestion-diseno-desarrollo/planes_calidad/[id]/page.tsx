@@ -12,6 +12,7 @@ import CampoConAyuda from "@/components/dashboard/CampoConAyuda";
 import OrganigramaEditor from "@/components/dashboard/OrganigramaEditor";
 import ManualesProyectoTab from "@/components/dashboard/ManualesProyectoTab";
 import PlanGestionObraTab from "@/components/dashboard/PlanGestionObraTab";
+import Modelo3DObraTab from "@/components/dashboard/Modelo3DObraTab";
 import SelectorAccesoColaboradores from "@/components/dashboard/SelectorAccesoColaboradores";
 import {
   parsePlanesCalidad,
@@ -32,7 +33,7 @@ const labelClass = "block text-xs font-medium text-gray-500 mb-1";
 const cellInput =
   "w-full bg-transparent border-0 focus:outline-none focus:ring-0 focus:bg-[#FFF6E5] px-2 py-1.5 text-xs text-[#1A1A1A] placeholder-gray-300 rounded transition-colors";
 
-type Tab = "planes" | "organigrama" | "manuales" | "obra" | "cronograma";
+type Tab = "planes" | "organigrama" | "manuales" | "obra" | "cronograma" | "modelo3d";
 
 export default function PerfilPlanCalidadPage() {
   const { user, colaborador } = useDashboardUser();
@@ -230,6 +231,7 @@ export default function PerfilPlanCalidadPage() {
           { key: "manuales" as Tab, label: "📋 Responsabilidades" },
           { key: "obra" as Tab, label: "🏗️ Plan de Gestión de Obra" },
           { key: "cronograma" as Tab, label: "📅 Cronograma del Proyecto" },
+          { key: "modelo3d" as Tab, label: "🧊 Modelo 3D" },
         ].map((t) => (
           <button
             key={t.key}
@@ -307,6 +309,8 @@ export default function PerfilPlanCalidadPage() {
       {tab === "manuales" && <ManualesProyectoTab userId={user?.id ?? null} planId={plan.id} />}
 
       {tab === "obra" && <PlanGestionObraTab userId={user?.id ?? null} planId={plan.id} />}
+
+      {tab === "modelo3d" && <Modelo3DObraTab fases={plan.fases} />}
 
       {tab === "cronograma" && (
         <div className="space-y-5">
