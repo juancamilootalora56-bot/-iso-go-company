@@ -1,6 +1,13 @@
 // Planes de Calidad — ISO 9001:2015 / guía ISO 10005: plan específico de calidad
 // para un producto, proyecto o contrato puntual, documentado por fases de trabajo.
 
+export type FotoBitacora = {
+  id: string;
+  dataUrl: string; // data URL (base64)
+  fecha: string; // YYYY-MM-DD
+  nota: string;
+};
+
 export type ActividadFase = {
   id: string;
   numero: number;
@@ -10,6 +17,7 @@ export type ActividadFase = {
   fechaEntrega: string;
   duracion: string;
   porcentajeCompletado: number;
+  fotos: FotoBitacora[]; // evidencia fotográfica real de avance de obra
 };
 
 export type FaseCronograma = {
@@ -83,7 +91,12 @@ export function actividadFaseVacia(numero: number): ActividadFase {
     fechaEntrega: "",
     duracion: "",
     porcentajeCompletado: 0,
+    fotos: [],
   };
+}
+
+export function fotoBitacoraVacia(): FotoBitacora {
+  return { id: crypto.randomUUID(), dataUrl: "", fecha: new Date().toISOString().slice(0, 10), nota: "" };
 }
 
 export function faseVacia(numeroFase: number): FaseCronograma {
@@ -124,7 +137,12 @@ export function parsePlanesCalidad(contenido: string): PlanCalidad[] {
       ...p,
       foto: p.foto ?? null,
       fases: Array.isArray(p.fases)
-        ? p.fases.map((f) => ({ ...f, actividades: Array.isArray(f.actividades) ? f.actividades : [] }))
+        ? p.fases.map((f) => ({
+            ...f,
+            actividades: Array.isArray(f.actividades)
+              ? f.actividades.map((a) => ({ ...a, fotos: Array.isArray(a.fotos) ? a.fotos : [] }))
+              : [],
+          }))
         : [],
       colaboradoresConAcceso: p.colaboradoresConAcceso ?? [],
     }));

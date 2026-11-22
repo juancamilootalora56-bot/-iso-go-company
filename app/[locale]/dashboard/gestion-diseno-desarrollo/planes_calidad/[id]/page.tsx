@@ -12,7 +12,7 @@ import CampoConAyuda from "@/components/dashboard/CampoConAyuda";
 import OrganigramaEditor from "@/components/dashboard/OrganigramaEditor";
 import ManualesProyectoTab from "@/components/dashboard/ManualesProyectoTab";
 import PlanGestionObraTab from "@/components/dashboard/PlanGestionObraTab";
-import Modelo3DObraTab from "@/components/dashboard/Modelo3DObraTab";
+import BitacoraObraTab from "@/components/dashboard/BitacoraObraTab";
 import SelectorAccesoColaboradores from "@/components/dashboard/SelectorAccesoColaboradores";
 import {
   parsePlanesCalidad,
@@ -22,6 +22,7 @@ import {
   ESTADOS_PLAN_CALIDAD,
   type PlanCalidad,
   type FaseCronograma,
+  type FotoBitacora,
 } from "@/lib/planesCalidad";
 
 const ITEM_KEY = "planes_calidad_lista";
@@ -33,7 +34,7 @@ const labelClass = "block text-xs font-medium text-gray-500 mb-1";
 const cellInput =
   "w-full bg-transparent border-0 focus:outline-none focus:ring-0 focus:bg-[#FFF6E5] px-2 py-1.5 text-xs text-[#1A1A1A] placeholder-gray-300 rounded transition-colors";
 
-type Tab = "planes" | "organigrama" | "manuales" | "obra" | "cronograma" | "modelo3d";
+type Tab = "planes" | "organigrama" | "manuales" | "obra" | "cronograma" | "bitacora";
 
 export default function PerfilPlanCalidadPage() {
   const { user, colaborador } = useDashboardUser();
@@ -125,10 +126,31 @@ export default function PerfilPlanCalidadPage() {
     actualizarFase(fase.id, { actividades: [...fase.actividades, actividadFaseVacia(fase.actividades.length + 1)] });
   }
 
-  function actualizarActividad(fase: FaseCronograma, actividadId: string, key: string, value: string | number) {
+  function actualizarActividad(
+    fase: FaseCronograma,
+    actividadId: string,
+    key: string,
+    value: string | number | FotoBitacora[]
+  ) {
     actualizarFase(fase.id, {
       actividades: fase.actividades.map((a) => (a.id === actividadId ? { ...a, [key]: value } : a)),
     });
+  }
+
+  async function cambiarFotosActividad(faseId: string, actividadId: string, fotos: FotoBitacora[]) {
+    if (!plan) return;
+    const nuevoPlan: PlanCalidad = {
+      ...plan,
+      fases: plan.fases.map((f) =>
+        f.id === faseId
+          ? { ...f, actividades: f.actividades.map((a) => (a.id === actividadId ? { ...a, fotos } : a)) }
+          : f
+      ),
+    };
+    setPlan(nuevoPlan);
+    const planes = parsePlanesCalidad(docs[ITEM_KEY] ?? "");
+    const actualizados = [...planes.filter((p) => p.id !== nuevoPlan.id), nuevoPlan];
+    await save(ITEM_KEY, JSON.stringify(actualizados));
   }
 
   function eliminarActividad(fase: FaseCronograma, actividadId: string) {
@@ -231,7 +253,7 @@ export default function PerfilPlanCalidadPage() {
           { key: "manuales" as Tab, label: "📋 Responsabilidades" },
           { key: "obra" as Tab, label: "🏗️ Plan de Gestión de Obra" },
           { key: "cronograma" as Tab, label: "📅 Cronograma del Proyecto" },
-          { key: "modelo3d" as Tab, label: "🧊 Modelo 3D" },
+          { key: "bitacora" as Tab, label: "📸 Bitácora de Obra" },
         ].map((t) => (
           <button
             key={t.key}
@@ -310,7 +332,9 @@ export default function PerfilPlanCalidadPage() {
 
       {tab === "obra" && <PlanGestionObraTab userId={user?.id ?? null} planId={plan.id} />}
 
-      {tab === "modelo3d" && <Modelo3DObraTab fases={plan.fases} />}
+      {tab === "bitacora" && (
+        <BitacoraObraTab fases={plan.fases} soloLectura={false} onCambiarFotos={cambiarFotosActividad} />
+      )}
 
       {tab === "cronograma" && (
         <div className="space-y-5">
