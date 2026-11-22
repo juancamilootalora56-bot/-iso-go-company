@@ -86,6 +86,54 @@ export function cotizacionVacia(): Cotizacion {
   };
 }
 
+// --- Ítem de la solicitud (una requisición puede pedir varios) ---
+
+export type ItemRequisicion = {
+  id: string;
+  descripcion: string;
+  cantidad: number;
+  unidad: string;
+  // Cantidad que el aprobador decide autorizar en la etapa de Autorización.
+  // Por defecto espeja `cantidad` (se asume aprobación completa hasta que
+  // el aprobador la reduzca); puede bajarse hasta 0 para no autorizar el
+  // ítem, o a un valor intermedio para una aprobación parcial.
+  cantidadAprobada: number;
+};
+
+export function itemRequisicionVacio(): ItemRequisicion {
+  return { id: crypto.randomUUID(), descripcion: "", cantidad: 1, unidad: "unidad", cantidadAprobada: 1 };
+}
+
+export type EstadoAprobacionItem = "completo" | "parcial" | "no_autorizado";
+
+export function estadoAprobacionItem(item: ItemRequisicion): EstadoAprobacionItem {
+  if (item.cantidadAprobada <= 0) return "no_autorizado";
+  if (item.cantidadAprobada >= item.cantidad) return "completo";
+  return "parcial";
+}
+
+export function colorEstadoAprobacionItem(estado: EstadoAprobacionItem): string {
+  switch (estado) {
+    case "completo":
+      return "#22C55E";
+    case "parcial":
+      return "#F5A623";
+    case "no_autorizado":
+      return "#9CA3AF";
+  }
+}
+
+export function labelEstadoAprobacionItem(estado: EstadoAprobacionItem): string {
+  switch (estado) {
+    case "completo":
+      return "Aprobado completo";
+    case "parcial":
+      return "Aprobado parcial";
+    case "no_autorizado":
+      return "No autorizado";
+  }
+}
+
 // --- Bitácora ---
 
 export type EventoRequisicion = {
@@ -104,9 +152,7 @@ export type Requisicion = {
 
   // 1. Solicitud
   tipo: TipoRequisicion;
-  descripcion: string;
-  cantidad: number;
-  unidad: string;
+  items: ItemRequisicion[];
   area: string;
   solicitante: string;
   fechaSolicitud: string;
@@ -145,9 +191,7 @@ export function requisicionVacia(codigo: string): Requisicion {
     id: crypto.randomUUID(),
     codigo,
     tipo: "Producto",
-    descripcion: "",
-    cantidad: 1,
-    unidad: "unidad",
+    items: [itemRequisicionVacio()],
     area: "",
     solicitante: "",
     fechaSolicitud: hoy,
@@ -177,7 +221,32 @@ export function parseRequisiciones(contenido: string): Requisicion[] {
   try {
     const parsed = JSON.parse(contenido);
     if (!Array.isArray(parsed)) return [];
-    return parsed.map((r: Requisicion) => ({ ...requisicionVacia(r.codigo ?? ""), ...r, cotizaciones: r.cotizaciones ?? [], bitacora: r.bitacora ?? [] }));
+    return parsed.map((r: Requisicion) => {
+      // Compat: documentos viejos guardaban un solo producto como
+      // descripcion/cantidad/unidad sueltos en vez de `items[]`.
+      const legacy = r as unknown as { descripcion?: string; cantidad?: number; unidad?: string };
+      const itemsBase: Partial<ItemRequisicion>[] = Array.isArray(r.items) && r.items.length > 0
+        ? r.items
+        : legacy.descripcion || legacy.cantidad || legacy.unidad
+          ? [{ id: crypto.randomUUID(), descripcion: legacy.descripcion ?? "", cantidad: legacy.cantidad ?? 1, unidad: legacy.unidad ?? "unidad" }]
+          : [itemRequisicionVacio()];
+      // Compat: ítems guardados antes de agregar aprobación parcial no
+      // tienen `cantidadAprobada` — por defecto espeja la cantidad pedida.
+      const items: ItemRequisicion[] = itemsBase.map((i) => ({
+        id: i.id ?? crypto.randomUUID(),
+        descripcion: i.descripcion ?? "",
+        cantidad: i.cantidad ?? 1,
+        unidad: i.unidad ?? "unidad",
+        cantidadAprobada: i.cantidadAprobada ?? i.cantidad ?? 1,
+      }));
+      return {
+        ...requisicionVacia(r.codigo ?? ""),
+        ...r,
+        items,
+        cotizaciones: r.cotizaciones ?? [],
+        bitacora: r.bitacora ?? [],
+      };
+    });
   } catch {
     return [];
   }
