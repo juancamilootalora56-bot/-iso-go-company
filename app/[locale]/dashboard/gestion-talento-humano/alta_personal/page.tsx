@@ -18,10 +18,10 @@ import {
   type Empleado,
 } from "@/lib/personal";
 import { parseLista as parseProcesos, PROCESOS_COMUNES } from "@/lib/mapaProcesos";
+import { comprimirImagen } from "@/lib/imagenes";
 import type { Sede } from "@/lib/sedesEmpresa";
 
 const ITEM_KEY = "personal_lista";
-const MAX_FOTO_BYTES = 800_000; // ~800KB
 
 export default function AltaPersonalPage() {
   const { user } = useDashboardUser();
@@ -72,17 +72,16 @@ export default function AltaPersonalPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > MAX_FOTO_BYTES) {
-      setError("La foto es muy pesada. Usá una imagen de menos de 800KB.");
-      return;
-    }
     setError(null);
-    const reader = new FileReader();
-    reader.onload = () => setForm((f) => ({ ...f, foto: reader.result as string }));
-    reader.readAsDataURL(file);
+    try {
+      const fotoComprimida = await comprimirImagen(file);
+      setForm((f) => ({ ...f, foto: fotoComprimida }));
+    } catch {
+      setError("No se pudo procesar la foto. Probá con otra imagen.");
+    }
   }
 
   function campo<K extends keyof Empleado>(key: K, value: Empleado[K]) {
@@ -183,7 +182,7 @@ export default function AltaPersonalPage() {
               {form.nombre || form.apellido ? `${form.nombre} ${form.apellido}`.trim() : "Nuevo colaborador"}
             </p>
             <p className="text-xs text-gray-500 mt-0.5">{form.cargo || "Sin cargo definido"}</p>
-            <p className="text-[11px] text-gray-400 mt-1">Hacé clic en la foto para subirla (máx. 800KB).</p>
+            <p className="text-[11px] text-gray-400 mt-1">Hacé clic en la foto para subirla — se ajusta sola, no importa el tamaño original.</p>
           </div>
         </div>
 
